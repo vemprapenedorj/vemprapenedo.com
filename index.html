@@ -28,6 +28,65 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TTVH4RFS"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+    <div id="app-splash" style="position: fixed; inset: 0; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #064e3b; transition: opacity 250ms ease; opacity: 1; pointer-events: none;">
+      <div style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <img src="/assets/imagens/Logo.jpg" alt="Vem Pra Penedo" style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid #d4af37; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.4);" />
+        <div style="font-size: 1.5rem; font-weight: 800; color: #d4af37; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 20px; font-family: 'Inter', system-ui, -apple-system, sans-serif;">Vem Pra Penedo</div>
+        
+        <!-- Discrete pulse loading indicator -->
+        <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+          <div style="width: 10px; height: 10px; border-radius: 50%; background-color: #d4af37; animation: splash-pulse 1.2s infinite ease-in-out;"></div>
+          <div style="width: 10px; height: 10px; border-radius: 50%; background-color: #d4af37; animation: splash-pulse 1.2s infinite ease-in-out 0.2s;"></div>
+          <div style="width: 10px; height: 10px; border-radius: 50%; background-color: #d4af37; animation: splash-pulse 1.2s infinite ease-in-out 0.4s;"></div>
+        </div>
+      </div>
+      <style>
+        @keyframes splash-pulse {
+          0%, 100% { transform: scale(0.6); opacity: 0.4; }
+          50% { transform: scale(1.2); opacity: 1; }
+        }
+      </style>
+    </div>
+    
+    <script>
+      (function() {
+        let isReady = false;
+        let safetyTimeout = null;
+        
+        // Safety timeout of 5 seconds starts after DOM is fully parsed and loaded
+        window.addEventListener('DOMContentLoaded', () => {
+          safetyTimeout = setTimeout(() => {
+            console.warn("⚠️ [Bootstrap] Safety timeout reached (5s after DOMContentLoaded). Hydration/loading may have encountered an issue. Forcing splash screen removal.");
+            signalReady();
+          }, 5000);
+        });
+
+        function signalReady() {
+          if (isReady) return;
+          isReady = true;
+          if (safetyTimeout) clearTimeout(safetyTimeout);
+          
+          const splash = document.getElementById('app-splash');
+          if (splash) {
+            // Confirm layout stabilization using consecutive requestAnimationFrames
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                  if (splash.parentNode) {
+                    splash.parentNode.removeChild(splash);
+                  }
+                }, 250);
+              });
+            });
+          }
+        }
+
+        // Listen for the custom ready event dispatched by the React app
+        document.addEventListener('penedo-app-ready', signalReady);
+      })();
+    </script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

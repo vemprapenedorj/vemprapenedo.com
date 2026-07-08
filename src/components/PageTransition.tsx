@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { useFirstHydration } from '../hooks/useFirstHydration';
+import { BootstrapManager } from '../utils/bootstrapManager';
 
 interface PageTransitionProps {
   children: React.ReactNode;
@@ -8,6 +9,14 @@ interface PageTransitionProps {
 
 export function PageTransition({ children }: PageTransitionProps) {
   const isFirstLoad = useFirstHydration();
+  
+  React.useEffect(() => {
+    if (isFirstLoad) {
+      BootstrapManager.waitForAppReady().then(() => {
+        BootstrapManager.signalReady();
+      });
+    }
+  }, [isFirstLoad]);
   
   return (
     <motion.div
