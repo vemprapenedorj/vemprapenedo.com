@@ -1,0 +1,56 @@
+989:    <section className="py-24 bg-white relative overflow-hidden">
+994:        <div className="max-w-5xl mx-auto mb-16 text-center">
+1448:      <footer className="bg-penedo-forest text-white py-16">
+1449:        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12">
+1788:      <section className="pt-32 pb-12 bg-penedo-mint/10">
+1864:            <div className="bg-penedo-mint/5 p-8 rounded-[2.5rem] border-l-8 border-penedo-gold mb-12">
+1870:            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mt-12">
+2088:        <section className="py-24 bg-white">
+2238:      <section className="py-24 max-w-7xl mx-auto px-4">
+2240:          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+2291:      <section className="py-24 max-w-7xl mx-auto px-4">
+2293:          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+2344:      <section className="py-24 max-w-7xl mx-auto px-4">
+2346:          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+2397:      <section className="py-24 max-w-7xl mx-auto px-4">
+2399:          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+2430:      <section className="py-24 bg-white max-w-5xl mx-auto px-4">
+2628:        <header className="relative pt-32 pb-16 md:pt-40 md:pb-24 bg-penedo-forest text-center text-white overflow-hidden">
+2693:              <h2 className="text-3xl font-black text-penedo-forest mb-12 mt-20 flex items-center gap-3">
+2700:                  <div className="flex flex-col md:flex-row gap-8 items-center mb-8">
+2727:                  <div className="flex flex-col md:flex-row gap-8 items-center mb-8">
+2754:                  <div className="flex flex-col md:flex-row gap-8 items-center mb-8">
+2810:              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-32">
+2841:                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+2849:              <section className="mt-32 text-center">
+2853:                <p className="text-gray-600 mb-12 text-xl max-w-2xl mx-auto">
+2877:        <section className="py-24 bg-penedo-forest relative overflow-hidden text-white border-t border-white/10">
+2939:        <section className="py-16 bg-white text-center">
+2958:        <section className="py-16 bg-gray-50 border-y border-gray-100">
+2962:            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch h-full">
+3002:        <section id="pontos-turisticos" className="py-16 bg-white">
+3005:            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+3015:                  className="p-8 bg-gray-50 rounded-[3rem] border border-gray-100 hover:border-penedo-gold transition-all group scroll-mt-32"
+3026:        <section id="passeios" className="py-16 bg-gray-50">
+3057:        <section id="roteiro-1-dia" className="py-16 bg-white border-y border-gray-100">
+3066:                <div key={i} className="flex flex-col sm:flex-row gap-4 sm:gap-8 items-start p-8 bg-penedo-mint/20 rounded-3xl border border-penedo-emerald/10 hover:border-penedo-gold transition-colors">
+3076:        <section id="roteiro-2-dias" className="py-24 bg-penedo-forest text-white">
+3079:            <div className="grid grid-cols-1 gap-12">
+3101:        <section id="secao-cachoeiras" className="py-16 bg-white scroll-mt-24">
+3104:            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+3110:                <div key={i} id={c.id} className="p-8 rounded-[2.5rem] bg-gray-50 border border-transparent hover:border-penedo-gold transition-all duration-300 hover:shadow-xl group scroll-mt-32">
+3120:        <section id="gastronomia" className="py-16 bg-gray-50 text-center scroll-mt-24">
+3123:            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left mb-12">
+3129:                <div key={i} id={res.id} className="p-8 bg-white rounded-[2.5rem] border border-transparent hover:border-penedo-gold transition-all duration-300 hover:shadow-xl group scroll-mt-32">
+3140:        <section id="onde-se-hospedar" className="py-16 bg-white border-y border-gray-100">
+3160:        <section className="py-16 bg-gray-50">
+3163:            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+3181:        <section id="shoppings" className="py-16 bg-white border-y border-gray-100">
+3184:            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
+3192:                <div key={i} id={shop.id} className="p-8 bg-gray-50 rounded-[2.5rem] border border-transparent hover:border-penedo-gold transition-all duration-300 hover:shadow-xl group scroll-mt-32">
+3202:        <section className="py-16 bg-gray-50">
+3219:            <p className="text-xl text-white/80 mb-12 font-medium">Fale conosco pelo WhatsApp agora mesmo e tire todas as suas dúvidas sobre o destino!</p>
+3249:      <section className="py-24 max-w-7xl mx-auto px-4">
+3250:        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+3288:      <section className="py-24 bg-penedo-forest relative overflow-hidden">
+3292:          <p className="text-penedo-gold/80 mb-12 text-lg font-medium italic">Seja um parceiro do Vem Pra Penedo e alcance milhares de turistas.</p>
