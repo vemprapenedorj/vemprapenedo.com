@@ -102,7 +102,7 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
 
   if (activeArticle === 'cachoeiras-penedo') {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-white">
+      <div className="bg-white">
         <SEO 
           {...generateSEO('article', {
             slug: 'cachoeiras-penedo',
@@ -137,28 +137,21 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
             <div className="absolute inset-0 bg-gradient-to-b from-penedo-forest/60 via-transparent to-penedo-forest"></div>
           </div>
           <div className="relative z-10 px-4 max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+            <div
               className="inline-block px-4 py-1.5 bg-penedo-gold text-penedo-forest text-xs font-black uppercase tracking-[0.3em] rounded-full mb-6 shadow-xl"
             >
               Natureza & Aventura
-            </motion.div>
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+            </div>
+            <h1 
               className="text-4xl md:text-7xl font-black text-white mb-6 leading-[1.1] tracking-tighter"
             >
               Cachoeiras em <span className="text-penedo-gold italic">Penedo RJ</span>: As Melhores para Visitar
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+            </h1>
+            <p 
               className="text-white/90 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-medium"
             >
               Um guia completo para refrescar o corpo e a alma nas águas mais cristalinas da Serra da Mantiqueira.
-            </motion.p>
+            </p>
           </div>
         </header>
 
@@ -391,13 +384,13 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
             </div>
           </div>
         </section>
-      </motion.div>
+      </div>
     );
   }
 
   if (activeArticle === 'penedo-guia') {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-white">
+      <div className="bg-white">
         <SEO 
           {...generateSEO('article', {
             slug: 'penedo-guia',
@@ -421,30 +414,21 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
             <img src="/assets/imagens/blog/penedo-guia/capa.jpg" className="w-full h-full object-cover" alt="Penedo RJ" referrerPolicy="no-referrer" />
           </div>
           <div className="relative z-10 px-4 max-w-4xl mx-auto">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+            <h1 
               className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight"
             >
               Guia Completo: <span className="text-penedo-gold">O Que Fazer em Penedo</span>
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+            </h1>
+            <p 
               className="text-white font-medium text-lg md:text-xl max-w-3xl mx-auto leading-relaxed shadow-black/20 drop-shadow-sm"
             >
               Descubra os encantos da Finlândia Brasileira. Um destino mágico na Serra da Mantiqueira esperando por você.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+            </p>
+            <div
               className="mt-8 flex justify-center"
             >
               <BlogPostCTA label="Ver hospedagens em Penedo" onClick={() => scrollToAnchor('onde-se-hospedar')} />
-            </motion.div>
+            </div>
           </div>
         </header>
 
@@ -740,7 +724,7 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
             </div>
           </div>
         </section>
-      </motion.div>
+      </div>
     );
   }
 
@@ -753,7 +737,7 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-white">
+    <div className="bg-white">
       <SEO 
         title="Blog Penedo RJ - Dicas e Roteiros | Vem Pra Penedo"
         description="Acompanhe o blog Vem Pra Penedo. Dicas exclusivas, roteiros completos, os melhores restaurantes e onde se hospedar na Finlândia Brasileira."
@@ -833,7 +817,7 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
           <BlogPostCTA label="Falar sobre parcerias" onClick={() => onNavigate('contato')} primary={true} />
         </div>
       </section>
-    </motion.div>
+    </div>
   );
 }
 

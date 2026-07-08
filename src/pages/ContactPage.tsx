@@ -4,11 +4,7 @@ import { Phone, Mail, MapPin, Send, CheckCircle, Instagram, Facebook, Handshake 
 
 export function ContactPage() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <div>
       <header className="relative pt-40 pb-6 md:pb-12 md:pt-48 md:pb-16 bg-penedo-forest text-center text-white overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <img src="https://picsum.photos/seed/contact/1920/1080" className="w-full h-full object-cover" alt="Background" referrerPolicy="no-referrer" />
@@ -76,10 +72,7 @@ export function ContactPage() {
         </div>
 
         {/* Parcerias */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+        <div 
           className="mt-12 md:mt-24 p-12 rounded-[3rem] bg-penedo-forest text-white text-center relative overflow-hidden"
         >
           <div className="relative z-10">
@@ -99,9 +92,9 @@ export function ContactPage() {
               </svg> Quero ser parceiro
             </a>
           </div>
-        </motion.div>
+          </div>
       </section>
-    </motion.div>
+    </div>
   );
 }
 

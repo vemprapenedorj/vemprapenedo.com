@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { Page, DetailItem } from '../types';
 import { shuffleArray } from '../utils/shuffle';
@@ -50,11 +49,7 @@ export function HomePage({
   }, [searchQuery, filteredResults.length]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <div>
       {/* Hero */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -69,34 +64,22 @@ export function HomePage({
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
         <div className="relative z-10 text-center px-4 max-w-4xl">
-          <motion.span 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
+          <span 
             className="inline-block px-4 py-1 mb-6 rounded-full bg-penedo-gold/20 border border-penedo-gold/30 text-penedo-gold text-sm font-semibold tracking-widest uppercase"
           >
             Descubra o Paraíso
-          </motion.span>
-          <motion.h1 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
+          </span>
+          <h1 
             className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight leading-tight"
           >
             A Magia de <span className="text-penedo-gold drop-shadow-[0_2px_4px_rgba(212,175,55,0.3)]">Penedo</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6 }}
+          </h1>
+          <p 
             className="text-xl text-white/90 mb-6 md:mb-10 max-w-2xl mx-auto leading-relaxed"
           >
             Entre a natureza exuberante e o charme da colonização finlandesa, encontre o seu refúgio perfeito na Serra da Mantiqueira.
-          </motion.p>
-          <motion.div 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.8 }}
+          </p>
+          <div 
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <a 
@@ -113,7 +96,7 @@ export function HomePage({
             >
               Onde Comprar
             </a>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -208,6 +191,6 @@ export function HomePage({
           />
     </>
   )}
-</motion.div>
+    </div>
 );
 }

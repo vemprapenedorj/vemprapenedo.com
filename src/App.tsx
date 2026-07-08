@@ -7,6 +7,8 @@ import SEO from './components/SEO';
 import { checkRedirects } from './seo/redirects';
 import { generateSEO } from './seo';
 import { Page, DetailItem } from './types';
+import { PageTransition } from './components/PageTransition';
+
 
 // Static JSON/data files
 import locaisData from './locais.json';
@@ -207,12 +209,27 @@ export default function App() {
 
   // 1. GTM SPA page_view tracking
   useEffect(() => {
-    const timer = setTimeout(() => {
+    let idleId: number;
+    let fallbackTimer: number;
+
+    const track = () => {
       const pagePath = window.location.pathname || '/';
       const pageTitle = document.title || 'Vem Pra Penedo';
       pushPageView(pagePath, pageTitle);
-    }, 100);
-    return () => clearTimeout(timer);
+    };
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      idleId = window.requestIdleCallback(track, { timeout: 1000 });
+    } else {
+      fallbackTimer = window.setTimeout(track, 200);
+    }
+
+    return () => {
+      if (idleId && typeof window !== 'undefined' && 'cancelIdleCallback' in window) {
+        window.cancelIdleCallback(idleId);
+      }
+      if (fallbackTimer) window.clearTimeout(fallbackTimer);
+    };
   }, [currentPage, selectedPremiumSlug, activeBlogArticle]);
 
   // 2. GTM page_scroll tracking
@@ -232,7 +249,13 @@ export default function App() {
         const key = t.toString() as '25' | '50' | '75' | '100';
         if (scrollPct >= t && !triggered[key]) {
           triggered[key] = true;
-          pushScroll(t, activeSlug);
+          
+          const pushEvent = () => pushScroll(t, activeSlug);
+          if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+            window.requestIdleCallback(pushEvent);
+          } else {
+            setTimeout(pushEvent, 10);
+          }
         }
       });
     };
@@ -244,10 +267,19 @@ export default function App() {
   // 3. GTM page_engagement tracking
   useEffect(() => {
     const activeSlug = selectedPremiumSlug;
+    
+    const pushEvent = (time: number) => {
+      if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+        window.requestIdleCallback(() => pushPageEngagement(time, activeSlug));
+      } else {
+        pushPageEngagement(time, activeSlug);
+      }
+    };
+
     const timers = [
-      setTimeout(() => pushPageEngagement(30, activeSlug), 30000),
-      setTimeout(() => pushPageEngagement(60, activeSlug), 60000),
-      setTimeout(() => pushPageEngagement(120, activeSlug), 120000)
+      setTimeout(() => pushEvent(30), 30000),
+      setTimeout(() => pushEvent(60), 60000),
+      setTimeout(() => pushEvent(120), 120000)
     ];
 
     return () => {
@@ -398,12 +430,7 @@ export default function App() {
         <Suspense fallback={<LoadingFallback />}>
           <AnimatePresence mode="wait">
             {currentPage === 'home' && (
-              <motion.div 
-                key={`home-${homeRefreshKey}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              <PageTransition key={`home-${homeRefreshKey}`}>
                 <SEO {...generateSEO('home')} />
                 <HomePage 
                   onNavigate={navigate} 
@@ -411,90 +438,50 @@ export default function App() {
                   onSelectArticle={setActiveBlogArticle}
                   onNavigatePremium={(slug) => navigate('premium-detail', slug)}
                 />
-              </motion.div>
+              </PageTransition>
             )}
             {currentPage === 'o-que-fazer' && (
-              <motion.div 
-                key="what-to-do"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              <PageTransition key="what-to-do">
                 <SEO {...generateSEO('category', 'o-que-fazer')} />
                 <WhatToDoPage onOpenDetail={handleOpenDetail} onGoBack={() => navigate('home')} />
-              </motion.div>
+              </PageTransition>
             )}
             {currentPage === 'onde-ficar' && (
-              <motion.div 
-                key="where-to-stay"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              <PageTransition key="where-to-stay">
                 <SEO {...generateSEO('category', 'onde-ficar')} />
                 <WhereToStayPage onOpenDetail={handleOpenDetail} onGoBack={() => navigate('home')} />
-              </motion.div>
+              </PageTransition>
             )}
             {currentPage === 'gastronomia' && (
-              <motion.div 
-                key="gastronomy"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              <PageTransition key="gastronomy">
                 <SEO {...generateSEO('category', 'gastronomia')} />
                 <GastronomyPage onOpenDetail={handleOpenDetail} onGoBack={() => navigate('home')} />
-              </motion.div>
+              </PageTransition>
             )}
             {currentPage === 'compras' && (
-              <motion.div 
-                key="shopping"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              <PageTransition key="shopping">
                 <SEO {...generateSEO('category', 'compras')} />
                 <ShoppingPage onOpenDetail={handleOpenDetail} onGoBack={() => navigate('home')} />
-              </motion.div>
+              </PageTransition>
             )}
             {currentPage === 'contato' && (
-              <motion.div 
-                key="contact"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              <PageTransition key="contact">
                 <SEO {...generateSEO('category', 'contato')} />
                 <ContactPage />
-              </motion.div>
+              </PageTransition>
             )}
             {currentPage === 'blog' && (
-              <motion.div 
-                key="blog"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              <PageTransition key="blog">
                 <BlogPage onOpenDetail={handleOpenDetail} onNavigate={navigate} activeArticle={activeBlogArticle} onSelectArticle={setActiveBlogArticle} />
-              </motion.div>
+              </PageTransition>
             )}
             {currentPage === 'premium-detail' && (
-              <motion.div 
-                key={`premium-${selectedPremiumSlug}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              <PageTransition key={`premium-${selectedPremiumSlug}`}>
                 <PremiumDetailPage slug={selectedPremiumSlug!} onNavigate={navigate} />
-              </motion.div>
+              </PageTransition>
             )}
             {currentPage === '404' && (
-              <motion.div 
-                key="page-404"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              <PageTransition key="page-404">
                 <SEO 
                   title="Página Não Encontrada | Vem Pra Penedo"
                   description="A página que você procura não foi encontrada. Navegue pelo portal oficial para descobrir o melhor de Penedo RJ."
@@ -502,7 +489,7 @@ export default function App() {
                   robots="noindex, follow"
                 />
                 <Page404 onNavigate={navigate} />
-              </motion.div>
+              </PageTransition>
             )}
           </AnimatePresence>
         </Suspense>
