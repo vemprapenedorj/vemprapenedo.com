@@ -57,3 +57,63 @@ export const generateKeywords = (name: string, category: string, location?: stri
   // Remove duplicates and join by comma
   return Array.from(new Set(baseKeywords)).join(', ');
 };
+
+import { DetailItem } from '../../types';
+
+/**
+ * Dynamic Subcategory classifier helper for breadcrumbs and lists.
+ */
+export function getSubcategoryInfo(item: DetailItem): { subName: string; subSlug: string } {
+  const catLower = (item.category || '').toLowerCase();
+  const titleLower = (item.title || '').toLowerCase();
+  const tagsStr = (item.tags || []).join(' ').toLowerCase();
+
+  let subName = '';
+  let subSlug = '';
+
+  if (catLower === 'hospedagem' || catLower === 'onde-ficar') {
+    if (titleLower.includes('pousada')) {
+      subName = 'Pousadas';
+      subSlug = 'pousadas';
+    } else if (titleLower.includes('hotel')) {
+      subName = 'Hotéis';
+      subSlug = 'hoteis';
+    } else {
+      subName = 'Chalés';
+      subSlug = 'chales';
+    }
+  } else if (catLower === 'gastronomia' || catLower === 'restaurantes' || catLower === 'carnes') {
+    if (titleLower.includes('café') || titleLower.includes('cafe') || tagsStr.includes('café') || tagsStr.includes('cafe') || tagsStr.includes('gelateria') || tagsStr.includes('sorvete') || titleLower.includes('patisserie')) {
+      subName = 'Cafés';
+      subSlug = 'cafes';
+    } else if (titleLower.includes('chocolate') || tagsStr.includes('chocolate') || titleLower.includes('lugano') || titleLower.includes('tonttulakki')) {
+      subName = 'Chocolaterias';
+      subSlug = 'chocolaterias';
+    } else {
+      subName = 'Restaurantes';
+      subSlug = 'restaurantes';
+    }
+  } else if (catLower === 'compras' || catLower === 'lojas') {
+    if (titleLower.includes('shopping') || tagsStr.includes('shopping')) {
+      subName = 'Shoppings';
+      subSlug = 'shoppings';
+    } else {
+      subName = 'Lojas';
+      subSlug = 'lojas';
+    }
+  } else {
+    // Default or 'o-que-fazer'
+    if (tagsStr.includes('cachoeira') || titleLower.includes('cachoeira')) {
+      subName = 'Cachoeiras';
+      subSlug = 'cachoeiras';
+    } else if (tagsStr.includes('passeio') || tagsStr.includes('aventura') || tagsStr.includes('quadriciclo') || tagsStr.includes('trilha') || titleLower.includes('expedição') || titleLower.includes('expedicao')) {
+      subName = 'Passeios';
+      subSlug = 'passeios';
+    } else {
+      subName = 'Atrações';
+      subSlug = 'atracoes';
+    }
+  }
+
+  return { subName, subSlug };
+}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Search } from 'lucide-react';
-import { motion } from 'motion/react';
 
 export function SearchPromo({ onSearch, query, minimal = false }: { onSearch: (q: string) => void, query: string, minimal?: boolean }) {
   return (

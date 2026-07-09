@@ -2,7 +2,7 @@ import { DetailItem } from '../types';
 
 /**
  * LocalBusiness Schema Generator
- * Generates tailored LocalBusiness schemas (Restaurant, Hotel, TouristAttraction) based on the business category.
+ * Generates tailored LocalBusiness schemas based on the business category and tags.
  */
 export const getLocalBusinessSchema = (item: DetailItem) => {
   const baseSchema: any = {
@@ -15,20 +15,40 @@ export const getLocalBusinessSchema = (item: DetailItem) => {
     "address": {
       "@type": "PostalAddress",
       "streetAddress": item.location || "Penedo",
-      "addressLocality": "Itatiaia",
+      "addressLocality": "Penedo, Itatiaia",
       "addressRegion": "RJ",
       "addressCountry": "BR",
       "postalCode": "27580-000"
+    },
+    "containedInPlace": {
+      "@id": "https://vemprapenedo.com.br/#penedo-destination"
     }
   };
 
-  // Contact Info
+  // GeoCoordinates
+  if (item.latitude && item.longitude) {
+    baseSchema["geo"] = {
+      "@type": "GeoCoordinates",
+      "latitude": item.latitude,
+      "longitude": item.longitude
+    };
+    baseSchema["hasMap"] = `https://www.google.com/maps?q=${item.latitude},${item.longitude}`;
+  }
+
+  // Contact Info & Social networks
   if (item.whatsapp) {
     baseSchema["telephone"] = item.whatsapp;
   }
+
+  const sameAsUrls: string[] = [];
+  if (item.link_instagram) sameAsUrls.push(item.link_instagram);
+  if (item.instagram && item.instagram !== item.link_instagram) sameAsUrls.push(item.instagram);
+  if (item.googleProfileUrl) sameAsUrls.push(item.googleProfileUrl);
+  if (item.tripadvisorUrl) sameAsUrls.push(item.tripadvisorUrl);
+  if (item.link_booking) sameAsUrls.push(item.link_booking);
   
-  if (item.link_instagram) {
-    baseSchema["sameAs"] = [item.link_instagram];
+  if (sameAsUrls.length > 0) {
+    baseSchema["sameAs"] = sameAsUrls;
   }
 
   // Hours
@@ -36,28 +56,45 @@ export const getLocalBusinessSchema = (item: DetailItem) => {
     baseSchema["openingHours"] = item.hours;
   }
 
-  // Aggregate Rating Mock
-  baseSchema["aggregateRating"] = {
-    "@type": "AggregateRating",
-    "ratingValue": item.rating || 4.8,
-    "reviewCount": item.isPremium || item.is_premium ? 24 : 8,
-    "bestRating": 5,
-    "worstRating": 1
-  };
+  // Strictly no mocked reviews!
+  if (item.rating && item.reviewCount) {
+    baseSchema["aggregateRating"] = {
+      "@type": "AggregateRating",
+      "ratingValue": item.rating,
+      "reviewCount": item.reviewCount,
+      "bestRating": 5,
+      "worstRating": 1
+    };
+  }
+
+  // Google Business Profile Details
+  if (item.priceRange) baseSchema["priceRange"] = item.priceRange;
+  if (item.currenciesAccepted) baseSchema["currenciesAccepted"] = item.currenciesAccepted;
+  if (item.paymentAccepted) baseSchema["paymentAccepted"] = item.paymentAccepted;
 
   // Category specific customizations
   const categoryLower = (item.category || '').toLowerCase();
+  const titleLower = (item.title || '').toLowerCase();
+  const tagsStr = (item.tags || []).join(' ').toLowerCase();
   
-  if (categoryLower === 'gastronomia' || categoryLower === 'restaurantes') {
-    baseSchema["@type"] = "Restaurant";
-    baseSchema["servesCuisine"] = item.tags && item.tags.length > 0 ? item.tags.join(', ') : "Variada";
-    baseSchema["priceRange"] = item.isPremium || item.is_premium ? "$$$" : "$$";
-    
-    if (item.whatsapp) {
-      baseSchema["acceptsReservations"] = "True";
+  if (categoryLower === 'gastronomia' || categoryLower === 'restaurantes' || categoryLower === 'carnes') {
+    if (tagsStr.includes('café') || tagsStr.includes('cafe') || tagsStr.includes('gelato') || tagsStr.includes('sorvete') || tagsStr.includes('chocolate') || titleLower.includes('café') || titleLower.includes('cafe') || titleLower.includes('chocolate')) {
+      baseSchema["@type"] = "CafeOrCoffeeShop";
+    } else if (tagsStr.includes('padaria') || tagsStr.includes('doces') || titleLower.includes('padaria')) {
+      baseSchema["@type"] = "Bakery";
+    } else {
+      baseSchema["@type"] = "Restaurant";
+    }
+    baseSchema["servesCuisine"] = item.tags && item.tags.length > 0 ? item.tags.filter(t => t !== 'gastronomia').join(', ') : "Variada";
+    if (!baseSchema["priceRange"]) {
+      baseSchema["priceRange"] = item.isPremium || item.is_premium ? "$$$" : "$$";
     }
   } else if (categoryLower === 'onde-ficar' || categoryLower === 'hospedagem') {
-    baseSchema["@type"] = "Hotel";
+    if (titleLower.includes('pousada') || titleLower.includes('chalé') || titleLower.includes('chale')) {
+      baseSchema["@type"] = "LodgingBusiness";
+    } else {
+      baseSchema["@type"] = "Hotel";
+    }
     
     const amenities: string[] = [];
     if (item.tags) {
@@ -76,8 +113,20 @@ export const getLocalBusinessSchema = (item: DetailItem) => {
         "value": true
       }));
     }
+  } else if (categoryLower === 'compras' || categoryLower === 'lojas') {
+    if (titleLower.includes('shopping') || tagsStr.includes('shopping')) {
+      baseSchema["@type"] = "ShoppingCenter";
+    } else {
+      baseSchema["@type"] = "Store";
+    }
   } else if (categoryLower === 'o-que-fazer' || categoryLower === 'turismo' || categoryLower === 'aventura') {
-    baseSchema["@type"] = "TouristAttraction";
+    if (tagsStr.includes('camping') || tagsStr.includes('campground')) {
+      baseSchema["@type"] = "Campground";
+    } else if (tagsStr.includes('trilha') || tagsStr.includes('quadriciclo') || tagsStr.includes('aventura')) {
+      baseSchema["@type"] = "SportsActivityLocation";
+    } else {
+      baseSchema["@type"] = "TouristAttraction";
+    }
     baseSchema["touristType"] = item.tags && item.tags.length > 0 ? item.tags.join(', ') : "Lazer";
   } else {
     baseSchema["@type"] = "LocalBusiness";

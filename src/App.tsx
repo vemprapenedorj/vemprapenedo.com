@@ -2,12 +2,13 @@ import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { 
   Menu, X, Instagram, Mail 
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import SEO from './components/SEO';
 import { checkRedirects } from './seo/redirects';
 import { generateSEO } from './seo';
 import { Page, DetailItem } from './types';
-import { PageTransition } from './components/PageTransition';
+import { DeferredSection } from './components/performance/DeferredSection';
+
+const PageTransition = lazy(() => import('./components/PageTransition').then(m => ({ default: m.PageTransition })));
 
 
 // Static JSON/data files
@@ -16,9 +17,10 @@ import { DETAILS_DATA } from './data/detailsData';
 
 // Sub-components
 import { BackgroundLayer } from './components/BackgroundLayer';
-import { DetailModal } from './components/DetailModal';
 import { ScrollToTop } from './components/ScrollToTop';
 import Page404 from './components/Page404';
+
+const DetailModal = lazy(() => import('./components/DetailModal').then(m => ({ default: m.DetailModal })));
 
 // Analytical trackers
 import { 
@@ -397,44 +399,38 @@ export default function App() {
         </div>
         
         {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-penedo-forest border-b border-white/10 overflow-hidden"
-            >
-              <div className="px-4 py-4 space-y-2">
-                {[
-                  { id: 'home', label: 'Início' },
-                  { id: 'o-que-fazer', label: 'O Que Fazer' },
-                  { id: 'onde-ficar', label: 'Onde Ficar' },
-                  { id: 'gastronomia', label: 'Gastronomia' },
-                  { id: 'compras', label: 'Compras' },
-                  { id: 'blog', label: 'Blog' },
-                  { id: 'contato', label: 'Contato' }
-                ].map((item) => (
-                  <a
-                    key={item.id}
-                    href={item.id === 'home' ? '/' : `/${item.id}`}
-                    onClick={(e) => { e.preventDefault(); navigate(item.id as Page); }}
-                    className="block w-full text-left px-3 py-2 rounded-md text-white/90 font-medium hover:bg-penedo-emerald/20 transition-colors cursor-pointer"
-                  >
-                    {item.label}
-                  </a>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div 
+          className={`md:hidden bg-penedo-forest border-b border-white/10 overflow-hidden transition-all duration-300 ${
+            isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
+          }`}
+        >
+          <div className="px-4 py-4 space-y-2">
+            {[
+              { id: 'home', label: 'Início' },
+              { id: 'o-que-fazer', label: 'O Que Fazer' },
+              { id: 'onde-ficar', label: 'Onde Ficar' },
+              { id: 'gastronomia', label: 'Gastronomia' },
+              { id: 'compras', label: 'Compras' },
+              { id: 'blog', label: 'Blog' },
+              { id: 'contato', label: 'Contato' }
+            ].map((item) => (
+              <a
+                key={item.id}
+                href={item.id === 'home' ? '/' : `/${item.id}`}
+                onClick={(e) => { e.preventDefault(); navigate(item.id as Page); }}
+                className="block w-full text-left px-3 py-2 rounded-md text-white/90 font-medium hover:bg-penedo-emerald/20 transition-colors cursor-pointer"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </div>
       </nav>
 
       <main className="flex-grow pt-0 overflow-x-hidden relative">
         <Suspense fallback={<LoadingFallback />}>
-          <AnimatePresence mode="wait">
             {currentPage === 'home' && (
-              <PageTransition key={`home-${homeRefreshKey}`}>
+              <div className="animate-fade-in">
                 <SEO {...generateSEO('home')} />
                 <HomePage 
                   onNavigate={navigate} 
@@ -442,7 +438,7 @@ export default function App() {
                   onSelectArticle={setActiveBlogArticle}
                   onNavigatePremium={(slug) => navigate('premium-detail', slug)}
                 />
-              </PageTransition>
+              </div>
             )}
             {currentPage === 'o-que-fazer' && (
               <PageTransition key="what-to-do">
@@ -495,105 +491,106 @@ export default function App() {
                 <Page404 onNavigate={navigate} />
               </PageTransition>
             )}
-          </AnimatePresence>
         </Suspense>
       </main>
 
       {/* Footer */}
-      <footer className="bg-penedo-forest text-white py-8 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12">
-          <div>
-            <div className="mb-4 flex items-center gap-3">
-              <img 
-                src="/assets/imagens/Logo.jpg" 
-                alt="Vem Pra Penedo Logo" 
-                className="h-16 w-16 object-cover rounded-full bg-white p-1"
-                referrerPolicy="no-referrer"
-              />
-              <div className="flex flex-col items-center">
-                <span className="text-2xl font-bold leading-none mb-1">VEM PRA PENEDO</span>
-                <span className="text-[#FFC107] text-[12px] font-bold tracking-wider drop-shadow-sm">onde a magia acontece</span>
+      <DeferredSection height={350}>
+        <footer className="bg-penedo-forest text-white py-8 md:py-16">
+          <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12">
+            <div>
+              <div className="mb-4 flex items-center gap-3">
+                <img 
+                  src="/assets/imagens/Logo.jpg" 
+                  alt="Vem Pra Penedo Logo" 
+                  className="h-16 w-16 object-cover rounded-full bg-white p-1"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="flex flex-col items-center">
+                  <span className="text-2xl font-bold leading-none mb-1">VEM PRA PENEDO</span>
+                  <span className="text-[#FFC107] text-[12px] font-bold tracking-wider drop-shadow-sm">onde a magia acontece</span>
+                </div>
+              </div>
+              <p className="text-white/60">O portal oficial para quem busca viver o melhor de Penedo.</p>
+            </div>
+            <div>
+              <h4 className="font-bold text-penedo-gold mb-6 text-lg">Links Rápidos</h4>
+              <ul className="space-y-2 text-white/50">
+                <li><a href="/" onClick={(e) => { e.preventDefault(); navigate('home'); }} className="hover:text-white transition-colors cursor-pointer">Início</a></li>
+                <li><a href="/o-que-fazer" onClick={(e) => { e.preventDefault(); navigate('o-que-fazer'); }} className="hover:text-white transition-colors cursor-pointer">O Que Fazer</a></li>
+                <li><a href="/onde-ficar" onClick={(e) => { e.preventDefault(); navigate('onde-ficar'); }} className="hover:text-white transition-colors cursor-pointer">Onde Ficar</a></li>
+                <li><a href="/gastronomia" onClick={(e) => { e.preventDefault(); navigate('gastronomia'); }} className="hover:text-white transition-colors cursor-pointer">Gastronomia</a></li>
+                <li><a href="/compras" onClick={(e) => { e.preventDefault(); navigate('compras'); }} className="hover:text-white transition-colors cursor-pointer">Compras</a></li>
+                <li><a href="/blog" onClick={(e) => { e.preventDefault(); navigate('blog'); }} className="hover:text-white transition-colors cursor-pointer">Blog</a></li>
+                <li><a href="/contato" onClick={(e) => { e.preventDefault(); navigate('contato'); }} className="hover:text-white transition-colors cursor-pointer">Contato</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-penedo-gold mb-6 text-lg">Siga-nos</h4>
+              <div className="flex gap-4 mb-4">
+                <a href="https://www.instagram.com/vemprapenedo/" target="_blank" rel="noopener noreferrer" 
+                  onClick={() => trackEvent('instagram_click', 'Instagram', 'Footer')}
+                  className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-white"
+                  style={{ background: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)' }}>
+                  <Instagram size={20} />
+                </a>
+                <a href="https://www.tiktok.com/@vemprapenedo" target="_blank" rel="noopener noreferrer" 
+                  onClick={() => trackEvent('tiktok_click', 'TikTok', 'Footer')}
+                  className="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:scale-110 transition-transform text-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
+                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.02 1.59 4.23.95 1.2 2.27 2.02 3.75 2.36v3.91a11.55 11.55 0 0 1-5.32-1.39v6.17c.05 1.5-.32 2.99-1.07 4.29-.75 1.3-1.85 2.36-3.17 3.03-1.32.67-2.81.98-4.28.9-1.47-.08-2.91-.6-4.13-1.5a8.7 8.7 0 0 1-2.61-3.61C.31 16.92.15 15.35.73 13.88c.58-1.47 1.6-2.73 2.91-3.6 1.31-.87 2.87-1.31 4.45-1.25.12 0 .23.01.35.03v4.06c-.12-.03-.25-.05-.37-.05-1.12-.03-2.22.42-2.98 1.23-.76.81-1.08 1.93-.89 3.02.19 1.1.92 2.02 1.94 2.51.15.07.31.13.48.17.65.17 1.34.1 1.95-.2.61-.31 1.08-.82 1.34-1.45.21-.51.3-1.05.27-1.6V0h2.33z" />
+                  </svg>
+                </a>
+                <a href="https://www.facebook.com/vemprapenedo" target="_blank" rel="noopener noreferrer" 
+                  onClick={() => trackEvent('facebook_click', 'Facebook', 'Footer')}
+                  className="w-10 h-10 rounded-full bg-[#1877F2] flex items-center justify-center hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                </a>
+                <a href="https://wa.me/5524992087767" target="_blank" rel="noopener noreferrer" 
+                  onClick={() => trackEvent('whatsapp_click', 'WhatsApp', 'Footer')}
+                  className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center hover:scale-110 transition-transform">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z" />
+                  </svg>
+                </a>
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-white/50 hover:text-white transition-colors cursor-pointer">
+                <Mail size={16} />
+                <a href="mailto:contato@vemprapenedo.com.br" onClick={() => trackEvent('email_click', 'Email', 'Footer')} className="text-sm font-medium">contato@vemprapenedo.com.br</a>
               </div>
             </div>
-            <p className="text-white/60">O portal oficial para quem busca viver o melhor de Penedo.</p>
           </div>
-          <div>
-            <h4 className="font-bold text-penedo-gold mb-6 text-lg">Links Rápidos</h4>
-            <ul className="space-y-2 text-white/50">
-              <li><a href="/" onClick={(e) => { e.preventDefault(); navigate('home'); }} className="hover:text-white transition-colors cursor-pointer">Início</a></li>
-              <li><a href="/o-que-fazer" onClick={(e) => { e.preventDefault(); navigate('o-que-fazer'); }} className="hover:text-white transition-colors cursor-pointer">O Que Fazer</a></li>
-              <li><a href="/onde-ficar" onClick={(e) => { e.preventDefault(); navigate('onde-ficar'); }} className="hover:text-white transition-colors cursor-pointer">Onde Ficar</a></li>
-              <li><a href="/gastronomia" onClick={(e) => { e.preventDefault(); navigate('gastronomia'); }} className="hover:text-white transition-colors cursor-pointer">Gastronomia</a></li>
-              <li><a href="/compras" onClick={(e) => { e.preventDefault(); navigate('compras'); }} className="hover:text-white transition-colors cursor-pointer">Compras</a></li>
-              <li><a href="/blog" onClick={(e) => { e.preventDefault(); navigate('blog'); }} className="hover:text-white transition-colors cursor-pointer">Blog</a></li>
-              <li><a href="/contato" onClick={(e) => { e.preventDefault(); navigate('contato'); }} className="hover:text-white transition-colors cursor-pointer">Contato</a></li>
-            </ul>
+          <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-white/10 text-center text-white/40 text-sm">
+            &copy; {new Date().getFullYear()} Vem Pra Penedo. Todos os direitos reservados.
           </div>
-          <div>
-            <h4 className="font-bold text-penedo-gold mb-6 text-lg">Siga-nos</h4>
-            <div className="flex gap-4 mb-4">
-              <a href="https://www.instagram.com/vemprapenedo/" target="_blank" rel="noopener noreferrer" 
-                onClick={() => trackEvent('instagram_click', 'Instagram', 'Footer')}
-                className="w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 transition-transform text-white"
-                style={{ background: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)' }}>
-                <Instagram size={20} />
-              </a>
-              <a href="https://www.tiktok.com/@vemprapenedo" target="_blank" rel="noopener noreferrer" 
-                onClick={() => trackEvent('tiktok_click', 'TikTok', 'Footer')}
-                className="w-10 h-10 rounded-full bg-black flex items-center justify-center hover:scale-110 transition-transform text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
-                  <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.02 1.59 4.23.95 1.2 2.27 2.02 3.75 2.36v3.91a11.55 11.55 0 0 1-5.32-1.39v6.17c.05 1.5-.32 2.99-1.07 4.29-.75 1.3-1.85 2.36-3.17 3.03-1.32.67-2.81.98-4.28.9-1.47-.08-2.91-.6-4.13-1.5a8.7 8.7 0 0 1-2.61-3.61C.31 16.92.15 15.35.73 13.88c.58-1.47 1.6-2.73 2.91-3.6 1.31-.87 2.87-1.31 4.45-1.25.12 0 .23.01.35.03v4.06c-.12-.03-.25-.05-.37-.05-1.12-.03-2.22.42-2.98 1.23-.76.81-1.08 1.93-.89 3.02.19 1.1.92 2.02 1.94 2.51.15.07.31.13.48.17.65.17 1.34.1 1.95-.2.61-.31 1.08-.82 1.34-1.45.21-.51.3-1.05.27-1.6V0h2.33z" />
-                </svg>
-              </a>
-              <a href="https://www.facebook.com/vemprapenedo" target="_blank" rel="noopener noreferrer" 
-                onClick={() => trackEvent('facebook_click', 'Facebook', 'Footer')}
-                className="w-10 h-10 rounded-full bg-[#1877F2] flex items-center justify-center hover:scale-110 transition-transform">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
-              </a>
-              <a href="https://wa.me/5524992087767" target="_blank" rel="noopener noreferrer" 
-                onClick={() => trackEvent('whatsapp_click', 'WhatsApp', 'Footer')}
-                className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center hover:scale-110 transition-transform">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z" />
-                </svg>
-              </a>
-            </div>
-            <div className="mt-4 flex items-center gap-2 text-white/50 hover:text-white transition-colors cursor-pointer">
-              <Mail size={16} />
-              <a href="mailto:contato@vemprapenedo.com.br" onClick={() => trackEvent('email_click', 'Email', 'Footer')} className="text-sm font-medium">contato@vemprapenedo.com.br</a>
-            </div>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-white/10 text-center text-white/40 text-sm">
-          &copy; {new Date().getFullYear()} Vem Pra Penedo. Todos os direitos reservados.
-        </div>
-      </footer>
+        </footer>
+      </DeferredSection>
 
       <ScrollToTop />
 
-      <DetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
-
-      <AnimatePresence>
-        {showCookies && (
-          <motion.div 
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-6 left-6 right-6 md:left-auto md:right-6 md:max-w-md z-[100]"
-          >
-            <div className="bg-white rounded-3xl shadow-2xl border p-6">
-              <h4 className="font-bold text-penedo-graphite">Privacidade e Cookies</h4>
-              <p className="text-sm text-gray-500 my-4">Utilizamos cookies para melhorar sua experiência. Ao continuar, você concorda com nossa política.</p>
-              <div className="flex gap-3">
-                <button onClick={acceptCookies} className="flex-grow py-3 bg-penedo-emerald text-white font-bold rounded-2xl text-sm hover:bg-penedo-forest transition-colors">Aceitar</button>
-                <button onClick={() => setShowCookies(false)} className="px-6 py-3 bg-gray-100 text-gray-600 font-bold rounded-2xl text-sm hover:bg-gray-200 transition-colors">Recusar</button>
-              </div>
-            </div>
-          </motion.div>
+      <Suspense fallback={null}>
+        {selectedItem && (
+          <DetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
         )}
-      </AnimatePresence>
+      </Suspense>
+
+      {/* Cookie Consent banner with CSS transition */}
+      <div 
+        className={`fixed bottom-6 left-6 right-6 md:left-auto md:right-6 md:max-w-md z-[100] transition-all duration-500 ease-out transform ${
+          showCookies ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="bg-white rounded-3xl shadow-2xl border p-6">
+          <h4 className="font-bold text-penedo-graphite">Privacidade e Cookies</h4>
+          <p className="text-sm text-gray-500 my-4">Utilizamos cookies para melhorar sua experiência. Ao continuar, você concorda com nossa política.</p>
+          <div className="flex gap-3">
+            <button onClick={acceptCookies} className="flex-grow py-3 bg-penedo-emerald text-white font-bold rounded-2xl text-sm hover:bg-penedo-forest transition-colors">Aceitar</button>
+            <button onClick={() => setShowCookies(false)} className="px-6 py-3 bg-gray-100 text-gray-600 font-bold rounded-2xl text-sm hover:bg-gray-200 transition-colors">Recusar</button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

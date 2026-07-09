@@ -14,8 +14,41 @@ export const getOrganizationSchema = () => {
       "url": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
       "caption": "Vem Pra Penedo Logo"
     },
-    "image": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
+    "image": {
+      "@type": "ImageObject",
+      "url": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
+      "caption": "Vem Pra Penedo Logo"
+    },
     "description": "O portal oficial de turismo de Penedo RJ. Encontre os melhores hotéis, pousadas, restaurantes, passeios, eventos e atrações na Finlândia Brasileira.",
+    "email": "contato@vemprapenedo.com.br",
+    "telephone": "+55-24-99208-7767",
+    "foundingDate": "2023-05-15",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Penedo, Itatiaia",
+      "addressRegion": "RJ",
+      "addressCountry": "BR",
+      "postalCode": "27580-000"
+    },
+    "areaServed": [
+      { "@type": "City", "name": "Penedo" },
+      { "@type": "City", "name": "Itatiaia" },
+      { "@type": "State", "name": "Rio de Janeiro" }
+    ],
+    "knowsAbout": [
+      "Turismo em Penedo",
+      "Hotéis em Penedo",
+      "Pousadas em Penedo",
+      "Restaurantes em Penedo",
+      "O que fazer em Penedo",
+      "Cachoeiras de Penedo",
+      "Pequena Finlândia",
+      "Casa do Papai Noel",
+      "Parque Nacional do Itatiaia",
+      "Ecoturismo",
+      "Turismo de aventura",
+      "Turismo gastronômico"
+    ],
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+55-24-99208-7767",
@@ -38,14 +71,24 @@ export const getPortalLocalBusinessSchema = () => {
     "@id": "https://vemprapenedo.com.br/#portalbusiness",
     "name": "Vem Pra Penedo",
     "url": "https://vemprapenedo.com.br",
-    "logo": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
-    "image": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
+      "caption": "Vem Pra Penedo Logo"
+    },
+    "image": {
+      "@type": "ImageObject",
+      "url": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
+      "caption": "Vem Pra Penedo Logo"
+    },
     "description": "O portal oficial de turismo de Penedo RJ. Informações sobre hotéis, pousadas, restaurantes, passeios e eventos na Serra da Mantiqueira.",
     "telephone": "+55-24-99208-7767",
-    "areaServed": {
-      "@type": "AdministrativeArea",
-      "name": "Penedo, Itatiaia, RJ"
-    },
+    "email": "contato@vemprapenedo.com.br",
+    "areaServed": [
+      { "@type": "City", "name": "Penedo" },
+      { "@type": "City", "name": "Itatiaia" },
+      { "@type": "State", "name": "Rio de Janeiro" }
+    ],
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Av. das Mangueiras, Centro",

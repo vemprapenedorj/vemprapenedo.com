@@ -10,6 +10,9 @@ export const getWebSiteSchema = () => {
     "name": "Vem Pra Penedo",
     "url": "https://vemprapenedo.com.br",
     "description": "Guia completo de Penedo RJ - Pousadas, Restaurantes e Passeios",
+    "publisher": {
+      "@id": "https://vemprapenedo.com.br/#organization"
+    },
     "potentialAction": {
       "@type": "SearchAction",
       "target": {

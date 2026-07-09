@@ -24,6 +24,9 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       cssMinify: true,
+      modulePreload: {
+        resolveDependencies: () => [],
+      },
       rollupOptions: {
         output: {
           manualChunks(id) {

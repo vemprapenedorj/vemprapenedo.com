@@ -1,5 +1,5 @@
 import { DEFAULT_SEO, CATEGORY_METADATA, FAQ_DATA } from '../constants/seoDefaults';
-import { getCanonicalUrl, generateFallbackDescription, generateKeywords } from '../utils/seoUtils';
+import { getCanonicalUrl, generateFallbackDescription, generateKeywords, getSubcategoryInfo } from '../utils/seoUtils';
 import { 
   getOrganizationSchema, 
   getWebSiteSchema, 
@@ -8,7 +8,8 @@ import {
   getArticleSchema,
   getPortalLocalBusinessSchema,
   getFAQSchema,
-  getCollectionPageSchema
+  getCollectionPageSchema,
+  getPenedoDestinationSchema
 } from '../../schema';
 import { DetailItem } from '../../types';
 import { DETAILS_DATA } from '../../data/detailsData';
@@ -26,6 +27,7 @@ export const getHomeSEOTemplate = () => {
       getOrganizationSchema(),
       getPortalLocalBusinessSchema(),
       getWebSiteSchema(),
+      getPenedoDestinationSchema(),
       getBreadcrumbSchema([{ name: 'Início', item: getCanonicalUrl('/') }])
     ]
   };
@@ -73,7 +75,23 @@ export const getCategorySEOTemplate = (category: string) => {
 };
 
 export const getBusinessSEOTemplate = (item: DetailItem) => {
-  const categoryCleanPath = item.category?.toLowerCase() === 'hospedagem' ? 'onde-ficar' : item.category?.toLowerCase() === 'gastronomia' ? 'gastronomia' : 'o-que-fazer';
+  const itemCategory = item.category?.toLowerCase() || '';
+  const categoryCleanPath = (itemCategory === 'hospedagem' || itemCategory === 'onde-ficar')
+    ? 'onde-ficar'
+    : (itemCategory === 'gastronomia' || itemCategory === 'carnes' || itemCategory === 'restaurantes')
+      ? 'gastronomia'
+      : (itemCategory === 'compras' || itemCategory === 'lojas')
+        ? 'compras'
+        : 'o-que-fazer';
+
+  const categoryLabel = (itemCategory === 'hospedagem' || itemCategory === 'onde-ficar')
+    ? 'Onde Ficar'
+    : (itemCategory === 'gastronomia' || itemCategory === 'carnes' || itemCategory === 'restaurantes')
+      ? 'Gastronomia'
+      : (itemCategory === 'compras' || itemCategory === 'lojas')
+        ? 'Compras'
+        : 'O Que Fazer';
+
   const name = item.title;
   const rawImage = item.image || '/assets/imagens/Logo.jpg';
   const image = rawImage.startsWith('http') ? rawImage : getCanonicalUrl(rawImage);
@@ -82,7 +100,7 @@ export const getBusinessSEOTemplate = (item: DetailItem) => {
   let prefix = 'Local';
   if (catLower === 'hospedagem' || catLower === 'onde-ficar') {
     prefix = name.toLowerCase().includes('pousada') ? 'Pousada em Penedo RJ' : 'Hotel em Penedo RJ';
-  } else if (catLower === 'gastronomia' || catLower === 'restaurantes') {
+  } else if (catLower === 'gastronomia' || catLower === 'restaurantes' || catLower === 'carnes') {
     prefix = 'Restaurante em Penedo RJ';
   } else if (catLower === 'compras' || catLower === 'lojas') {
     prefix = 'Compras em Penedo RJ';
@@ -94,12 +112,17 @@ export const getBusinessSEOTemplate = (item: DetailItem) => {
   const description = item.description || generateFallbackDescription(name, item.category || 'Local', item.location);
   const keywords = generateKeywords(name, item.category || 'Local', item.location, item.tags);
 
+  const { subName, subSlug } = getSubcategoryInfo(item);
   const businessSchema = getLocalBusinessSchema(item);
+  const penedoPlaceSchema = getPenedoDestinationSchema();
+
   const detailSchemas = [
     businessSchema,
+    penedoPlaceSchema,
     getBreadcrumbSchema([
       { name: 'Início', item: getCanonicalUrl('/') },
-      { name: item.category || 'Empresas', item: getCanonicalUrl(`/${categoryCleanPath}`) },
+      { name: categoryLabel, item: getCanonicalUrl(`/${categoryCleanPath}`) },
+      { name: subName, item: getCanonicalUrl(`/${categoryCleanPath}#${subSlug}`) },
       { name: name, item: getCanonicalUrl(`/${categoryCleanPath}/${item.slug || item.id}`) }
     ])
   ];

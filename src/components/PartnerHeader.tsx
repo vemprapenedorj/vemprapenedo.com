@@ -27,6 +27,8 @@ export function PartnerHeader({ item, size = 'large' }: PartnerHeaderProps) {
           alt={`Logotipo oficial do estabelecimento ${item.title} em Penedo RJ`} 
           width={imgSize}
           height={imgSize}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover" 
           referrerPolicy="no-referrer"
           onError={(e) => {

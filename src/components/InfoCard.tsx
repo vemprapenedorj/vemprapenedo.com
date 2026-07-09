@@ -1,6 +1,5 @@
 import React from 'react';
 import { Info } from 'lucide-react';
-import { motion } from 'motion/react';
 import { DetailItem } from '../types';
 
 interface InfoCardProps {
@@ -9,7 +8,7 @@ interface InfoCardProps {
   key?: string;
 }
 
-export function InfoCard({ item, onOpen }: InfoCardProps) {
+export const InfoCard = React.memo(function InfoCard({ item, onOpen }: InfoCardProps) {
   const isPremium = React.useMemo(() => {
     return item.isPremium || (item as any).is_premium;
   }, [item]);
@@ -64,14 +63,13 @@ export function InfoCard({ item, onOpen }: InfoCardProps) {
   }, [item, isPremium]);
 
   return (
-    <motion.a 
+    <a 
       href={linkHref}
       onClick={(e) => {
         e.preventDefault();
         onOpen(item);
       }}
-      whileHover={{ scale: 1.02 }}
-      className="group relative rounded-3xl overflow-hidden aspect-[3/4] shadow-md cursor-pointer bg-gray-100 block"
+      className="group relative rounded-3xl overflow-hidden aspect-[3/4] shadow-md cursor-pointer bg-gray-100 block transition-transform duration-300 hover:scale-[1.02] will-change-transform"
     >
       {/* Blurred Background Layer for Contained Images */}
       {!isPremium && ['pequena-finlandia', 'pequena-finlandia-shopping', 'lelu-museu', 'hotel-girassol', 'hotel-bertell', 'hotel-britannia', 'hotel-daniela', 'hotel-rio-penedo', 'hotel-do-sino', 'hotel-titanic', 'pousada-aurora-mantiqueira', 'pousada-chez-nous', 'pousada-penedo', 'pousada-reserva-penedo', 'pousada-terraco', 'pousada-villa-luna', 'pousada-rainha-mata', 'pousada-rainha-da-mata', 'vila-francesa-hotel', 'hotel-casa-encantada', 'pousada-santa-fe', 'pousada-do-sol', 'vert-hotel', 'pousada-lago', 'hotel-terras-finlandia', 'aglio-e-olio', 'bazzini-pizzeria', 'borbulha-penedo', 'botegare', 'braseiro-gaucho', 'casa-da-picanha', 'casa-do-fritz', 'enoteca-serrana', 'estancia-penedo', 'kaiten-sushi', 'loazo-resto', 'petit-gourmet', 'pizza-da-villa', 'querencia', 'rei-das-trutas', 'restaurante-finlandes', 'truta-viva', 'zero-a-zero', 'expedicao-raizes', 'aguia-de-penedo', 'rota-dos-passeios', 'trilhando-penedo', 'tonttulakki-suklaat', 'lugano-penedo', 'lolita-penedo', 'kahvila-cafe', 'santa-claus-burger', 'maria-cuisine', 'armazem-da-vila', 'geek-penedo', 'astral-exotheryca', 'via-lactea-balas', 'casa-das-latas', 'vanilla-patisserie', 'delicias-da-carol', 'fue-gelateria', 'cafe-finlandes-penedo', 'arte-da-nossa-terra', 'reserva-da-mata', 'meu-sonho', 'artevelas', 'raio-de-luz-decoracoes', 'raio-de-luz'].includes(item.id) && (
@@ -147,6 +145,6 @@ export function InfoCard({ item, onOpen }: InfoCardProps) {
 
         <p className="text-white/60 text-xs line-clamp-2">{item.description}</p>
       </div>
-    </motion.a>
+    </a>
   );
-}
+});

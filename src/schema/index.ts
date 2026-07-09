@@ -6,3 +6,4 @@ export * from './event';
 export * from './article';
 export * from './faq';
 export * from './collectionPage';
+export * from './place';

@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { Star, ChevronLeft, ChevronRight, Compass } from 'lucide-react';
 import locaisData from '../locais.json';
 import { DETAILS_DATA } from '../data/detailsData';
@@ -57,7 +56,7 @@ export function PremiumCarousel({ onNavigatePremium }: { onNavigatePremium: (slu
           items={premiumItems as any}
           itemsPerView={{ mobile: 1, tablet: 2, desktop: 3 }}
           renderItem={(item, index) => (
-            <motion.a
+            <a
               href={`#/detalhe/${(item as any).slug || item.id}`}
               onClick={(e) => {
                 e.preventDefault();
@@ -68,8 +67,7 @@ export function PremiumCarousel({ onNavigatePremium }: { onNavigatePremium: (slu
                 }, index + 1);
                 ((item as any).slug || item.id) && onNavigatePremium((item as any).slug || item.id);
               }}
-              whileHover={{ y: -8 }}
-              className="bg-white rounded-[2.5rem] overflow-hidden shadow-xl border border-gray-100 flex flex-col h-full group cursor-pointer block"
+              className="bg-white rounded-[2.5rem] overflow-hidden shadow-xl border border-gray-100 flex flex-col h-full group cursor-pointer block transition-transform duration-300 hover:-translate-y-2"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
                 {['Hotel Girassol', 'Águia de Penedo', 'Rota dos Passeios', 'Trilhando Penedo Ecoturismo'].includes(item.title) && (
@@ -85,6 +83,10 @@ export function PremiumCarousel({ onNavigatePremium }: { onNavigatePremium: (slu
                 <img 
                   src={(item as any).galeria?.[0] || item.image} 
                   alt={item.title}
+                  loading={index < 2 ? "eager" : "lazy"}
+                  decoding="async"
+                  width={400}
+                  height={300}
                   className={`relative z-10 w-full h-full transition-transform duration-700 group-hover:scale-110 ${
                     ['Hotel Girassol', 'Águia de Penedo', 'Rota dos Passeios', 'Trilhando Penedo Ecoturismo'].includes(item.title)
                       ? 'object-contain object-center'
@@ -113,7 +115,7 @@ export function PremiumCarousel({ onNavigatePremium }: { onNavigatePremium: (slu
                   SAIBA MAIS <ChevronRight size={14} />
                 </div>
               </div>
-            </motion.a>
+            </a>
           )}
         />
       </div>

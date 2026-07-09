@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { Page, DetailItem } from '../types';
 import { shuffleArray } from '../utils/shuffle';
 import { DETAILS_DATA } from '../data/detailsData';
 import { PremiumCarousel } from '../components/PremiumCarousel';
 import { SearchPromo } from '../components/SearchPromo';
-import { InfoCard } from '../components/InfoCard';
-import { Carousel } from '../components/Carousel';
 import { pushSearch } from '../analytics/events';
+import { DeferredSection } from '../components/performance/DeferredSection';
+
+const Carousel = lazy(() => import('../components/Carousel').then(m => ({ default: m.Carousel })));
+const InfoCard = lazy(() => import('../components/InfoCard').then(m => ({ default: m.InfoCard })));
 
 export function HomePage({ 
   onNavigate, 
@@ -156,11 +158,13 @@ export function HomePage({
           <div className="max-w-7xl mx-auto px-4">
             <h2 className="text-3xl font-bold text-penedo-forest mb-4 md:mb-8">Resultados da Busca para "{searchQuery}"</h2>
             {filteredResults.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {filteredResults.map((item) => (
-                  <InfoCard key={item.id} item={item} onOpen={onOpenDetail} />
-                ))}
-              </div>
+              <Suspense fallback={<div className="h-96 w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-penedo-emerald border-t-transparent rounded-full animate-spin"></div></div>}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {filteredResults.map((item) => (
+                    <InfoCard key={item.id} item={item} onOpen={onOpenDetail} />
+                  ))}
+                </div>
+              </Suspense>
             ) : (
               <div className="text-center py-8 md:py-20">
                 <p className="text-gray-500 text-xl">Nenhum resultado encontrado em todo o site.</p>
@@ -179,63 +183,83 @@ export function HomePage({
       ) : (
         <>
           {/* O Que Fazer Section */}
-          <Carousel 
-            title="O Que Fazer"
-            subtitle="Descubra as melhores atrações e passeios."
-            items={shuffledOQueFazer}
-            renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
-            onNavigate={() => onNavigate('o-que-fazer')}
-          />
+          <DeferredSection height={450}>
+            <Suspense fallback={<div style={{ height: "450px" }} />}>
+              <Carousel 
+                title="O Que Fazer"
+                subtitle="Descubra as melhores atrações e passeios."
+                items={shuffledOQueFazer}
+                renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
+                onNavigate={() => onNavigate('o-que-fazer')}
+              />
+            </Suspense>
+          </DeferredSection>
 
           {/* Onde Ficar Section */}
-          <Carousel 
-            title="Onde Ficar"
-            subtitle="Pousadas e hotéis para o seu descanso."
-            items={shuffledOndeFicar}
-            renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
-            onNavigate={() => onNavigate('onde-ficar')}
-          />
+          <DeferredSection height={450}>
+            <Suspense fallback={<div style={{ height: "450px" }} />}>
+              <Carousel 
+                title="Onde Ficar"
+                subtitle="Pousadas e hotéis para o seu descanso."
+                items={shuffledOndeFicar}
+                renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
+                onNavigate={() => onNavigate('onde-ficar')}
+              />
+            </Suspense>
+          </DeferredSection>
 
           {/* Gastronomia Section */}
-          <Carousel 
-            title="Gastronomia"
-            subtitle="Os melhores sabores de Penedo."
-            items={shuffledGastronomia}
-            renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
-            onNavigate={() => onNavigate('gastronomia')}
-          />
+          <DeferredSection height={450}>
+            <Suspense fallback={<div style={{ height: "450px" }} />}>
+              <Carousel 
+                title="Gastronomia"
+                subtitle="Os melhores sabores de Penedo."
+                items={shuffledGastronomia}
+                renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
+                onNavigate={() => onNavigate('gastronomia')}
+              />
+            </Suspense>
+          </DeferredSection>
 
           {/* Compras Section */}
-          <Carousel 
-            title="Compras & Lojas"
-            subtitle="Artesanato e produtos exclusivos."
-            items={shuffledCompras}
-            renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
-            onNavigate={() => onNavigate('compras')}
-          />
+          <DeferredSection height={450}>
+            <Suspense fallback={<div style={{ height: "450px" }} />}>
+              <Carousel 
+                title="Compras & Lojas"
+                subtitle="Artesanato e produtos exclusivos."
+                items={shuffledCompras}
+                renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
+                onNavigate={() => onNavigate('compras')}
+              />
+            </Suspense>
+          </DeferredSection>
 
           {/* Blog Section */}
-          <Carousel 
-            title="Blog & Dicas"
-            subtitle="Fique por dentro das novidades e curiosidades."
-            items={shuffledBlog}
-            renderItem={(item) => (
-              <InfoCard 
-                item={item} 
-                onOpen={(item) => {
-                  if (item.id === 'penedo-guia' || item.id === 'cachoeiras-penedo' || item.id === 'restaurantes' || item.id === 'melhores-hospedagens') {
-                    onSelectArticle(item.id);
-                    onNavigate('blog');
-                  } else {
-                    onNavigate('blog');
-                  }
-                }} 
+          <DeferredSection height={450}>
+            <Suspense fallback={<div style={{ height: "450px" }} />}>
+              <Carousel 
+                title="Blog & Dicas"
+                subtitle="Fique por dentro das novidades e curiosidades."
+                items={shuffledBlog}
+                renderItem={(item) => (
+                  <InfoCard 
+                    item={item} 
+                    onOpen={(item) => {
+                      if (item.id === 'penedo-guia' || item.id === 'cachoeiras-penedo' || item.id === 'restaurantes' || item.id === 'melhores-hospedagens') {
+                        onSelectArticle(item.id);
+                        onNavigate('blog');
+                      } else {
+                        onNavigate('blog');
+                      }
+                    }} 
+                  />
+                )}
+                onNavigate={() => onNavigate('blog')}
               />
-            )}
-            onNavigate={() => onNavigate('blog')}
-          />
-    </>
-  )}
+            </Suspense>
+          </DeferredSection>
+        </>
+      ) /* End of searchQuery conditional */}
     </div>
 );
 }

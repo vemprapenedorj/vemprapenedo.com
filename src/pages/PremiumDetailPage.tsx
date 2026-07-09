@@ -13,6 +13,7 @@ import { trackEvent } from '../analytics/tracking';
 import { generateSEO } from '../seo';
 import SEO from '../components/SEO';
 import { PartnerHeader } from '../components/PartnerHeader';
+import { getSubcategoryInfo } from '../seo/utils/seoUtils';
 
 // Helper to extract video embed details
 function getVideoEmbedData(url: string): { url: string; platform: 'youtube' | 'instagram' | 'unknown' } {
@@ -38,6 +39,7 @@ function getVideoEmbedData(url: string): { url: string; platform: 'youtube' | 'i
 
 export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: string, onNavigate: (page: Page, slug?: string) => void, onOpenDetail?: (item: DetailItem) => void }) {
   const [selectedImgIndex, setSelectedImgIndex] = useState<number | null>(null);
+  const [showMap, setShowMap] = useState(false);
 
   const item = React.useMemo(() => {
     const allItems = [...Object.values(locaisData).flat(), ...Object.values(DETAILS_DATA).flat()];
@@ -167,7 +169,9 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
       : `https://wa.me/5524992087767?text=${whatsappMessage}`;
 
   const instagramUrl = item.link_instagram || item.instagram || "https://www.instagram.com/vemprapenedo/";
-  const mapsUrl = item.link_maps || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title + ' Penedo RJ')}`;
+  const mapsUrl = (item.latitude && item.longitude)
+    ? `https://www.google.com/maps?q=${item.latitude},${item.longitude}`
+    : (item.link_maps || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title + ', Penedo, Itatiaia - RJ')}`);
 
   const ActionButtons = ({ sticky = false }: { sticky?: boolean }) => {
     const isPremium = item.isPremium || (item as any).is_premium;
@@ -231,6 +235,18 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
               </a>
             )}
             
+            {item.googleProfileUrl && (
+              <a 
+                href={item.googleProfileUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                onClick={() => trackEvent('google_profile', item.category, item.title)}
+                className="flex items-center justify-center gap-2 py-3 bg-white text-gray-700 border border-gray-200 font-bold rounded-xl hover:bg-gray-50 transition-all text-sm shadow-md"
+              >
+                <Star size={18} className="text-penedo-gold fill-penedo-gold" /> Avaliações no Google
+              </a>
+            )}
+
             <a 
               href={mapsUrl} 
               target="_blank" 
@@ -238,7 +254,7 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
               onClick={() => trackEvent('map_location', item.category, item.title)}
               className="flex items-center justify-center gap-2 py-3 bg-penedo-forest text-white font-bold rounded-xl hover:bg-black transition-all text-sm shadow-md"
             >
-              <Compass size={18} /> Google Maps
+              <Compass size={18} /> Ver no Google Maps
             </a>
           </>
         )}
@@ -341,7 +357,24 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
     }
   }
 
-  const categoryCleanPath = item.category?.toLowerCase() === 'hospedagem' ? 'onde-ficar' : item.category?.toLowerCase() === 'gastronomia' ? 'gastronomia' : 'o-que-fazer';
+  const itemCategory = item.category?.toLowerCase() || '';
+  const categoryCleanPath = (itemCategory === 'hospedagem' || itemCategory === 'onde-ficar')
+    ? 'onde-ficar'
+    : (itemCategory === 'gastronomia' || itemCategory === 'carnes' || itemCategory === 'restaurantes')
+      ? 'gastronomia'
+      : (itemCategory === 'compras' || itemCategory === 'lojas')
+        ? 'compras'
+        : 'o-que-fazer';
+
+  const categoryLabel = (itemCategory === 'hospedagem' || itemCategory === 'onde-ficar')
+    ? 'Onde Ficar'
+    : (itemCategory === 'gastronomia' || itemCategory === 'carnes' || itemCategory === 'restaurantes')
+      ? 'Gastronomia'
+      : (itemCategory === 'compras' || itemCategory === 'lojas')
+        ? 'Compras'
+        : 'O Que Fazer';
+
+  const { subName, subSlug } = getSubcategoryInfo(item);
 
   return (
     <div
@@ -359,7 +392,7 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
               <ArrowRight className="rotate-180" size={20} /> Voltar ao Início
             </button>
             
-            <nav className="text-xs font-semibold text-gray-500 uppercase tracking-widest" aria-label="Breadcrumb">
+            <nav className="text-xs font-semibold text-gray-500 uppercase tracking-widest flex items-center flex-wrap gap-y-1" aria-label="Breadcrumb">
               <a href="/" onClick={(e) => { e.preventDefault(); onNavigate('home'); }} className="hover:text-penedo-emerald transition-colors">Início</a>
               <span className="mx-2 text-gray-400">/</span>
               <a 
@@ -367,7 +400,15 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
                 onClick={(e) => { e.preventDefault(); onNavigate(categoryCleanPath as Page); }}
                 className="hover:text-penedo-emerald transition-colors"
               >
-                {item.category}
+                {categoryLabel}
+              </a>
+              <span className="mx-2 text-gray-400">/</span>
+              <a 
+                href={`/${categoryCleanPath}#${subSlug}`} 
+                onClick={(e) => { e.preventDefault(); onNavigate(categoryCleanPath as Page); }}
+                className="hover:text-penedo-emerald transition-colors"
+              >
+                {subName}
               </a>
               <span className="mx-2 text-gray-400">/</span>
               <span className="text-penedo-forest line-clamp-1">{item.title}</span>
@@ -388,16 +429,17 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
                 onClick={() => setSelectedImgIndex(idx)}
                 className="aspect-[4/3] rounded-[2rem] overflow-hidden shadow-xl border-4 border-white cursor-pointer group/img"
               >
-                 <img 
-                   src={img} 
-                   alt={`Imagem ${idx + 1} de ${item.category || 'Estabelecimento'} ${item.title} em Penedo RJ`} 
-                   loading={idx > 2 ? "lazy" : "eager"} 
-                   decoding="async"
-                   width={360}
-                   height={270}
-                   className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110 group-hover/img:rotate-1"
-                   referrerPolicy="no-referrer"
-                 />
+                  <img 
+                    src={img} 
+                    alt={`Imagem ${idx + 1} de ${item.category || 'Estabelecimento'} ${item.title} em Penedo RJ`} 
+                    loading={idx === 0 ? "eager" : "lazy"} 
+                    fetchPriority={idx === 0 ? "high" : undefined}
+                    decoding="async"
+                    width={360}
+                    height={270}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110 group-hover/img:rotate-1"
+                    referrerPolicy="no-referrer"
+                  />
               </motion.div>
             ))}
           </div>
@@ -592,6 +634,58 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
           </div>
         </div>
       </section>
+
+      {/* Map Section */}
+      {item.latitude && item.longitude && (
+        <section className="py-10 md:py-16 bg-white border-t border-gray-100">
+          <div className="max-w-4xl mx-auto px-4 text-left">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-penedo-emerald text-white flex items-center justify-center shadow-md">
+                <MapPin size={20} />
+              </div>
+              <h3 className="text-2xl font-bold text-penedo-forest">Localização</h3>
+            </div>
+            
+            <div className="relative w-full h-[350px] bg-gray-50 rounded-[1.8rem] overflow-hidden border border-gray-200 flex flex-col items-center justify-center p-6 text-center shadow-inner">
+              {showMap ? (
+                <>
+                  <iframe
+                    src={`https://maps.google.com/maps?q=${item.latitude},${item.longitude}&z=16&output=embed`}
+                    title={`Mapa - ${item.title}`}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen={false}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="absolute inset-0 w-full h-full"
+                  ></iframe>
+                  <div className="absolute bottom-4 right-4 z-10">
+                    <a 
+                      href={mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 bg-white text-penedo-forest hover:bg-gray-100 font-bold rounded-xl shadow-lg border border-gray-100 text-xs transition-all"
+                    >
+                      <Compass size={14} /> Abrir no Google Maps
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <div className="z-10 flex flex-col items-center gap-3">
+                  <p className="text-gray-600 font-medium text-sm">O mapa interativo está oculto para preservar a performance.</p>
+                  <button 
+                    onClick={() => setShowMap(true)}
+                    className="px-6 py-3 bg-penedo-emerald hover:bg-penedo-forest text-white font-bold rounded-xl shadow-md transition-all transform hover:-translate-y-0.5 text-sm cursor-pointer"
+                  >
+                    Mostrar mapa
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Recommended Section (Internal Link Mesh) */}
       {recommendations && (

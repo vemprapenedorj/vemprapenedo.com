@@ -26,6 +26,13 @@ export interface DetailItem {
   link_booking?: string;
   tag_destaque?: string;
   date?: string;
+  latitude?: string;
+  longitude?: string;
+  googleProfileUrl?: string;
+  reviewCount?: number;
+  priceRange?: string;
+  paymentAccepted?: string;
+  currenciesAccepted?: string;
 }
 
 export type Page = 'home' | 'o-que-fazer' | 'onde-ficar' | 'gastronomia' | 'compras' | 'blog' | 'contato' | 'premium-detail' | '404';
