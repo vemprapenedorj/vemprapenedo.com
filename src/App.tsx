@@ -290,7 +290,7 @@ export default function App() {
   const navigate = (page: Page, premiumSlug: string | null = null) => {
     setActiveBlogArticle(null);
     
-    if (page !== 'premium-detail') {
+    if (page !== 'premium-detail' && page !== 'blog') {
       setSelectedPremiumSlug(null);
     }
 
@@ -299,7 +299,11 @@ export default function App() {
     }
     
     setCurrentPage(page);
-    setSelectedPremiumSlug(premiumSlug);
+    if (page === 'blog' && premiumSlug) {
+      setActiveBlogArticle(premiumSlug);
+    } else {
+      setSelectedPremiumSlug(premiumSlug);
+    }
     setIsMenuOpen(false);
     
     // Always scroll to top on navigation
@@ -467,7 +471,7 @@ export default function App() {
             {currentPage === 'contato' && (
               <PageTransition key="contact">
                 <SEO {...generateSEO('category', 'contato')} />
-                <ContactPage />
+                <ContactPage onGoBack={() => navigate('home')} />
               </PageTransition>
             )}
             {currentPage === 'blog' && (
@@ -477,7 +481,7 @@ export default function App() {
             )}
             {currentPage === 'premium-detail' && (
               <PageTransition key={`premium-${selectedPremiumSlug}`}>
-                <PremiumDetailPage slug={selectedPremiumSlug!} onNavigate={navigate} />
+                <PremiumDetailPage slug={selectedPremiumSlug!} onNavigate={navigate} onOpenDetail={handleOpenDetail} />
               </PageTransition>
             )}
             {currentPage === '404' && (

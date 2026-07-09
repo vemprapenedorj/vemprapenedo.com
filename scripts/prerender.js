@@ -156,12 +156,18 @@ const prerenderAndValidate = async (routes) => {
   const definedRoutes = new Set(routes);
   let homeHtmlContent = null;
 
-  // Monitor browser console for hydration errors
+  // Monitor browser console for hydration errors and general exceptions
   page.on('console', msg => {
     const text = msg.text();
-    if (text.includes('hydration') || text.includes('Hydration') || text.includes('Mismatched') || text.includes('does not match')) {
+    if (msg.type() === 'error') {
+      console.error(`❌ CONSOLE.ERROR: ${text}`);
+    } else if (text.includes('hydration') || text.includes('Hydration') || text.includes('Mismatched') || text.includes('does not match')) {
       console.warn(`⚠️ ALERTA DO CONSOLE DO NAVEGADOR: ${text}`);
     }
+  });
+
+  page.on('pageerror', err => {
+    console.error(`🚨 ERRO CRÍTICO DO CLIENTE (JS CRASH): ${err.toString()}`);
   });
 
   for (const route of routes) {

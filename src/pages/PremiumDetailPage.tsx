@@ -36,7 +36,7 @@ function getVideoEmbedData(url: string): { url: string; platform: 'youtube' | 'i
   return { url: cleanUrl, platform: 'unknown' };
 }
 
-export function PremiumDetailPage({ slug, onNavigate }: { slug: string, onNavigate: (page: Page) => void }) {
+export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: string, onNavigate: (page: Page, slug?: string) => void, onOpenDetail?: (item: DetailItem) => void }) {
   const [selectedImgIndex, setSelectedImgIndex] = useState<number | null>(null);
 
   const item = React.useMemo(() => {
@@ -238,27 +238,99 @@ export function PremiumDetailPage({ slug, onNavigate }: { slug: string, onNaviga
               onClick={() => trackEvent('map_location', item.category, item.title)}
               className="flex items-center justify-center gap-2 py-3 bg-penedo-forest text-white font-bold rounded-xl hover:bg-black transition-all text-sm shadow-md"
             >
-              <MapPin size={18} /> Como Chegar
+              <Compass size={18} /> Google Maps
             </a>
           </>
         )}
       </div>
     );
   };
-
-  const resolvedCoverImage = React.useMemo(() => {
-    const isPremium = item.isPremium || item.is_premium;
-    if (isPremium) {
-      const folder = item.slug || item.id;
-      let cleanFolder = folder.split('/').pop() || folder;
-      if (cleanFolder === 'pousada-aurora-mantiqueira') {
-        cleanFolder = 'pousada-aurora-da-mantiqueira';
-      } else if (cleanFolder === 'pousada-rainha-mata') {
-        cleanFolder = 'pousada-rainha-da-mata';
-      }
-      return `/assets/imagens/premium/${cleanFolder}/galeria-1.jpg`;
+  const recommendations = React.useMemo(() => {
+    if (!item) return null;
+    const catLower = (item.category || '').toLowerCase();
+    const currentLoc = (item.location || '').toLowerCase();
+    
+    // Zone indicators
+    const isAlto = currentLoc.includes('alto');
+    const isCentro = currentLoc.includes('mangueiras') || currentLoc.includes('centro') || currentLoc.includes('finlândia') || currentLoc.includes('duendes') || currentLoc.includes('vale dos duendes');
+    const isCachoeiras = currentLoc.includes('cachoeira') || currentLoc.includes('deus') || currentLoc.includes('esmeraldas');
+    
+    const getZoneScore = (candidateLoc: string) => {
+      const cl = candidateLoc.toLowerCase();
+      if (cl === currentLoc) return 20;
+      if (isAlto && cl.includes('alto')) return 10;
+      if (isCentro && (cl.includes('centro') || cl.includes('mangueiras') || cl.includes('finlândia') || cl.includes('duendes'))) return 10;
+      if (isCachoeiras && cl.includes('cachoeira')) return 10;
+      return 0;
+    };
+    
+    const getSharedTagsCount = (candTags: string[]) => {
+      if (!candTags || !item.tags) return 0;
+      return candTags.filter(t => item.tags!.some(it => it.toLowerCase() === t.toLowerCase())).length;
+    };
+    
+    let nearPlacesCat: 'gastronomia' | 'onde-ficar' | 'o-que-fazer' = 'gastronomia';
+    let secondaryCat: 'onde-ficar' | 'o-que-fazer' | 'gastronomia' = 'o-que-fazer';
+    
+    if (catLower === 'hospedagem' || catLower === 'onde-ficar') {
+      nearPlacesCat = 'gastronomia';
+      secondaryCat = 'o-que-fazer';
+    } else if (catLower === 'gastronomia' || catLower === 'restaurantes') {
+      nearPlacesCat = 'onde-ficar';
+      secondaryCat = 'o-que-fazer';
+    } else {
+      nearPlacesCat = 'onde-ficar';
+      secondaryCat = 'gastronomia';
     }
-    return item.image;
+    
+    const scoreCandidates = (cat: 'gastronomia' | 'onde-ficar' | 'o-que-fazer' | 'compras') => {
+      return (DETAILS_DATA[cat] || [])
+        .filter(c => c.id !== item.id)
+        .map(c => {
+          let score = getZoneScore(c.location || '');
+          score += getSharedTagsCount(c.tags || []) * 2;
+          score += (c.isPremium || (c as any).is_premium) ? 5 : 0;
+          return { item: c, score };
+        })
+        .sort((a, b) => b.score - a.score)
+        .map(x => x.item);
+    };
+    
+    const recommendedNearPlaces = scoreCandidates(nearPlacesCat).slice(0, 3);
+    const recommendedSecondary = scoreCandidates(secondaryCat).slice(0, 2);
+    
+    let recommendedBlog = {
+      id: 'penedo-guia',
+      title: 'Penedo RJ: Guia Completo de Viagem',
+      description: 'Descubra como aproveitar o melhor de Penedo, a colônia finlandesa no Rio de Janeiro.'
+    };
+    if (catLower === 'hospedagem' || catLower === 'onde-ficar') {
+      recommendedBlog = {
+        id: 'melhores-hospedagens',
+        title: 'As Melhores Hospedagens em Penedo RJ',
+        description: 'Encontre pousadas charmosas, chalés privativos e hotéis incríveis para sua viagem.'
+      };
+    } else if (catLower === 'gastronomia' || catLower === 'restaurantes') {
+      recommendedBlog = {
+        id: 'restaurantes',
+        title: 'Onde Comer em Penedo: Experiências Gastronômicas',
+        description: 'Um roteiro pelos melhores restaurantes de truta, fondue e chocolates finos.'
+      };
+    } else if (catLower === 'o-que-fazer' || catLower === 'compras') {
+      recommendedBlog = {
+        id: 'cachoeiras-penedo',
+        title: 'Guia de Cachoeiras e Trilhas em Penedo',
+        description: 'Dicas práticas para visitar as cachoeiras públicas e trilhas de aventura mais bonitas.'
+      };
+    }
+    
+    return {
+      nearPlaces: recommendedNearPlaces,
+      secondary: recommendedSecondary,
+      blog: recommendedBlog,
+      nearPlacesTitle: nearPlacesCat === 'gastronomia' ? 'Restaurantes Próximos' : 'Hospedagens Próximas',
+      secondaryTitle: secondaryCat === 'o-que-fazer' ? 'Atrações Recomendadas' : 'Gastronomia Recomendada'
+    };
   }, [item]);
 
   const seoData = generateSEO('business', item);
@@ -269,6 +341,8 @@ export function PremiumDetailPage({ slug, onNavigate }: { slug: string, onNaviga
     }
   }
 
+  const categoryCleanPath = item.category?.toLowerCase() === 'hospedagem' ? 'onde-ficar' : item.category?.toLowerCase() === 'gastronomia' ? 'gastronomia' : 'o-que-fazer';
+
   return (
     <div
       className="bg-white min-h-screen pb-40 md:pb-20 relative"
@@ -277,12 +351,28 @@ export function PremiumDetailPage({ slug, onNavigate }: { slug: string, onNaviga
       {/* Header / Gallery */}
       <section className="pt-10 md:pt-20 md:pt-32 pb-6 md:pb-12 bg-penedo-mint/10">
         <div className="max-w-6xl mx-auto px-4">
-          <button 
-            onClick={() => onNavigate('home')}
-            className="mb-4 md:mb-8 flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all"
-          >
-            <ArrowRight className="rotate-180" size={20} /> Voltar ao Início
-          </button>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:mb-8 text-left">
+            <button 
+              onClick={() => onNavigate('home')}
+              className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all bg-transparent border-none outline-none cursor-pointer"
+            >
+              <ArrowRight className="rotate-180" size={20} /> Voltar ao Início
+            </button>
+            
+            <nav className="text-xs font-semibold text-gray-500 uppercase tracking-widest" aria-label="Breadcrumb">
+              <a href="/" onClick={(e) => { e.preventDefault(); onNavigate('home'); }} className="hover:text-penedo-emerald transition-colors">Início</a>
+              <span className="mx-2 text-gray-400">/</span>
+              <a 
+                href={`/${categoryCleanPath}`} 
+                onClick={(e) => { e.preventDefault(); onNavigate(categoryCleanPath as Page); }}
+                className="hover:text-penedo-emerald transition-colors"
+              >
+                {item.category}
+              </a>
+              <span className="mx-2 text-gray-400">/</span>
+              <span className="text-penedo-forest line-clamp-1">{item.title}</span>
+            </nav>
+          </div>
           
           <div className="mb-6 md:mb-8">
             <PartnerHeader item={item} size="large" />
@@ -298,14 +388,16 @@ export function PremiumDetailPage({ slug, onNavigate }: { slug: string, onNaviga
                 onClick={() => setSelectedImgIndex(idx)}
                 className="aspect-[4/3] rounded-[2rem] overflow-hidden shadow-xl border-4 border-white cursor-pointer group/img"
               >
-                <img 
-                  src={img} 
-                  alt={`${item.title} ${idx + 1}`} 
-                  loading={idx > 2 ? "lazy" : "eager"} 
-                  decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110 group-hover/img:rotate-1"
-                  referrerPolicy="no-referrer"
-                />
+                 <img 
+                   src={img} 
+                   alt={`Imagem ${idx + 1} de ${item.category || 'Estabelecimento'} ${item.title} em Penedo RJ`} 
+                   loading={idx > 2 ? "lazy" : "eager"} 
+                   decoding="async"
+                   width={360}
+                   height={270}
+                   className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110 group-hover/img:rotate-1"
+                   referrerPolicy="no-referrer"
+                 />
               </motion.div>
             ))}
           </div>
@@ -500,6 +592,138 @@ export function PremiumDetailPage({ slug, onNavigate }: { slug: string, onNaviga
           </div>
         </div>
       </section>
+
+      {/* Recommended Section (Internal Link Mesh) */}
+      {recommendations && (
+        <section className="py-12 md:py-24 bg-gray-50 border-t border-gray-100">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="flex items-center gap-4 mb-10 text-left">
+              <div className="w-12 h-12 rounded-2xl bg-penedo-gold text-penedo-forest flex items-center justify-center shadow-lg shrink-0">
+                <Compass size={24} />
+              </div>
+              <div>
+                <h2 className="text-3xl font-black text-penedo-forest tracking-tight">Descubra Mais em Penedo</h2>
+                <p className="text-gray-500 text-sm">Estabelecimentos próximos e dicas recomendadas para seu roteiro</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
+              {/* Near Places */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-penedo-forest border-b pb-2 border-gray-200">
+                  {recommendations.nearPlacesTitle}
+                </h3>
+                <div className="space-y-4">
+                  {recommendations.nearPlaces.map(place => (
+                    <div 
+                      key={place.id}
+                      onClick={() => {
+                        const isPrem = place.isPremium || (place as any).is_premium;
+                        if (isPrem) {
+                          onNavigate('premium-detail', place.slug || place.id);
+                        } else if (onOpenDetail) {
+                          onOpenDetail(place);
+                        }
+                      }}
+                      className="flex gap-4 p-4 bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                    >
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0">
+                        <img 
+                          src={place.image} 
+                          alt={`${place.category} ${place.title} em Penedo RJ`} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                          loading="lazy"
+                          decoding="async"
+                          width={80}
+                          height={80}
+                        />
+                      </div>
+                      <div className="flex flex-col justify-center">
+                        <h4 className="font-bold text-gray-800 line-clamp-1 group-hover:text-penedo-emerald transition-colors">{place.title}</h4>
+                        <p className="text-xs text-gray-400 mb-1">{place.location}</p>
+                        <span className="text-[10px] font-bold text-penedo-gold">Ver mais</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Secondary Places */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-penedo-forest border-b pb-2 border-gray-200">
+                  {recommendations.secondaryTitle}
+                </h3>
+                <div className="space-y-4">
+                  {recommendations.secondary.map(place => (
+                    <div 
+                      key={place.id}
+                      onClick={() => {
+                        const isPrem = place.isPremium || (place as any).is_premium;
+                        if (isPrem) {
+                          onNavigate('premium-detail', place.slug || place.id);
+                        } else if (onOpenDetail) {
+                          onOpenDetail(place);
+                        }
+                      }}
+                      className="flex gap-4 p-4 bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                    >
+                      <div className="w-20 h-20 rounded-2xl overflow-hidden shrink-0">
+                        <img 
+                          src={place.image} 
+                          alt={`${place.category} ${place.title} em Penedo RJ`} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                          loading="lazy"
+                          decoding="async"
+                          width={80}
+                          height={80}
+                        />
+                      </div>
+                      <div className="flex flex-col justify-center">
+                        <h4 className="font-bold text-gray-800 line-clamp-1 group-hover:text-penedo-emerald transition-colors">{place.title}</h4>
+                        <p className="text-xs text-gray-400 mb-1">{place.location}</p>
+                        <span className="text-[10px] font-bold text-penedo-gold">Ver mais</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Blog & Category Links */}
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-penedo-forest border-b pb-2 border-gray-200">Dicas do Especialista</h3>
+                
+                {/* Blog Card */}
+                <div 
+                  onClick={() => onNavigate('blog', recommendations.blog.id)}
+                  className="p-6 bg-penedo-forest text-white rounded-3xl shadow-lg hover:shadow-xl transition-all cursor-pointer relative overflow-hidden group"
+                >
+                  <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                  <div className="relative z-10">
+                    <span className="inline-block px-3 py-1 rounded-full bg-white/20 text-[9px] font-black uppercase tracking-wider mb-4 border border-white/10">Artigo do Blog</span>
+                    <h4 className="text-xl font-black mb-2 group-hover:text-penedo-gold transition-colors leading-tight">{recommendations.blog.title}</h4>
+                    <p className="text-xs opacity-75 mb-4 leading-relaxed">{recommendations.blog.description}</p>
+                    <div className="flex items-center gap-2 text-xs font-bold text-penedo-gold uppercase tracking-wider group-hover:gap-3 transition-all">
+                      Ler artigo completo <ArrowRight size={16} className="shrink-0" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Category Link */}
+                <div 
+                  onClick={() => onNavigate(categoryCleanPath as Page)}
+                  className="p-6 bg-white border border-gray-100 rounded-3xl shadow-sm hover:shadow-md transition-all cursor-pointer text-center group"
+                >
+                  <h4 className="font-bold text-gray-800 mb-1">Quer ver a lista completa?</h4>
+                  <p className="text-xs text-gray-400 mb-4">Veja todas as opções da categoria {item.category} em Penedo.</p>
+                  <span className="inline-block px-6 py-2.5 bg-gray-50 group-hover:bg-penedo-emerald group-hover:text-white rounded-2xl font-bold text-xs text-penedo-emerald uppercase tracking-widest transition-all">
+                    Ver {item.category}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Sticky Mobile Buttons */}
       <ActionButtons sticky />

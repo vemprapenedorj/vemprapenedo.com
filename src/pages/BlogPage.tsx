@@ -754,9 +754,12 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
           <button onClick={() => onNavigate('home')} className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer bg-transparent border-none outline-none">
             <ArrowRight className="rotate-180" size={20} /> Voltar ao Início
           </button>
-          <div className="hidden md:block text-xs font-black text-gray-400 uppercase tracking-widest">
-            Navegando: <span className="text-penedo-forest">Blog</span>
-          </div>
+          
+          <nav className="text-xs font-semibold text-gray-500 uppercase tracking-widest" aria-label="Breadcrumb">
+            <a href="/" onClick={(e) => { e.preventDefault(); onNavigate('home'); }} className="hover:text-penedo-emerald transition-colors">Início</a>
+            <span className="mx-2 text-gray-400">/</span>
+            <span className="text-penedo-forest">Blog</span>
+          </nav>
         </div>
       </div>
       <header className="relative pt-40 pb-6 md:pb-12 md:pt-48 md:pb-16 bg-penedo-forest text-center text-white overflow-hidden">

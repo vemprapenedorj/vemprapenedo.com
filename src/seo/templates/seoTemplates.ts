@@ -1,7 +1,17 @@
-import { DEFAULT_SEO, CATEGORY_METADATA } from '../constants/seoDefaults';
+import { DEFAULT_SEO, CATEGORY_METADATA, FAQ_DATA } from '../constants/seoDefaults';
 import { getCanonicalUrl, generateFallbackDescription, generateKeywords } from '../utils/seoUtils';
-import { getOrganizationSchema, getWebSiteSchema, getBreadcrumbSchema, getLocalBusinessSchema, getArticleSchema } from '../../schema';
+import { 
+  getOrganizationSchema, 
+  getWebSiteSchema, 
+  getBreadcrumbSchema, 
+  getLocalBusinessSchema, 
+  getArticleSchema,
+  getPortalLocalBusinessSchema,
+  getFAQSchema,
+  getCollectionPageSchema
+} from '../../schema';
 import { DetailItem } from '../../types';
+import { DETAILS_DATA } from '../../data/detailsData';
 
 export const getHomeSEOTemplate = () => {
   return {
@@ -14,6 +24,7 @@ export const getHomeSEOTemplate = () => {
     robots: DEFAULT_SEO.robots,
     schema: [
       getOrganizationSchema(),
+      getPortalLocalBusinessSchema(),
       getWebSiteSchema(),
       getBreadcrumbSchema([{ name: 'Início', item: getCanonicalUrl('/') }])
     ]
@@ -25,6 +36,30 @@ export const getCategorySEOTemplate = (category: string) => {
     title: `${category.charAt(0).toUpperCase() + category.slice(1)} em Penedo RJ | Vem Pra Penedo`,
     description: `Descubra as melhores opções de ${category} em Penedo RJ.`
   };
+  
+  const schemas: any[] = [
+    getBreadcrumbSchema([
+      { name: 'Início', item: getCanonicalUrl('/') },
+      { name: meta.title.split(' | ')[0], item: getCanonicalUrl(`/${category}`) }
+    ])
+  ];
+
+  // Dynamic FAQpage JSON-LD schema
+  const faq = FAQ_DATA[category];
+  if (faq) {
+    schemas.push(getFAQSchema(faq));
+  }
+
+  // ItemList CollectionPage JSON-LD schema for lists
+  const listItems = DETAILS_DATA[category];
+  if (listItems && ['onde-ficar', 'gastronomia', 'compras', 'o-que-fazer'].includes(category)) {
+    let catName = 'Atrações';
+    if (category === 'onde-ficar') catName = 'Hospedagem';
+    else if (category === 'gastronomia') catName = 'Gastronomia';
+    else if (category === 'compras') catName = 'Compras';
+    schemas.push(getCollectionPageSchema(catName, category, listItems));
+  }
+
   return {
     title: meta.title,
     description: meta.description,
@@ -33,10 +68,7 @@ export const getCategorySEOTemplate = (category: string) => {
     type: 'website',
     keywords: generateKeywords(category, 'categoria', 'Penedo RJ'),
     robots: DEFAULT_SEO.robots,
-    schema: getBreadcrumbSchema([
-      { name: 'Início', item: getCanonicalUrl('/') },
-      { name: category, item: getCanonicalUrl(`/${category}`) }
-    ])
+    schema: schemas
   };
 };
 
@@ -46,7 +78,19 @@ export const getBusinessSEOTemplate = (item: DetailItem) => {
   const rawImage = item.image || '/assets/imagens/Logo.jpg';
   const image = rawImage.startsWith('http') ? rawImage : getCanonicalUrl(rawImage);
   
-  const title = `${name} | ${item.category || 'Local'} em Penedo RJ | Vem Pra Penedo`;
+  const catLower = (item.category || '').toLowerCase();
+  let prefix = 'Local';
+  if (catLower === 'hospedagem' || catLower === 'onde-ficar') {
+    prefix = name.toLowerCase().includes('pousada') ? 'Pousada em Penedo RJ' : 'Hotel em Penedo RJ';
+  } else if (catLower === 'gastronomia' || catLower === 'restaurantes') {
+    prefix = 'Restaurante em Penedo RJ';
+  } else if (catLower === 'compras' || catLower === 'lojas') {
+    prefix = 'Compras em Penedo RJ';
+  } else {
+    prefix = 'Atração em Penedo RJ';
+  }
+  
+  const title = `${prefix} | ${name} | Vem Pra Penedo`;
   const description = item.description || generateFallbackDescription(name, item.category || 'Local', item.location);
   const keywords = generateKeywords(name, item.category || 'Local', item.location, item.tags);
 

@@ -17,13 +17,16 @@ export function PartnerHeader({ item, size = 'large' }: PartnerHeaderProps) {
     : "text-xl md:text-2xl font-black text-penedo-forest tracking-tighter leading-none drop-shadow-sm text-left line-clamp-2";
 
   const HeadingTag = size === 'large' ? 'h1' : 'h3';
+  const imgSize = size === 'large' ? 80 : 56;
 
   return (
     <div className="flex items-center gap-4 text-left">
       <div className={`${containerSize} rounded-full border-2 border-penedo-gold shadow-md shrink-0 bg-white overflow-hidden flex items-center justify-center`}>
         <img 
           src={`/assets/imagens/logos/logo-${item.id}.jpg`} 
-          alt={`Logo ${item.title}`} 
+          alt={`Logotipo oficial do estabelecimento ${item.title} em Penedo RJ`} 
+          width={imgSize}
+          height={imgSize}
           className="w-full h-full object-cover" 
           referrerPolicy="no-referrer"
           onError={(e) => {

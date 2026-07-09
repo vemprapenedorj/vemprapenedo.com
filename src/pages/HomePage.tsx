@@ -53,14 +53,59 @@ export function HomePage({
       {/* Hero */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img 
-            src="https://avozdacidade.com/wp/wp-content/uploads/2021/03/Portal-de-Informa%C3%A7%C3%B5es-Turisticas-de-Penedo-Divulga%C3%A7%C3%A3o-PMI.jpeg" 
-            className="w-full h-full object-cover" 
-            alt="Penedo"
-            fetchPriority="high"
-            decoding="sync"
-            referrerPolicy="no-referrer"
-          />
+          <picture>
+            {/* Desktop (1920px) */}
+            <source 
+              media="(min-width: 1280px)" 
+              srcSet="/assets/imagens/hero-desktop.avif" 
+              type="image/avif" 
+            />
+            <source 
+              media="(min-width: 1280px)" 
+              srcSet="/assets/imagens/hero-desktop.webp" 
+              type="image/webp" 
+            />
+            <source 
+              media="(min-width: 1280px)" 
+              srcSet="/assets/imagens/hero-desktop.jpg" 
+              type="image/jpeg" 
+            />
+
+            {/* Tablet (1280px) */}
+            <source 
+              media="(min-width: 768px)" 
+              srcSet="/assets/imagens/hero-tablet.avif" 
+              type="image/avif" 
+            />
+            <source 
+              media="(min-width: 768px)" 
+              srcSet="/assets/imagens/hero-tablet.webp" 
+              type="image/webp" 
+            />
+            <source 
+              media="(min-width: 768px)" 
+              srcSet="/assets/imagens/hero-tablet.jpg" 
+              type="image/jpeg" 
+            />
+
+            {/* Mobile (768px) */}
+            <source 
+              srcSet="/assets/imagens/hero-mobile.avif" 
+              type="image/avif" 
+            />
+            <source 
+              srcSet="/assets/imagens/hero-mobile.webp" 
+              type="image/webp" 
+            />
+            
+            <img 
+              src="/assets/imagens/hero-mobile.jpg" 
+              className="w-full h-full object-cover" 
+              alt="Penedo"
+              fetchPriority="high"
+              decoding="async"
+            />
+          </picture>
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
         <div className="relative z-10 text-center px-4 max-w-4xl">

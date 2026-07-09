@@ -89,8 +89,10 @@ export function InfoCard({ item, onOpen }: InfoCardProps) {
         src={cardImage} 
         loading="lazy"
         decoding="async"
+        width={320}
+        height={420}
         className={imgClass}
-        alt={item.title} 
+        alt={`${item.category || 'Estabelecimento'} ${item.title} em Penedo RJ`} 
         referrerPolicy="no-referrer" 
       />
       
@@ -114,7 +116,9 @@ export function InfoCard({ item, onOpen }: InfoCardProps) {
           <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 bg-white border border-white/20 flex items-center justify-center">
             <img 
               src={`/assets/imagens/logos/logo-${item.id}.jpg`} 
-              alt={`Logo ${item.title}`} 
+              alt={`Logotipo oficial do estabelecimento ${item.title} em Penedo RJ`} 
+              width={24}
+              height={24}
               className="w-full h-full object-cover" 
               loading="lazy"
               decoding="async"
