@@ -9,7 +9,8 @@ import {
   getPortalLocalBusinessSchema,
   getFAQSchema,
   getCollectionPageSchema,
-  getPenedoDestinationSchema
+  getPenedoDestinationSchema,
+  getLogoSchema
 } from '../../schema';
 import { DetailItem } from '../../types';
 import { DETAILS_DATA } from '../../data/detailsData';
@@ -28,6 +29,7 @@ export const getHomeSEOTemplate = () => {
       getPortalLocalBusinessSchema(),
       getWebSiteSchema(),
       getPenedoDestinationSchema(),
+      getLogoSchema(),
       getBreadcrumbSchema([{ name: 'Início', item: getCanonicalUrl('/') }])
     ]
   };

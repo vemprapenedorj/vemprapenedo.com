@@ -3,7 +3,7 @@ export const BASE_URL = 'https://vemprapenedo.com.br';
 export const DEFAULT_SEO = {
   title: 'Vem Pra Penedo | Guia Oficial de Turismo e Viagem de Penedo RJ',
   description: 'Descubra o melhor de Penedo RJ. Encontre pousadas charmosas, hotéis aconchegantes, restaurantes saborosos e passeios imperdíveis no guia turístico oficial.',
-  image: `${BASE_URL}/assets/imagens/Logo.jpg`,
+  image: `${BASE_URL}/assets/imagens/logo-google.png`,
   type: 'website',
   robots: 'index, follow',
   keywords: 'penedo, penedo rj, guia penedo, hoteis penedo, pousadas penedo, restaurantes penedo, turismo penedo, penedo turismo, o que fazer em penedo, onde ficar em penedo'

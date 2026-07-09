@@ -11,12 +11,13 @@ export const getOrganizationSchema = () => {
     "url": "https://vemprapenedo.com.br",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
+      "@id": "https://vemprapenedo.com.br/#logo",
+      "url": "https://vemprapenedo.com.br/assets/imagens/logo-google.png",
       "caption": "Vem Pra Penedo Logo"
     },
     "image": {
       "@type": "ImageObject",
-      "url": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
+      "url": "https://vemprapenedo.com.br/assets/imagens/logo-google.png",
       "caption": "Vem Pra Penedo Logo"
     },
     "description": "O portal oficial de turismo de Penedo RJ. Encontre os melhores hotéis, pousadas, restaurantes, passeios, eventos e atrações na Finlândia Brasileira.",
@@ -73,12 +74,13 @@ export const getPortalLocalBusinessSchema = () => {
     "url": "https://vemprapenedo.com.br",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
+      "@id": "https://vemprapenedo.com.br/#logo",
+      "url": "https://vemprapenedo.com.br/assets/imagens/logo-google.png",
       "caption": "Vem Pra Penedo Logo"
     },
     "image": {
       "@type": "ImageObject",
-      "url": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
+      "url": "https://vemprapenedo.com.br/assets/imagens/logo-google.png",
       "caption": "Vem Pra Penedo Logo"
     },
     "description": "O portal oficial de turismo de Penedo RJ. Informações sobre hotéis, pousadas, restaurantes, passeios e eventos na Serra da Mantiqueira.",
@@ -107,5 +109,18 @@ export const getPortalLocalBusinessSchema = () => {
       "https://www.tiktok.com/@vemprapenedo",
       "https://www.facebook.com/vemprapenedo"
     ]
+  };
+};
+
+export const getLogoSchema = () => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ImageObject",
+    "@id": "https://vemprapenedo.com.br/#logo",
+    "contentUrl": "https://vemprapenedo.com.br/assets/imagens/logo-google.png",
+    "url": "https://vemprapenedo.com.br/assets/imagens/logo-google.png",
+    "width": 512,
+    "height": 512,
+    "caption": "Vem Pra Penedo"
   };
 };
