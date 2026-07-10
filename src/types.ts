@@ -3,6 +3,7 @@ export interface DetailItem {
   title: string;
   category: string;
   image: string;
+  imagem_url?: string;
   description: string;
   fullInfo: string;
   location?: string;
@@ -33,6 +34,8 @@ export interface DetailItem {
   priceRange?: string;
   paymentAccepted?: string;
   currenciesAccepted?: string;
+  email?: string;
+  link_site?: string;
 }
 
 export type Page = 'home' | 'o-que-fazer' | 'onde-ficar' | 'gastronomia' | 'compras' | 'blog' | 'contato' | 'premium-detail' | '404';
