@@ -791,8 +791,8 @@ export const DETAILS_DATA: Record<string, DetailItem[]> = {
       category: "Hospedagem",
       isPremium: false,
       is_premium: false,
-      image: "/assets/imagens/logos/logo-pousada-penedo.jpg",
-      imagem_url: "/assets/imagens/logos/logo-pousada-penedo.jpg",
+      image: "/assets/imagens/logos/logo-pousada-da-praca.jpg",
+      imagem_url: "/assets/imagens/logos/logo-pousada-da-praca.jpg",
       description: "Hospedagem charmosa e familiar no coração de Penedo.",
       fullInfo: "A Pousada da Praça Penedo oferece uma hospedagem charmosa e acolhedora no centro histórico de Penedo-RJ, a poucos passos das principais atrações, lojas e restaurantes da cidade. Com ambiente familiar e tranquilo, oferece suítes confortáveis e equipadas com ar-condicionado. A estrutura conta com piscina ao ar livre, jardim e Wi-Fi gratuito. Excelente opção para casais e famílias.",
       descricao_longa: "A Pousada da Praça Penedo oferece uma hospedagem charmosa e acolhedora no centro histórico de Penedo-RJ, a poucos passos das principais atrações, lojas e restaurantes da cidade. Com ambiente familiar e tranquilo, oferece suítes confortáveis e equipadas com ar-condicionado. A estrutura conta com piscina ao ar livre, jardim e Wi-Fi gratuito. Excelente opção para casais e famílias.",
@@ -801,6 +801,7 @@ export const DETAILS_DATA: Record<string, DetailItem[]> = {
       link_whatsapp: "https://wa.me/5524978346758",
       instagram: "https://www.instagram.com/pousadadapraca.penedo/",
       link_instagram: "https://www.instagram.com/pousadadapraca.penedo/",
+      tripadvisorUrl: "https://www.tripadvisor.com.br/Hotel_Review-g2427181-d3964174-Reviews-Pousada_da_Praca_Penedo-Penedo_Itatiaia_State_of_Rio_de_Janeiro.html",
       email: "contato@pousadadapraca.com.br",
       tags: ["centro", "piscina", "jardim", "wi-fi grátis", "ar-condicionado", "ambiente familiar"]
     },
