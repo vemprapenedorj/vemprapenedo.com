@@ -16,8 +16,8 @@ export function GastronomyPage({ onOpenDetail, onGoBack }: { onOpenDetail: (item
     item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   ).sort((a, b) => {
-    const aPremium = (a as any).is_premium || a.isPremium ? 1 : 0;
-    const bPremium = (b as any).is_premium || b.isPremium ? 1 : 0;
+    const aPremium = a.isPremium || a.isPremium ? 1 : 0;
+    const bPremium = b.isPremium || b.isPremium ? 1 : 0;
     if (aPremium !== bPremium) return bPremium - aPremium;
     return a.title.localeCompare(b.title);
   });

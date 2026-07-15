@@ -36,10 +36,8 @@ const waitPort = async (port, timeout = 15000) => {
 // --- 2. ROUTE DISCOVERY ---
 const discoverRoutes = () => {
   console.log('🔍 Iniciando descoberta automática de rotas...');
-  const routes = new Set(['/', '/blog', '/contato', '/404']);
-  const explicitSlugs = new Map();
-
-  // 1. First Pass: Read detailsData.ts to collect explicit slugs
+  const routes = new Set(['/', '/blog', '/contato', '/politica-de-privacidade', '/politica-de-cookies', '/404']);
+  // Read the canonical content source.
   let DETAILS_DATA = null;
   const detailsDataPath = path.resolve(__dirname, '../src/data/detailsData.ts');
   if (fs.existsSync(detailsDataPath)) {
@@ -55,43 +53,12 @@ const discoverRoutes = () => {
       runContext(context);
       DETAILS_DATA = context.DETAILS_DATA;
       
-      if (DETAILS_DATA) {
-        Object.keys(DETAILS_DATA).forEach(cat => {
-          if (cat !== 'blog') {
-            DETAILS_DATA[cat].forEach(item => {
-              if (item.slug && item.id) {
-                explicitSlugs.set(item.id, item.slug);
-              }
-            });
-          }
-        });
-      }
     } catch (err) {
       console.error('⚠️ Erro ao ler detailsData.ts para mapear slugs:', err);
     }
   }
 
-  // 2. First Pass: Read locais.json to collect explicit slugs
-  let locaisData = null;
-  const locaisPath = path.resolve(__dirname, '../src/locais.json');
-  if (fs.existsSync(locaisPath)) {
-    try {
-      locaisData = JSON.parse(fs.readFileSync(locaisPath, 'utf8'));
-      if (locaisData) {
-        Object.keys(locaisData).forEach(cat => {
-          locaisData[cat].forEach(item => {
-            if (item.slug && item.id) {
-              explicitSlugs.set(item.id, item.slug);
-            }
-          });
-        });
-      }
-    } catch (err) {
-      console.error('⚠️ Erro ao ler locais.json para mapear slugs:', err);
-    }
-  }
-
-  // 3. Second Pass: Add category routes and details routes using final slugs
+  // Add category routes and detail routes.
   if (DETAILS_DATA) {
     Object.keys(DETAILS_DATA).forEach(cat => {
       if (cat === 'blog') {
@@ -104,26 +71,12 @@ const discoverRoutes = () => {
       } else {
         routes.add(`/${cat}`);
         DETAILS_DATA[cat].forEach(item => {
-          const slug = explicitSlugs.get(item.id) || item.slug || item.id;
-          const isPremium = item.isPremium || item.is_premium;
-          if (slug && isPremium) {
+          const slug = item.slug || item.id;
+          if (slug && item.isPremium) {
             routes.add(`/${cat}/${slug}`);
           }
         });
       }
-    });
-  }
-
-  if (locaisData) {
-    Object.keys(locaisData).forEach(cat => {
-      routes.add(`/${cat}`);
-      locaisData[cat].forEach(item => {
-        const slug = explicitSlugs.get(item.id) || item.slug || item.id;
-        const isPremium = item.isPremium || item.is_premium;
-        if (slug && isPremium) {
-          routes.add(`/${cat}/${slug}`);
-        }
-      });
     });
   }
 
@@ -147,7 +100,23 @@ const compressFile = (filePath) => {
 // --- 4. PRE-RENDERING AND VALIDATION ---
 const prerenderAndValidate = async (routes) => {
   console.log('🚀 Iniciando pré-renderização com Puppeteer...');
-  const browser = await puppeteer.launch({ headless: true });
+  const runsAsRoot = typeof process.getuid === 'function' && process.getuid() === 0;
+  const browser = await puppeteer.launch({
+    headless: true,
+    ...(runsAsRoot
+      ? {
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-crash-reporter',
+            '--no-zygote',
+            '--single-process',
+          ],
+          userDataDir: process.env.PUPPETEER_USER_DATA_DIR || '/tmp/vem-pra-penedo-chrome',
+        }
+      : {}),
+  });
   const page = await browser.newPage();
   
   const validationReport = [];
@@ -478,8 +447,6 @@ ${brokenLinks.map(l => `    *   [Link Quebrado] \`${l}\` ❌`).join('\n')}
 // --- 6. SITEMAP GENERATION ---
 const generateSitemap = (routes) => {
   console.log('xml 🗺️ Gerando sitemap.xml baseado nas páginas geradas...');
-  const lastmod = new Date().toISOString().split('T')[0];
-  
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
@@ -507,13 +474,12 @@ const generateSitemap = (routes) => {
     xml += `
   <url>
     <loc>${PRODUCTION_URL}${route === '/' ? '' : route}</loc>
-    <lastmod>${lastmod}</lastmod>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>
   </url>`;
   });
 
-  xml += '\n</urlset>';
+  xml += '\n</urlset>\n';
   
   fs.writeFileSync(path.join(DIST_DIR, 'sitemap.xml'), xml, 'utf8');
   fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), xml, 'utf8');

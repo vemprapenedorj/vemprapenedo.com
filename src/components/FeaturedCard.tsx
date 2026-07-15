@@ -28,10 +28,10 @@ export function FeaturedCard(props: { item: DetailItem, onClick: () => void }) {
           : 'shadow-xl shadow-gray-200/40 hover:shadow-2xl hover:shadow-gray-300/50'
       }`}
     >
-      {(item.isPremium || (item as any).is_premium) && (
+      {(item.isPremium) && (
         <div className="absolute top-4 left-4 z-20">
           <span className="bg-penedo-gold text-black font-black text-[9px] uppercase tracking-tighter px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
-            {item.tag_destaque || (item as any).tag_destaque || "Destaque"}
+            {item.badge || (item as any).badge || "Destaque"}
           </span>
         </div>
       )}
