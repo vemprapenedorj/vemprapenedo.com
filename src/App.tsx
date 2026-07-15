@@ -11,8 +11,6 @@ import { DeferredSection } from './components/performance/DeferredSection';
 const PageTransition = lazy(() => import('./components/PageTransition').then(m => ({ default: m.PageTransition })));
 
 
-// Static JSON/data files
-import locaisData from './locais.json';
 import { DETAILS_DATA } from './data/detailsData';
 
 // Sub-components
@@ -38,6 +36,7 @@ const ShoppingPage = lazy(() => import('./pages/ShoppingPage').then(m => ({ defa
 const ContactPage = lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
 const BlogPage = lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));
 const PremiumDetailPage = lazy(() => import('./pages/PremiumDetailPage').then(m => ({ default: m.PremiumDetailPage })));
+const LegalPage = lazy(() => import('./pages/LegalPage').then(m => ({ default: m.LegalPage })));
 
 // Loading fallback component
 const LoadingFallback = () => (
@@ -51,20 +50,12 @@ const LoadingFallback = () => (
 
 import { trackEvent } from './analytics/tracking';
 
-const getCategoryCleanPath = (categoryName: string): string => {
-  const cat = (categoryName || '').toLowerCase();
-  if (cat === 'hospedagem' || cat === 'onde-ficar') return 'onde-ficar';
-  if (cat === 'gastronomia' || cat === 'restaurantes') return 'gastronomia';
-  if (cat === 'o-que-fazer' || cat === 'turismo' || cat === 'aventura') return 'o-que-fazer';
-  if (cat === 'compras') return 'compras';
-  return 'detalhe';
-};
-
 const getBusinessPath = (slug: string): string => {
-  const allItems = [...Object.values(locaisData).flat(), ...Object.values(DETAILS_DATA).flat()];
-  const item = allItems.find((i: any) => i.slug === slug || i.id === slug) as any;
-  if (item) {
-    return `/${getCategoryCleanPath(item.category)}/${slug}`;
+  for (const [category, items] of Object.entries(DETAILS_DATA)) {
+    const item = items.find((candidate) => candidate.slug === slug || candidate.id === slug);
+    if (item && category !== 'blog') {
+      return `/${category}/${item.slug || item.id}`;
+    }
   }
   return `/detalhe/${slug}`;
 };
@@ -120,7 +111,7 @@ const parsePath = (): { page: Page; premiumSlug: string | null; blogArticle: str
   }
   
   const pageName = path.replace(/^\//, '').replace(/\/$/, '') as Page;
-  const validPages: Page[] = ['home', 'o-que-fazer', 'onde-ficar', 'gastronomia', 'compras', 'blog', 'contato', 'premium-detail', '404'];
+  const validPages: Page[] = ['home', 'o-que-fazer', 'onde-ficar', 'gastronomia', 'compras', 'blog', 'contato', 'politica-de-privacidade', 'politica-de-cookies', 'premium-detail', '404'];
   if (validPages.includes(pageName)) {
     return { page: pageName, premiumSlug: null, blogArticle: null };
   }
@@ -223,7 +214,7 @@ export default function App() {
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
       idleId = window.requestIdleCallback(track, { timeout: 1000 });
     } else {
-      fallbackTimer = window.setTimeout(track, 200);
+      fallbackTimer = globalThis.setTimeout(track, 200) as unknown as number;
     }
 
     return () => {
@@ -313,7 +304,7 @@ export default function App() {
   };
 
   const handleOpenDetail = (item: DetailItem) => {
-    const isPremium = item.isPremium || (item as any).is_premium;
+    const isPremium = item.isPremium;
     if (isPremium) {
       navigate('premium-detail', item.slug || item.id);
     } else {
@@ -321,8 +312,33 @@ export default function App() {
     }
   };
 
-  const acceptCookies = () => {
-    localStorage.setItem('cookie-consent', 'true');
+  const updateConsent = (granted: boolean) => {
+    const consent = granted ? 'granted' : 'denied';
+    localStorage.setItem('cookie-consent', consent);
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'consent_update',
+      consent_choice: consent,
+    });
+    if (typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', {
+        ad_storage: consent,
+        analytics_storage: consent,
+        ad_user_data: consent,
+        ad_personalization: consent,
+        functionality_storage: consent,
+        personalization_storage: consent,
+      });
+    } else {
+      window.dataLayer.push(['consent', 'update', {
+        ad_storage: consent,
+        analytics_storage: consent,
+        ad_user_data: consent,
+        ad_personalization: consent,
+        functionality_storage: consent,
+        personalization_storage: consent,
+      }]);
+    }
     setShowCookies(false);
   };
 
@@ -480,6 +496,16 @@ export default function App() {
                 <PremiumDetailPage slug={selectedPremiumSlug!} onNavigate={navigate} onOpenDetail={handleOpenDetail} />
               </PageTransition>
             )}
+            {currentPage === 'politica-de-privacidade' && (
+              <PageTransition key="privacy-policy">
+                <LegalPage kind="privacidade" onGoBack={() => navigate('home')} />
+              </PageTransition>
+            )}
+            {currentPage === 'politica-de-cookies' && (
+              <PageTransition key="cookie-policy">
+                <LegalPage kind="cookies" onGoBack={() => navigate('home')} />
+              </PageTransition>
+            )}
             {currentPage === '404' && (
               <PageTransition key="page-404">
                 <SEO 
@@ -523,6 +549,8 @@ export default function App() {
                 <li><a href="/compras" onClick={(e) => { e.preventDefault(); navigate('compras'); }} className="hover:text-white transition-colors cursor-pointer">Compras</a></li>
                 <li><a href="/blog" onClick={(e) => { e.preventDefault(); navigate('blog'); }} className="hover:text-white transition-colors cursor-pointer">Blog</a></li>
                 <li><a href="/contato" onClick={(e) => { e.preventDefault(); navigate('contato'); }} className="hover:text-white transition-colors cursor-pointer">Contato</a></li>
+                <li><a href="/politica-de-privacidade" onClick={(e) => { e.preventDefault(); navigate('politica-de-privacidade'); }} className="hover:text-white transition-colors cursor-pointer">Privacidade</a></li>
+                <li><a href="/politica-de-cookies" onClick={(e) => { e.preventDefault(); navigate('politica-de-cookies'); }} className="hover:text-white transition-colors cursor-pointer">Cookies</a></li>
               </ul>
             </div>
             <div>
@@ -584,10 +612,15 @@ export default function App() {
       >
         <div className="bg-white rounded-3xl shadow-2xl border p-6">
           <h4 className="font-bold text-penedo-graphite">Privacidade e Cookies</h4>
-          <p className="text-sm text-gray-500 my-4">Utilizamos cookies para melhorar sua experiência. Ao continuar, você concorda com nossa política.</p>
+          <p className="text-sm text-gray-500 my-4">
+            Utilizamos tecnologias necessárias e, com sua autorização, métricas para melhorar sua experiência.{' '}
+            <a href="/politica-de-cookies" onClick={(e) => { e.preventDefault(); navigate('politica-de-cookies'); }} className="text-penedo-emerald font-semibold hover:underline">
+              Saiba mais
+            </a>.
+          </p>
           <div className="flex gap-3">
-            <button onClick={acceptCookies} className="flex-grow py-3 bg-penedo-emerald text-white font-bold rounded-2xl text-sm hover:bg-penedo-forest transition-colors">Aceitar</button>
-            <button onClick={() => setShowCookies(false)} className="px-6 py-3 bg-gray-100 text-gray-600 font-bold rounded-2xl text-sm hover:bg-gray-200 transition-colors">Recusar</button>
+            <button onClick={() => updateConsent(true)} className="flex-grow py-3 bg-penedo-emerald text-white font-bold rounded-2xl text-sm hover:bg-penedo-forest transition-colors">Aceitar</button>
+            <button onClick={() => updateConsent(false)} className="px-6 py-3 bg-gray-100 text-gray-600 font-bold rounded-2xl text-sm hover:bg-gray-200 transition-colors">Recusar</button>
           </div>
         </div>
       </div>

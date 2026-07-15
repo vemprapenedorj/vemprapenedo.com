@@ -129,7 +129,7 @@ export function DetailModal({ item, onClose }: { item: DetailItem | null, onClos
             
             <div className="pt-6 border-t grid grid-cols-1 sm:grid-cols-3 gap-3">
               <a 
-                href={item.link_maps || item.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title + ' ' + (item.location || 'Penedo Itatiaia RJ'))}`}
+                href={item.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title + ' ' + (item.location || 'Penedo Itatiaia RJ'))}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent('map_location', item.category, item.title)}
@@ -138,10 +138,10 @@ export function DetailModal({ item, onClose }: { item: DetailItem | null, onClos
                 <MapPin size={18} /> Como Chegar
               </a>
               {(() => {
-                const isPremium = item.isPremium || (item as any).is_premium;
+                const isPremium = item.isPremium;
                 const isHospedagem = item.category === 'Hospedagem';
                 const fallbackBookingUrl = 'https://www.booking.com/searchresults.pt-br.html?label=pt-br-booking-desktop-9_uvqir24qvA6x6xGiDvCQS652796015463%3Apl%3Ata%3Ap1%3Ap2%3Aac%3Aap%3Aneg%3Afi%3Atikwd-65526620%3Alp1031722%3Ali%3Adec%3Adm&gclid=Cj0KCQjwxvjRBhC2ARIsAI7KJa1ZHtRerJPfgkFeXecwrxjO7CkOzHPB6Gy0PC6H1ul-Q0ltXy90nk0aAiq6EALw_wcB&aid=2311236&dest_id=900048364&dest_type=city&group_adults=2&req_adults=2&no_rooms=1&group_children=0&req_children=0&order=class';
-                const bookingUrl = item.link_booking || fallbackBookingUrl;
+                const bookingUrl = item.bookingUrl || fallbackBookingUrl;
 
                 if (isHospedagem) {
                   if (isPremium) {
@@ -155,7 +155,7 @@ export function DetailModal({ item, onClose }: { item: DetailItem | null, onClos
                             business_id: item.id,
                             business_name: item.title,
                             business_category: item.category,
-                            is_premium: !!(item.isPremium || item.is_premium)
+                            is_premium: !!(item.isPremium)
                           })}
                           className="py-4 bg-[#25D366] text-white font-bold rounded-2xl hover:bg-[#128C7E] shadow-lg shadow-green-500/20 transition-all flex items-center justify-center gap-2 text-sm transform active:scale-95 h-full"
                         >
@@ -164,14 +164,14 @@ export function DetailModal({ item, onClose }: { item: DetailItem | null, onClos
                           </svg> WhatsApp
                         </a>
                         <a 
-                          href={item.instagram || item.link_instagram || "https://www.instagram.com/vemprapenedo/"}
+                          href={item.instagramUrl || "https://www.instagram.com/vemprapenedo/"}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => pushInstagramClick({
                             business_id: item.id,
                             business_name: item.title,
                             business_category: item.category,
-                            is_premium: !!(item.isPremium || item.is_premium)
+                            is_premium: !!(item.isPremium)
                           })}
                           className="py-4 text-white font-bold rounded-2xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm h-full"
                           style={{ background: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)' }}
@@ -197,14 +197,14 @@ export function DetailModal({ item, onClose }: { item: DetailItem | null, onClos
                           <span className="font-extrabold text-[13px] tracking-tight">Booking.com</span>
                         </a>
                         <a 
-                          href={item.instagram || item.link_instagram || "https://www.instagram.com/vemprapenedo/"}
+                          href={item.instagramUrl || "https://www.instagram.com/vemprapenedo/"}
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => pushInstagramClick({
                             business_id: item.id,
                             business_name: item.title,
                             business_category: item.category,
-                            is_premium: !!(item.isPremium || item.is_premium)
+                            is_premium: !!(item.isPremium)
                           })}
                           className="py-4 text-white font-bold rounded-2xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm h-full"
                           style={{ background: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)' }}
@@ -225,7 +225,7 @@ export function DetailModal({ item, onClose }: { item: DetailItem | null, onClos
                           business_id: item.id,
                           business_name: item.title,
                           business_category: item.category,
-                          is_premium: !!(item.isPremium || item.is_premium)
+                          is_premium: !!(item.isPremium)
                         })}
                         className="py-4 bg-[#25D366] text-white font-bold rounded-2xl hover:bg-[#128C7E] shadow-lg shadow-green-500/20 transition-all flex items-center justify-center gap-2 text-sm transform active:scale-95"
                       >
@@ -234,14 +234,14 @@ export function DetailModal({ item, onClose }: { item: DetailItem | null, onClos
                         </svg> WhatsApp
                       </a>
                       <a 
-                        href={item.instagram || item.link_instagram || "https://www.instagram.com/vemprapenedo/"}
+                        href={item.instagramUrl || "https://www.instagram.com/vemprapenedo/"}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => pushInstagramClick({
                           business_id: item.id,
                           business_name: item.title,
                           business_category: item.category,
-                          is_premium: !!(item.isPremium || item.is_premium)
+                          is_premium: !!(item.isPremium)
                         })}
                         className="py-4 text-white font-bold rounded-2xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm"
                         style={{ background: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)' }}

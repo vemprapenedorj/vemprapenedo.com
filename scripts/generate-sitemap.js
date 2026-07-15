@@ -15,9 +15,8 @@ const staticPages = [
   { url: '/compras', priority: '0.9', changefreq: 'weekly' },
   { url: '/blog', priority: '0.7', changefreq: 'daily' },
   { url: '/contato', priority: '0.5', changefreq: 'monthly' },
-  { url: '/sobre', priority: '0.5', changefreq: 'monthly' },
-  { url: '/politica-privacidade', priority: '0.5', changefreq: 'monthly' },
-  { url: '/termos-uso', priority: '0.5', changefreq: 'monthly' }
+  { url: '/politica-de-privacidade', priority: '0.3', changefreq: 'yearly' },
+  { url: '/politica-de-cookies', priority: '0.3', changefreq: 'yearly' }
 ];
 
 const blogArticles = [
@@ -27,23 +26,24 @@ const blogArticles = [
   { slug: 'melhores-hospedagens', priority: '0.7', changefreq: 'weekly' }
 ];
 
-// Load local business data dynamically
-const localesPath = path.resolve(__dirname, '../src/locais.json');
-let locaisData = {};
+// Load the canonical content source.
+const detailsPath = path.resolve(__dirname, '../src/data/detailsData.ts');
+let detailsData = {};
 try {
-  locaisData = JSON.parse(fs.readFileSync(localesPath, 'utf8'));
+  const source = fs.readFileSync(detailsPath, 'utf8');
+  detailsData = JSON.parse(source.slice(source.indexOf('=') + 1, source.lastIndexOf(';')));
 } catch (error) {
-  console.error('Error loading locais.json:', error);
+  console.error('Error loading detailsData.ts:', error);
+  process.exit(1);
 }
 
 const dynamicUrls = [];
 const categories = ['o-que-fazer', 'onde-ficar', 'gastronomia', 'compras'];
 
 categories.forEach(cat => {
-  if (locaisData[cat]) {
-    locaisData[cat].forEach(item => {
-      const isPremium = item.isPremium || item.is_premium;
-      if (isPremium) {
+  if (detailsData[cat]) {
+    detailsData[cat].forEach(item => {
+      if (item.isPremium) {
         const slug = item.slug || item.id;
         dynamicUrls.push({
           url: `/${cat}/${slug}`,
@@ -55,8 +55,6 @@ categories.forEach(cat => {
   }
 });
 
-const lastmod = new Date().toISOString().split('T')[0];
-
 let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
@@ -65,7 +63,6 @@ staticPages.forEach(page => {
   xml += `
   <url>
     <loc>${BASE_URL}${page.url}</loc>
-    <lastmod>${lastmod}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
   </url>`;
@@ -76,7 +73,6 @@ blogArticles.forEach(art => {
   xml += `
   <url>
     <loc>${BASE_URL}/blog/artigo/${art.slug}</loc>
-    <lastmod>${lastmod}</lastmod>
     <changefreq>${art.changefreq}</changefreq>
     <priority>${art.priority}</priority>
   </url>`;
@@ -87,13 +83,12 @@ dynamicUrls.forEach(dyn => {
   xml += `
   <url>
     <loc>${BASE_URL}${dyn.url}</loc>
-    <lastmod>${lastmod}</lastmod>
     <changefreq>${dyn.changefreq}</changefreq>
     <priority>${dyn.priority}</priority>
   </url>`;
 });
 
-xml += '\n</urlset>';
+xml += '\n</urlset>\n';
 
 // Ensure public directory exists
 const publicDir = path.resolve(__dirname, '../public');

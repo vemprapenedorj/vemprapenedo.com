@@ -1,6 +1,5 @@
 import React from 'react';
 import { Star, ChevronLeft, ChevronRight, Compass } from 'lucide-react';
-import locaisData from '../locais.json';
 import { DETAILS_DATA } from '../data/detailsData';
 import { Carousel } from './Carousel';
 import { PartnerHeader } from './PartnerHeader';
@@ -8,18 +7,12 @@ import { pushPremiumCardClick } from '../analytics/events';
 
 export function PremiumCarousel({ onNavigatePremium }: { onNavigatePremium: (slug: string) => void }) {
   const premiumItems = React.useMemo(() => {
-    const allowedCategories = ['onde-ficar', 'gastronomia', 'compras'];
-    const filteredPremium = allowedCategories.flatMap(cat => (locaisData as any)[cat] || [])
-      .filter((item: any) => item.is_premium);
-      
     const detailsPremium = Object.values(DETAILS_DATA).flat()
-      .filter((item: any) => item.is_premium || item.isPremium);
-      
-    const allPremium = [...filteredPremium, ...detailsPremium];
+      .filter((item) => item.isPremium);
     
     // De-duplicate by id or slug
     const uniquePremiumMap = new Map();
-    allPremium.forEach((item: any) => {
+    detailsPremium.forEach((item) => {
       const key = item.title;
       if (!uniquePremiumMap.has(key)) {
         uniquePremiumMap.set(key, item);
@@ -95,7 +88,7 @@ export function PremiumCarousel({ onNavigatePremium }: { onNavigatePremium: (slu
                 />
                 <div className="absolute top-4 left-4 z-10">
                   <span className="bg-penedo-gold text-black font-black text-[9px] uppercase tracking-tighter px-3 py-1.5 rounded-full shadow-lg">
-                    {item.tag_destaque || (item as any).tag_destaque || "Destaque"}
+                    {item.badge || (item as any).badge || "Destaque"}
                   </span>
                 </div>
               </div>

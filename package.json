@@ -1,5 +1,5 @@
 {
-  "name": "react-example",
+  "name": "vem-pra-penedo",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,7 +12,6 @@
     "validate:db": "node scripts/validate_db.js"
   },
   "dependencies": {
-    "@google/genai": "^1.29.0",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
     "dotenv": "^17.2.3",
