@@ -354,7 +354,7 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
   if (galleryImages.length > 0) {
     const businessSchema = (seoData.schema as any[]).find((s: any) => s["@type"] === 'Restaurant' || s["@type"] === 'Hotel' || s["@type"] === 'TouristAttraction' || s["@type"] === 'LocalBusiness') as any;
     if (businessSchema) {
-      businessSchema.image = galleryImages.map((img: string) => img.startsWith('http') ? img : `https://vemprapenedo.com.br${img}`);
+      businessSchema.image = galleryImages.map((img: string) => img.startsWith('http') ? img : `https://vemprapenedo.com${img}`);
     }
   }
 
@@ -438,7 +438,11 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
                     decoding="async"
                     width={360}
                     height={270}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110 group-hover/img:rotate-1"
+                    className={`w-full h-full transition-transform duration-700 group-hover/img:scale-110 group-hover/img:rotate-1 ${
+                      img.includes('/rodrigo-massoterapeuta/galeria-2')
+                        ? 'object-contain bg-black'
+                        : 'object-cover'
+                    }`}
                     referrerPolicy="no-referrer"
                   />
               </motion.div>

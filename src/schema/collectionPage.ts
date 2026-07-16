@@ -9,7 +9,7 @@ export const getCollectionPageSchema = (
   categorySlug: string,
   items: DetailItem[]
 ) => {
-  const baseUrl = 'https://vemprapenedo.com.br';
+  const baseUrl = 'https://vemprapenedo.com';
   
   return {
     "@context": "https://schema.org",
