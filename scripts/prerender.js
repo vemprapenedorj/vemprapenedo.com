@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 
 const PORT = 4173;
 const BASE_URL = `http://localhost:${PORT}`;
-const PRODUCTION_URL = 'https://vemprapenedo.com.br';
+const PRODUCTION_URL = 'https://vemprapenedo.com';
 const DIST_DIR = path.resolve(__dirname, '../dist');
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
 

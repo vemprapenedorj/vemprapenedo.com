@@ -9,7 +9,7 @@ interface LegalPageProps {
   onGoBack: () => void;
 }
 
-const SITE_URL = 'https://vemprapenedo.com.br';
+const SITE_URL = 'https://vemprapenedo.com';
 const UPDATED_AT = '15 de julho de 2026';
 
 const pageContent = {

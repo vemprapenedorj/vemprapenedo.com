@@ -8,4 +8,4 @@ Disallow: /private/
 Disallow: /tmp/
 Disallow: /cache/
 
-Sitemap: https://vemprapenedo.com.br/sitemap.xml
+Sitemap: https://vemprapenedo.com/sitemap.xml
