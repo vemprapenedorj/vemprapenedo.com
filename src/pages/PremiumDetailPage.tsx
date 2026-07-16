@@ -354,7 +354,7 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
   if (galleryImages.length > 0) {
     const businessSchema = (seoData.schema as any[]).find((s: any) => s["@type"] === 'Restaurant' || s["@type"] === 'Hotel' || s["@type"] === 'TouristAttraction' || s["@type"] === 'LocalBusiness') as any;
     if (businessSchema) {
-      businessSchema.image = galleryImages.map((img: string) => img.startsWith('http') ? img : `https://vemprapenedo.com.br${img}`);
+      businessSchema.image = galleryImages.map((img: string) => img.startsWith('http') ? img : `https://vemprapenedo.com${img}`);
     }
   }
 

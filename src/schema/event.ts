@@ -36,19 +36,19 @@ export const getEventSchema = (event: EventData) => {
         "postalCode": "27580-000"
       }
     },
-    "image": event.image.startsWith('http') ? event.image : `https://vemprapenedo.com.br${event.image}`,
+    "image": event.image.startsWith('http') ? event.image : `https://vemprapenedo.com${event.image}`,
     "description": event.description,
     "offers": {
       "@type": "Offer",
       "price": event.price || 0,
       "priceCurrency": "BRL",
       "availability": "https://schema.org/InStock",
-      "url": "https://vemprapenedo.com.br"
+      "url": "https://vemprapenedo.com"
     },
     "organizer": {
       "@type": "Organization",
       "name": event.organizerName || "Vem Pra Penedo",
-      "url": "https://vemprapenedo.com.br"
+      "url": "https://vemprapenedo.com"
     }
   };
 };

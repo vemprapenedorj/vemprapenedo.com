@@ -511,7 +511,7 @@ export default function App() {
                 <SEO 
                   title="Página Não Encontrada | Vem Pra Penedo"
                   description="A página que você procura não foi encontrada. Navegue pelo portal oficial para descobrir o melhor de Penedo RJ."
-                  canonical="https://vemprapenedo.com.br/404"
+                  canonical="https://vemprapenedo.com/404"
                   robots="noindex, follow"
                 />
                 <Page404 onNavigate={navigate} />
