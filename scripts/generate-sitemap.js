@@ -5,7 +5,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const BASE_URL = 'https://vemprapenedo.com';
+const BASE_URL = (process.env.SITE_URL || process.env.VITE_SITE_URL || 'https://vemprapenedo.com.br')
+  .replace(/\/$/, '');
 
 const staticPages = [
   { url: '/', priority: '1.0', changefreq: 'daily' },

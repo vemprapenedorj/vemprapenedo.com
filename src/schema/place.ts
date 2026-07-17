@@ -5,7 +5,7 @@ export const getPenedoDestinationSchema = () => {
   return {
     "@context": "https://schema.org",
     "@type": "TouristDestination",
-    "@id": "https://vemprapenedo.com/#penedo-destination",
+    "@id": "https://vemprapenedo.com.br/#penedo-destination",
     "name": "Penedo",
     "description": "A Finlândia Brasileira. Distrito turístico de Itatiaia, localizado na Serra da Mantiqueira, Rio de Janeiro.",
     "containedInPlace": {

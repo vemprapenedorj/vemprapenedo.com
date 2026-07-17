@@ -741,12 +741,12 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
       <SEO 
         title="Blog Penedo RJ - Dicas e Roteiros | Vem Pra Penedo"
         description="Acompanhe o blog Vem Pra Penedo. Dicas exclusivas, roteiros completos, os melhores restaurantes e onde se hospedar na Finlândia Brasileira."
-        image="https://vemprapenedo.com/assets/imagens/blog/penedo_blog_header.jpg"
+        image="https://vemprapenedo.com.br/assets/imagens/blog/penedo_blog_header.jpg"
         type="website"
-        canonical="https://vemprapenedo.com/blog"
+        canonical="https://vemprapenedo.com.br/blog"
         schema={getBreadcrumbSchema([
-          { name: 'Início', item: 'https://vemprapenedo.com/' },
-          { name: 'Blog', item: 'https://vemprapenedo.com/blog' }
+          { name: 'Início', item: 'https://vemprapenedo.com.br/' },
+          { name: 'Blog', item: 'https://vemprapenedo.com.br/blog' }
         ])}
       />
       <div className="sticky top-[72px] z-40 bg-white/90 backdrop-blur-md border-b py-4 shadow-sm">

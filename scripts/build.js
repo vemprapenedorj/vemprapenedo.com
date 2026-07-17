@@ -5,15 +5,19 @@ const isNetlify = process.env.NETLIFY === 'true';
 console.log(`📡 [Build Pipeline] Ambiente detectado: ${isNetlify ? 'NETLIFY (Cloud)' : 'LOCAL / HOSTINGER'}`);
 
 try {
-  // 1. Generate the public sitemap from the current content source.
+  // 1. Generate environment-specific crawler directives.
+  console.log('🤖 Gerando robots.txt para o ambiente...');
+  execSync('node scripts/generate-robots.js', { stdio: 'inherit' });
+
+  // 2. Generate the public sitemap from the current content source.
   console.log('🗺️ Gerando sitemap.xml...');
   execSync('node scripts/generate-sitemap.js', { stdio: 'inherit' });
 
-  // 2. Run standard Vite compilation
+  // 3. Run standard Vite compilation
   console.log('📦 Executando vite build...');
   execSync('npx vite build', { stdio: 'inherit' });
 
-  // 3. Conditionally execute static pre-rendering (SSG) with Puppeteer
+  // 4. Conditionally execute static pre-rendering (SSG) with Puppeteer
   if (isNetlify) {
     console.log('⚡ Detectado ambiente Netlify. Ignorando a pré-renderização estática (SSG) para evitar dependências de Chrome/Puppeteer.');
   } else {
