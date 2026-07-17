@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://vemprapenedo.com';
+export const BASE_URL = 'https://vemprapenedo.com.br';
 
 export const DEFAULT_SEO = {
   title: 'Vem Pra Penedo | Guia Oficial de Turismo e Viagem de Penedo RJ',
