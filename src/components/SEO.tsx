@@ -16,9 +16,9 @@ interface SEOProps {
 export default function SEO({
   title = 'Vem Pra Penedo | Guia Completo de Penedo RJ - Hotéis, Restaurantes, Passeios e Eventos',
   description = 'Descubra os melhores hotéis, pousadas, restaurantes, passeios, eventos e atrações de Penedo RJ. Planeje sua viagem com o Vem Pra Penedo.',
-  canonical = 'https://vemprapenedo.com/',
-  image = 'https://vemprapenedo.com/assets/imagens/logo-google.png',
-  url = 'https://vemprapenedo.com/',
+  canonical = 'https://vemprapenedo.com.br/',
+  image = 'https://vemprapenedo.com.br/assets/imagens/logo-google.png',
+  url = 'https://vemprapenedo.com.br/',
   type = 'website',
   keywords = 'penedo, penedo rj, guia penedo, hoteis penedo, pousadas penedo, restaurantes penedo, turismo penedo, penedo turismo, o que fazer em penedo, onde ficar em penedo',
   robots = 'index, follow',

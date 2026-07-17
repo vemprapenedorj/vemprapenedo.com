@@ -7,11 +7,11 @@ import { DetailItem } from '../types';
 export const getLocalBusinessSchema = (item: DetailItem) => {
   const baseSchema: any = {
     "@context": "https://schema.org",
-    "@id": `https://vemprapenedo.com/detalhe/${item.slug || item.id}#business`,
+    "@id": `https://vemprapenedo.com.br/detalhe/${item.slug || item.id}#business`,
     "name": item.title,
     "description": item.description || item.fullInfo,
-    "url": `https://vemprapenedo.com/detalhe/${item.slug || item.id}`,
-    "image": item.image ? (item.image.startsWith('http') ? item.image : `https://vemprapenedo.com${item.image.startsWith('/') ? '' : '/'}${item.image}`) : "https://vemprapenedo.com/assets/imagens/Logo.jpg",
+    "url": `https://vemprapenedo.com.br/detalhe/${item.slug || item.id}`,
+    "image": item.image ? (item.image.startsWith('http') ? item.image : `https://vemprapenedo.com.br${item.image.startsWith('/') ? '' : '/'}${item.image}`) : "https://vemprapenedo.com.br/assets/imagens/Logo.jpg",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": item.location || "Penedo",
@@ -21,7 +21,7 @@ export const getLocalBusinessSchema = (item: DetailItem) => {
       "postalCode": "27580-000"
     },
     "containedInPlace": {
-      "@id": "https://vemprapenedo.com/#penedo-destination"
+      "@id": "https://vemprapenedo.com.br/#penedo-destination"
     }
   };
 

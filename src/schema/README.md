@@ -53,13 +53,13 @@ import { getOrganizationSchema, getWebSiteSchema, getBreadcrumbSchema } from './
 <SEO
   title="Título da Página"
   description="Descrição"
-  canonical="https://vemprapenedo.com/caminho"
+  canonical="https://vemprapenedo.com.br/caminho"
   schema={[
     getOrganizationSchema(),
     getWebSiteSchema(),
     getBreadcrumbSchema([
-      { name: 'Início', item: 'https://vemprapenedo.com/' },
-      { name: 'Página Atual', item: 'https://vemprapenedo.com/caminho' }
+      { name: 'Início', item: 'https://vemprapenedo.com.br/' },
+      { name: 'Página Atual', item: 'https://vemprapenedo.com.br/caminho' }
     ])
   ]}
 />
