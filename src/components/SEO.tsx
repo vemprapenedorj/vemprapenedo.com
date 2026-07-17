@@ -25,8 +25,9 @@ export default function SEO({
   schema,
 }: SEOProps) {
   const finalCanonical = canonical || url;
+  const testHostnames = ['vemprapenedo.com', 'www.vemprapenedo.com', 'homologacao.vemprapenedo.com'];
   const effectiveRobots = typeof window !== 'undefined'
-    && window.location.hostname === 'homologacao.vemprapenedo.com'
+    && testHostnames.includes(window.location.hostname)
     ? 'noindex, nofollow, noarchive'
     : robots;
 
