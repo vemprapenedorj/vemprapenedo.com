@@ -236,18 +236,6 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
               </a>
             )}
             
-            {item.googleProfileUrl && (
-              <a 
-                href={item.googleProfileUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                onClick={() => trackEvent('google_profile', item.category, item.title)}
-                className="flex items-center justify-center gap-2 py-3 bg-white text-gray-700 border border-gray-200 font-bold rounded-xl hover:bg-gray-50 transition-all text-sm shadow-md"
-              >
-                <Star size={18} className="text-penedo-gold fill-penedo-gold" /> Avaliações no Google
-              </a>
-            )}
-
             <a 
               href={mapsUrl} 
               target="_blank" 
@@ -255,7 +243,7 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
               onClick={() => trackEvent('map_location', item.category, item.title)}
               className="flex items-center justify-center gap-2 py-3 bg-penedo-forest text-white font-bold rounded-xl hover:bg-black transition-all text-sm shadow-md"
             >
-              <Compass size={18} /> Ver no Google Maps
+              <Compass size={18} /> Como chegar
             </a>
           </>
         )}
