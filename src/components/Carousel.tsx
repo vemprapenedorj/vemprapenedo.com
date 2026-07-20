@@ -27,7 +27,10 @@ export const Carousel = React.memo(function Carousel({
 }: CarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const [currentItemsPerView, setCurrentItemsPerView] = useState(itemsPerView.desktop);
+  // The SSG preview uses the tablet breakpoint. Keeping that same deterministic
+  // value for the first client render prevents the resize effect from changing
+  // the pre-rendered DOM before hydration begins.
+  const [currentItemsPerView, setCurrentItemsPerView] = useState(itemsPerView.tablet);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
