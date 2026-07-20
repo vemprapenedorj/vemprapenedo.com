@@ -4,6 +4,7 @@ import { DETAILS_DATA } from '../data/detailsData';
 import { Carousel } from './Carousel';
 import { PartnerHeader } from './PartnerHeader';
 import { pushPremiumCardClick } from '../analytics/events';
+import { shuffleArray } from '../utils/shuffle';
 
 export function PremiumCarousel({ onNavigatePremium }: { onNavigatePremium: (slug: string) => void }) {
   const premiumItems = React.useMemo(() => {
@@ -21,10 +22,8 @@ export function PremiumCarousel({ onNavigatePremium }: { onNavigatePremium: (slu
     
     const uniquePremium = Array.from(uniquePremiumMap.values());
       
-    // Always shuffle and slice to max 12
-    return uniquePremium
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 12);
+    // Stable shuffle keeps the visual variety without changing between SSG and hydration.
+    return shuffleArray(uniquePremium).slice(0, 12);
   }, []);
 
   if (premiumItems.length === 0) return null;

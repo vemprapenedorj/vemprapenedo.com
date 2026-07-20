@@ -69,14 +69,20 @@ export const InfoCard = React.memo(function InfoCard({ item, onOpen }: InfoCardP
   }, [item, isPremium]);
 
   return (
-    <a 
-      href={linkHref}
-      onClick={(e) => {
-        e.preventDefault();
-        onOpen(item);
-      }}
+    <article
       className="group relative rounded-3xl overflow-hidden aspect-[3/4] shadow-md cursor-pointer bg-gray-100 block transition-transform duration-300 hover:scale-[1.02] will-change-transform"
     >
+      <a
+        href={linkHref}
+        aria-label={`Abrir detalhes de ${item.title}`}
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen(item);
+        }}
+        className="absolute inset-0 z-[25]"
+      >
+        <span className="sr-only">{`Abrir detalhes de ${item.title}`}</span>
+      </a>
       {/* Blurred Background Layer for Contained Images */}
       {!isPremium && ['pequena-finlandia', 'pequena-finlandia-shopping', 'lelu-museu', 'hotel-girassol', 'hotel-bertell', 'hotel-britannia', 'hotel-daniela', 'hotel-rio-penedo', 'hotel-do-sino', 'hotel-titanic', 'pousada-aurora-mantiqueira', 'pousada-chez-nous', 'pousada-penedo', 'pousada-reserva-penedo', 'pousada-terraco', 'pousada-villa-luna', 'pousada-rainha-mata', 'pousada-rainha-da-mata', 'vila-francesa-hotel', 'hotel-casa-encantada', 'pousada-santa-fe', 'pousada-do-sol', 'vert-hotel', 'pousada-lago', 'hotel-terras-finlandia', 'aglio-e-olio', 'bazzini-pizzeria', 'borbulha-penedo', 'botegare', 'braseiro-gaucho', 'casa-da-picanha', 'casa-do-fritz', 'enoteca-serrana', 'estancia-penedo', 'kaiten-sushi', 'loazo-resto', 'petit-gourmet', 'pizza-da-villa', 'querencia', 'rei-das-trutas', 'restaurante-finlandes', 'truta-viva', 'zero-a-zero', 'expedicao-raizes', 'aguia-de-penedo', 'rota-dos-passeios', 'trilhando-penedo', 'tonttulakki-suklaat', 'lugano-penedo', 'lolita-penedo', 'kahvila-cafe', 'santa-claus-burger', 'maria-cuisine', 'armazem-da-vila', 'geek-penedo', 'astral-exotheryca', 'via-lactea-balas', 'casa-das-latas', 'vanilla-patisserie', 'delicias-da-carol', 'fue-gelateria', 'cafe-finlandes-penedo', 'arte-da-nossa-terra', 'reserva-da-mata', 'meu-sonho', 'artevelas', 'raio-de-luz-decoracoes', 'raio-de-luz', 'pousada-doce-mel', 'le-garden-pousada-boutique', 'pousada-viking', 'halloween-inn-penedo', 'pousada-nova-conquista', 'recanto-dos-passaros-penedo', 'pousada-laponia', 'vilar-hotel', 'hotel-penedo-inn', 'chale-na-roca-penedo', 'pousada-chicle-penedo-mc', 'pousada-estancia-penedo', 'casa-de-artista-suites-penedo', 'pousada-da-praca-penedo', 'pousada-bela-vista-penedo', 'pousada-chales-mon-desir', 'chales-laco-e-no', 'hotel-moradas-do-penedo', 'hotel-aromas-de-penedo', 'pousada-finlandia', 'city-park-hotel', 'hotel-do-papai-noel', 'pousada-penedo-house', 'pousada-nossa-senhora', 'hotel-pequena-suecia', 'gute-passeios', 'esquilo-passeios', 'pousada-vale-do-ermitao', 'andicaro-penedo-cafes-especiais', 'chocolate-do-papai-noel', 'emporio-haru'].includes(item.id) && (
         <div 
@@ -110,7 +116,7 @@ export const InfoCard = React.memo(function InfoCard({ item, onOpen }: InfoCardP
       )}
 
       <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-      <div className="absolute bottom-0 left-0 z-30 px-6 pb-4 pt-6 text-white text-left w-full">
+      <div className="absolute bottom-0 left-0 z-30 px-6 pb-4 pt-6 text-white text-left w-full pointer-events-none">
         <span className="inline-block px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[8px] font-bold uppercase tracking-wider mb-2">
           {item.category}
         </span>
@@ -141,9 +147,9 @@ export const InfoCard = React.memo(function InfoCard({ item, onOpen }: InfoCardP
         </div>
         
         {item.tripadvisorUrl && (
-          <div className="card-rating !text-white/70 mb-1" onClick={(e) => e.stopPropagation()}>
-            ⭐ {item.rating || '4.5'} no 
-            <a href={item.tripadvisorUrl} target="_blank" rel="noopener noreferrer" className="!text-white hover:underline ml-1">
+          <div className="card-rating !text-white/70 mb-1">
+            {`⭐ ${item.rating || '4.5'} no `}
+            <a href={item.tripadvisorUrl} target="_blank" rel="noopener noreferrer" className="!text-white hover:underline ml-1 pointer-events-auto relative z-40">
               Tripadvisor
             </a>
           </div>
@@ -151,6 +157,6 @@ export const InfoCard = React.memo(function InfoCard({ item, onOpen }: InfoCardP
 
         <p className="text-white/60 text-xs line-clamp-2">{item.description}</p>
       </div>
-    </a>
+    </article>
   );
 });
