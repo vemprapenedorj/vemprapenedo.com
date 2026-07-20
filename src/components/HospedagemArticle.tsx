@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, X, ArrowRight, Check } from 'lucide-react';
+import { ArrowLeft, X, ArrowRight, Check, Calendar, Clock, User } from 'lucide-react';
 import SEO from './SEO';
 import { generateSEO } from '../seo';
+import { DETAILS_DATA } from '../data/detailsData';
 
 interface HospedagemArticleProps {
   handleSelectArticle: (id: string | null) => void;
+  onNavigate: (page: string, premiumSlug?: string | null) => void;
 }
 
 const BlogPostCTA = ({ label, onClick, primary = true }: { label: string, onClick: () => void, primary?: boolean }) => (
@@ -56,8 +58,55 @@ const ImageWithFallback = ({
   );
 };
 
-export function HospedagemArticle({ handleSelectArticle }: HospedagemArticleProps) {
+export function HospedagemArticle({ handleSelectArticle, onNavigate }: HospedagemArticleProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const blogPosts = React.useMemo(() => {
+    return [...(DETAILS_DATA['blog'] || [])].sort((a, b) => {
+      const parseDate = (d: string) => {
+        const [day, month, year] = d.split('/').map(Number);
+        return new Date(year, month - 1, day).getTime();
+      };
+      return parseDate(b.date) - parseDate(a.date);
+    });
+  }, []);
+
+  const currentIndex = blogPosts.findIndex(post => post.id === 'melhores-hospedagens');
+  const prevPost = currentIndex !== -1 && currentIndex + 1 < blogPosts.length ? blogPosts[currentIndex + 1] : null;
+
+  const handlePrevArticle = () => {
+    if (prevPost) {
+      const inlineArticleIds = ['roteiro-1-dia-em-penedo', 'penedo-guia', 'cachoeiras-penedo', 'restaurantes', 'melhores-hospedagens'];
+      if (inlineArticleIds.includes(prevPost.id)) {
+        handleSelectArticle(prevPost.id);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        onNavigate('blog');
+      }
+    } else {
+      handleSelectArticle(null);
+      onNavigate('blog');
+    }
+  };
+
+  const handleContinueExploring = () => {
+    const nextPost = currentIndex > 0 ? blogPosts[currentIndex - 1] : null;
+    if (nextPost) {
+      const inlineArticleIds = ['roteiro-1-dia-em-penedo', 'penedo-guia', 'cachoeiras-penedo', 'restaurantes', 'melhores-hospedagens'];
+      if (inlineArticleIds.includes(nextPost.id)) {
+        handleSelectArticle(nextPost.id);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+    }
+    const penedoGuiaExists = blogPosts.some(post => post.id === 'penedo-guia');
+    if (penedoGuiaExists) {
+      handleSelectArticle('penedo-guia');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      onNavigate('o-que-fazer');
+    }
+  };
 
   const hotels = [
     {
@@ -190,6 +239,13 @@ export function HospedagemArticle({ handleSelectArticle }: HospedagemArticleProp
           >
             Onde se Hospedar em Penedo: Pousadas e Hotéis que <span className="text-penedo-gold italic">Encantam e Surpreendem</span>
           </motion.h1>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-white/85 uppercase tracking-widest mt-8">
+            <span className="flex items-center gap-1.5"><Calendar size={14} className="text-penedo-gold" /> 23/06/2026</span>
+            <span className="w-1.5 h-1.5 bg-penedo-gold rounded-full"></span>
+            <span className="flex items-center gap-1.5"><Clock size={14} className="text-penedo-gold" /> 9 MIN DE LEITURA</span>
+            <span className="w-1.5 h-1.5 bg-penedo-gold rounded-full"></span>
+            <span className="flex items-center gap-1.5"><User size={14} className="text-penedo-gold" /> PORTAL VEM PRA PENEDO</span>
+          </div>
         </div>
       </header>
 
@@ -325,7 +381,6 @@ export function HospedagemArticle({ handleSelectArticle }: HospedagemArticleProp
             <p className="text-lg leading-relaxed">
               Mais do que locais de repouso, as pousadas de Penedo oferecem cenários deslumbrantes, aconchego em cada pequeno detalhe e a amigável hospitalidade de serra para que você desfrute cada instante de sua estadia.
             </p>
-            <p className="text-gray-400 text-sm mt-6 italic">Publicado em 23/06/2026.</p>
           </div>
           
           <div className="mb-4 md:mb-8 md:mb-16 rounded-[3rem] overflow-hidden shadow-2xl relative w-full h-96 md:h-[32rem]">
@@ -339,6 +394,35 @@ export function HospedagemArticle({ handleSelectArticle }: HospedagemArticleProp
           </div>
         </div>
       </section>
+
+      {/* Navigation buttons below conclusion */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-8 border-t border-gray-100 max-w-4xl mx-auto w-full px-4 mb-12">
+        {prevPost ? (
+          <button 
+            onClick={handlePrevArticle}
+            className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
+          >
+            <ArrowLeft size={16} className="shrink-0" />
+            <span className="flex-1 text-center pr-4">Artigo anterior</span>
+          </button>
+        ) : (
+          <button 
+            onClick={() => { handleSelectArticle(null); onNavigate('blog'); }}
+            className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
+          >
+            <ArrowLeft size={16} className="shrink-0" />
+            <span className="flex-1 text-center pr-4">Ver todos os artigos</span>
+          </button>
+        )}
+        
+        <button 
+          onClick={handleContinueExploring}
+          className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
+        >
+          <span className="flex-grow text-center pl-4">Continue explorando Penedo</span>
+          <ArrowRight size={16} className="shrink-0" />
+        </button>
+      </div>
 
       {/* CTA final section */}
       <section className="py-32 bg-penedo-forest relative overflow-hidden text-white">

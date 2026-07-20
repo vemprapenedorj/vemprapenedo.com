@@ -21,6 +21,7 @@ const staticPages = [
 ];
 
 const blogArticles = [
+  { slug: 'roteiro-1-dia-em-penedo', priority: '0.7', changefreq: 'weekly' },
   { slug: 'cachoeiras-penedo', priority: '0.7', changefreq: 'weekly' },
   { slug: 'penedo-guia', priority: '0.7', changefreq: 'weekly' },
   { slug: 'restaurantes', priority: '0.7', changefreq: 'weekly' },

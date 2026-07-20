@@ -245,7 +245,7 @@ export function HomePage({
                   <InfoCard 
                     item={item} 
                     onOpen={(item) => {
-                      if (item.id === 'penedo-guia' || item.id === 'cachoeiras-penedo' || item.id === 'restaurantes' || item.id === 'melhores-hospedagens') {
+                      if (item.id === 'roteiro-1-dia-em-penedo' || item.id === 'penedo-guia' || item.id === 'cachoeiras-penedo' || item.id === 'restaurantes' || item.id === 'melhores-hospedagens') {
                         onSelectArticle(item.id);
                         onNavigate('blog');
                       } else {

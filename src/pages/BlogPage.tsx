@@ -15,8 +15,88 @@ import { getBreadcrumbSchema } from '../schema';
 // Lazy load heavy blog article components
 const RestaurantesArticle = lazy(() => import('../components/RestaurantesArticle').then(m => ({ default: m.RestaurantesArticle })));
 const HospedagemArticle = lazy(() => import('../components/HospedagemArticle').then(m => ({ default: m.HospedagemArticle })));
+const Roteiro1DiaArticle = lazy(() => import('../components/Roteiro1DiaArticle').then(m => ({ default: m.Roteiro1DiaArticle })));
 
-export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArticle }: { onOpenDetail: (item: DetailItem) => void, onNavigate: (page: Page) => void, activeArticle: string | null, onSelectArticle: (id: string | null) => void }) {
+export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArticle }: { onOpenDetail: (item: DetailItem) => void, onNavigate: (page: Page, premiumSlug?: string | null) => void, activeArticle: string | null, onSelectArticle: (id: string | null) => void }) {
+  const blogPosts = React.useMemo(() => {
+    return [...(DETAILS_DATA['blog'] || [])].sort((a, b) => {
+      const parseDate = (d: string) => {
+        const [day, month, year] = d.split('/').map(Number);
+        return new Date(year, month - 1, day).getTime();
+      };
+      return parseDate(b.date) - parseDate(a.date);
+    });
+  }, []);
+
+  const getNavigationButtons = (articleId: string) => {
+    const currentIndex = blogPosts.findIndex(post => post.id === articleId);
+    const prevPost = currentIndex !== -1 && currentIndex + 1 < blogPosts.length ? blogPosts[currentIndex + 1] : null;
+    const nextPost = currentIndex > 0 ? blogPosts[currentIndex - 1] : null;
+
+    const handlePrev = () => {
+      if (prevPost) {
+        const inlineArticleIds = ['roteiro-1-dia-em-penedo', 'penedo-guia', 'cachoeiras-penedo', 'restaurantes', 'melhores-hospedagens'];
+        if (inlineArticleIds.includes(prevPost.id)) {
+          handleSelectArticle(prevPost.id);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          onNavigate('blog');
+        }
+      } else {
+        handleSelectArticle(null);
+        onNavigate('blog');
+      }
+    };
+
+    const handleNext = () => {
+      if (nextPost) {
+        const inlineArticleIds = ['roteiro-1-dia-em-penedo', 'penedo-guia', 'cachoeiras-penedo', 'restaurantes', 'melhores-hospedagens'];
+        if (inlineArticleIds.includes(nextPost.id)) {
+          handleSelectArticle(nextPost.id);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+      }
+      const penedoGuiaExists = blogPosts.some(post => post.id === 'penedo-guia');
+      if (penedoGuiaExists && articleId !== 'penedo-guia') {
+        handleSelectArticle('penedo-guia');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        onNavigate('o-que-fazer');
+      }
+    };
+
+    return (
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-8 border-t border-gray-100 max-w-4xl mx-auto w-full px-4 mb-12">
+        {prevPost ? (
+          <button 
+            onClick={handlePrev}
+            className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
+          >
+            <ArrowRight className="rotate-180 shrink-0" size={16} />
+            <span className="flex-1 text-center pr-4">Artigo anterior</span>
+          </button>
+        ) : (
+          <button 
+            onClick={() => { handleSelectArticle(null); onNavigate('blog'); }}
+            className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
+          >
+            <ArrowRight className="rotate-180 shrink-0" size={16} />
+            <span className="flex-1 text-center pr-4">Ver todos os artigos</span>
+          </button>
+        )}
+        
+        <button 
+          onClick={handleNext}
+          className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
+        >
+          <span className="flex-grow text-center pl-4">Continue explorando Penedo</span>
+          <ArrowRight size={16} className="shrink-0" />
+        </button>
+      </div>
+    );
+  };
+
   const scrollToAnchor = (id: string) => {
     // Timeout para garantir que o DOM esteja pronto e evitar conflitos com transições do motion
     setTimeout(() => {
@@ -100,6 +180,14 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
     onSelectArticle(id);
   };
 
+  if (activeArticle === 'roteiro-1-dia-em-penedo') {
+    return (
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-gray-500 font-bold">Carregando roteiro...</p></div>}>
+        <Roteiro1DiaArticle onOpenDetail={onOpenDetail} onNavigate={onNavigate} handleSelectArticle={handleSelectArticle} />
+      </Suspense>
+    );
+  }
+
   if (activeArticle === 'cachoeiras-penedo') {
     return (
       <div className="bg-white">
@@ -152,6 +240,13 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
             >
               Um guia completo para refrescar o corpo e a alma nas águas mais cristalinas da Serra da Mantiqueira.
             </p>
+            <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-white/85 uppercase tracking-widest mt-8">
+              <span className="flex items-center gap-1.5"><Calendar size={14} className="text-penedo-gold" /> 21/06/2026</span>
+              <span className="w-1.5 h-1.5 bg-penedo-gold rounded-full"></span>
+              <span className="flex items-center gap-1.5"><Clock size={14} className="text-penedo-gold" /> 6 MIN DE LEITURA</span>
+              <span className="w-1.5 h-1.5 bg-penedo-gold rounded-full"></span>
+              <span className="flex items-center gap-1.5"><User size={14} className="text-penedo-gold" /> PORTAL VEM PRA PENEDO</span>
+            </div>
           </div>
         </header>
 
@@ -346,7 +441,6 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
                 <p className="text-gray-600 mb-6 md:mb-12 text-xl max-w-2xl mx-auto">
                   Quer aproveitar ao máximo sua viagem e descobrir todos os segredos da Finlândia Brasileira?
                 </p>
-                <p className="text-gray-400 text-sm mb-8 italic">Publicado em 21/06/2026.</p>
                 <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
                   <button 
                     onClick={() => handleSelectArticle('penedo-guia')}
@@ -366,6 +460,9 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
             </div>
           </div>
         </section>
+
+        {/* Navigation buttons */}
+        {getNavigationButtons('cachoeiras-penedo')}
 
         {/* FOOTER CTA */}
         <section className="py-10 md:py-24 bg-penedo-forest relative overflow-hidden text-white border-t border-white/10">
@@ -424,6 +521,13 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
             >
               Descubra os encantos da Finlândia Brasileira. Um destino mágico na Serra da Mantiqueira esperando por você.
             </p>
+            <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-white/85 uppercase tracking-widest mt-8">
+              <span className="flex items-center gap-1.5"><Calendar size={14} className="text-penedo-gold" /> 20/06/2026</span>
+              <span className="w-1.5 h-1.5 bg-penedo-gold rounded-full"></span>
+              <span className="flex items-center gap-1.5"><Clock size={14} className="text-penedo-gold" /> 10 MIN DE LEITURA</span>
+              <span className="w-1.5 h-1.5 bg-penedo-gold rounded-full"></span>
+              <span className="flex items-center gap-1.5"><User size={14} className="text-penedo-gold" /> PORTAL VEM PRA PENEDO</span>
+            </div>
             <div
               className="mt-8 flex justify-center"
             >
@@ -702,10 +806,12 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
             <div className="prose prose-xl prose-penedo max-w-none text-gray-600 mb-4 md:mb-8 text-left">
               <p>Penedo, RJ, é um destino que realmente encanta e oferece experiências únicas para todos os tipos de viajantes. Seja para uma escapada romântica a dois, férias em família com muita diversão na natureza ou até mesmo um bate-volta para recarregar as energias, este pedacinho da Finlândia na serra fluminense tem tudo para tornar sua viagem inesquecível.</p>
               <p>Com sua atmosfera acolhedora, paisagens deslumbrantes e uma gastronomia de dar água na boca, <strong>Penedo RJ</strong> espera por você!</p>
-              <p className="text-gray-400 text-sm mt-6 italic">Publicado em 20/06/2026.</p>
             </div>
           </div>
         </section>
+
+        {/* Navigation buttons */}
+        {getNavigationButtons('penedo-guia')}
 
         {/* 14. CTA FINAL */}
         <section className="py-32 bg-penedo-forest relative overflow-hidden text-white">
@@ -729,11 +835,19 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
   }
 
   if (activeArticle === 'restaurantes') {
-    return <RestaurantesArticle handleSelectArticle={handleSelectArticle} />;
+    return (
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-gray-500 font-bold">Carregando...</p></div>}>
+        <RestaurantesArticle handleSelectArticle={handleSelectArticle} onNavigate={onNavigate} />
+      </Suspense>
+    );
   }
 
   if (activeArticle === 'melhores-hospedagens') {
-    return <HospedagemArticle handleSelectArticle={handleSelectArticle} />;
+    return (
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-gray-500 font-bold">Carregando...</p></div>}>
+        <HospedagemArticle handleSelectArticle={handleSelectArticle} onNavigate={onNavigate} />
+      </Suspense>
+    );
   }
 
   return (
@@ -779,7 +893,7 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
               key={post.id} 
               whileHover={{ y: -12 }}
               onClick={() => {
-                if (post.id === 'penedo-guia' || post.id === 'cachoeiras-penedo' || post.id === 'restaurantes' || post.id === 'melhores-hospedagens') {
+                if (post.id === 'roteiro-1-dia-em-penedo' || post.id === 'penedo-guia' || post.id === 'cachoeiras-penedo' || post.id === 'restaurantes' || post.id === 'melhores-hospedagens') {
                   handleSelectArticle(post.id);
                 } else {
                   onNavigate('onde-ficar');
