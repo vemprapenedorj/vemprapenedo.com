@@ -106,7 +106,7 @@ const BlockImage: React.FC<BlockImageProps> = ({ id, src, alt, onOpenDetail, onO
         <img 
           src={src} 
           alt={alt} 
-          className={`w-full h-full transition-transform duration-700 ${item?.id === 'arte-da-nossa-terra' ? 'object-contain object-center' : 'object-cover'} ${item ? 'group-hover:scale-105' : ''}`}
+          className={`w-full h-full transition-transform duration-700 ${['arte-da-nossa-terra', 'andicaro-penedo-cafes-especiais', 'lugano-penedo'].includes(item?.id || '') ? 'object-contain object-center' : 'object-cover'} ${item ? 'group-hover:scale-105' : ''}`}
           referrerPolicy="no-referrer"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
@@ -212,9 +212,13 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
           <a href="/blog" onClick={(event) => { event.preventDefault(); handleSelectArticle(null); }} className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer bg-transparent border-none outline-none">
             <ArrowRight className="rotate-180" size={20} /> Voltar para o Blog
           </a>
-          <div className="hidden md:block text-xs font-black text-gray-400 uppercase tracking-widest">
-            Lendo: <span className="text-penedo-forest">Roteiro de 1 Dia em Penedo</span>
-          </div>
+          <nav className="hidden md:flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest" aria-label="Breadcrumb">
+            <a href="/" onClick={(event) => { event.preventDefault(); onNavigate('home'); }} className="hover:text-penedo-emerald transition-colors">Início</a>
+            <span aria-hidden="true">/</span>
+            <a href="/blog" onClick={(event) => { event.preventDefault(); handleSelectArticle(null); onNavigate('blog'); }} className="hover:text-penedo-emerald transition-colors">Blog</a>
+            <span aria-hidden="true">/</span>
+            <span className="text-penedo-forest" aria-current="page">Roteiro de 1 Dia em Penedo</span>
+          </nav>
         </div>
       </div>
 
@@ -285,7 +289,7 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
               />
               <BlockImage 
                 id="pousada-villa-luna" 
-                src="/assets/imagens/blog/roteiro-1-dia-penedo/pousada-villa-luna.jpg" 
+                src="/assets/imagens/blog/melhores-hospedagens/pousada-villa-luna2.jpg"
                 alt="Pousada Villa Luna em Penedo" 
                 onOpenDetail={onOpenDetail} 
                 onOpenConfirm={handleOpenConfirm} 
@@ -318,7 +322,7 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
               />
               <BlockImage 
                 id="andicaro-penedo-cafes-especiais" 
-                src="/assets/imagens/blog/roteiro-1-dia-penedo/andicaro-penedo.jpg" 
+                src="/assets/imagens/logos/logo-andicaro-penedo.jpg"
                 alt="Andicarô Penedo e cafés especiais" 
                 onOpenDetail={onOpenDetail} 
                 onOpenConfirm={handleOpenConfirm} 
@@ -343,7 +347,7 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
               />
               <BlockImage 
                 id="lugano-penedo" 
-                src="/assets/imagens/blog/roteiro-1-dia-penedo/lugano-penedo.jpg" 
+                src="/assets/imagens/logos/logo-lugano-penedo.jpg"
                 alt="Loja Lugano em Penedo" 
                 onOpenDetail={onOpenDetail} 
                 onOpenConfirm={handleOpenConfirm} 

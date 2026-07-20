@@ -204,9 +204,13 @@ export function RestaurantesArticle({ handleSelectArticle, onNavigate }: Restaur
           >
             <ArrowLeft size={20} /> Voltar para o Blog
           </a>
-          <div className="hidden md:block text-xs font-black text-gray-400 uppercase tracking-widest">
-            Lendo: <span className="text-penedo-forest">Gastronomia em Penedo RJ</span>
-          </div>
+          <nav className="hidden md:flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest" aria-label="Breadcrumb">
+            <a href="/" onClick={(event) => { event.preventDefault(); onNavigate('home'); }} className="hover:text-penedo-emerald transition-colors">Início</a>
+            <span aria-hidden="true">/</span>
+            <a href="/blog" onClick={(event) => { event.preventDefault(); handleSelectArticle(null); onNavigate('blog'); }} className="hover:text-penedo-emerald transition-colors">Blog</a>
+            <span aria-hidden="true">/</span>
+            <span className="text-penedo-forest" aria-current="page">Gastronomia em Penedo RJ</span>
+          </nav>
         </div>
       </div>
 

@@ -216,9 +216,13 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
             <a href="/blog" onClick={(event) => { event.preventDefault(); handleSelectArticle(null); }} className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer">
               <ArrowRight className="rotate-180" size={20} /> Voltar para o Blog
             </a>
-            <div className="hidden md:block text-xs font-black text-gray-400 uppercase tracking-widest">
-              Lendo: <span className="text-penedo-forest">Cachoeiras em Penedo RJ</span>
-            </div>
+            <nav className="hidden md:flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest" aria-label="Breadcrumb">
+              <a href="/" onClick={(event) => { event.preventDefault(); onNavigate('home'); }} className="hover:text-penedo-emerald transition-colors">Início</a>
+              <span aria-hidden="true">/</span>
+              <a href="/blog" onClick={(event) => { event.preventDefault(); handleSelectArticle(null); onNavigate('blog'); }} className="hover:text-penedo-emerald transition-colors">Blog</a>
+              <span aria-hidden="true">/</span>
+              <span className="text-penedo-forest" aria-current="page">Cachoeiras em Penedo RJ</span>
+            </nav>
           </div>
         </div>
 
@@ -513,10 +517,17 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
           })}
         />
         <div className="sticky top-[72px] z-40 bg-white/90 backdrop-blur-md border-b py-4">
-          <div className="max-w-7xl mx-auto px-4">
+          <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
             <a href="/blog" onClick={(event) => { event.preventDefault(); handleSelectArticle(null); }} className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer">
               <ArrowRight className="rotate-180" size={20} /> Voltar para o Blog
             </a>
+            <nav className="hidden md:flex items-center gap-2 text-xs font-black text-gray-400 uppercase tracking-widest" aria-label="Breadcrumb">
+              <a href="/" onClick={(event) => { event.preventDefault(); onNavigate('home'); }} className="hover:text-penedo-emerald transition-colors">Início</a>
+              <span aria-hidden="true">/</span>
+              <a href="/blog" onClick={(event) => { event.preventDefault(); handleSelectArticle(null); onNavigate('blog'); }} className="hover:text-penedo-emerald transition-colors">Blog</a>
+              <span aria-hidden="true">/</span>
+              <span className="text-penedo-forest" aria-current="page">Guia Completo de Penedo</span>
+            </nav>
           </div>
         </div>
         {/* Full Guia Content */}
