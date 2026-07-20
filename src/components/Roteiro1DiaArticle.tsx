@@ -22,7 +22,10 @@ interface EstablishmentLinkProps {
 const getItemPath = (item: DetailItem): string => {
   for (const [category, items] of Object.entries(DETAILS_DATA)) {
     if (items.some(candidate => candidate.id === item.id)) {
-      return `/${category}/${item.slug || item.id}`;
+      const itemSlug = item.slug || item.id;
+      return item.isPremium
+        ? `/${category}/${itemSlug}`
+        : `/${category}#local=${encodeURIComponent(itemSlug)}`;
     }
   }
   return `/detalhe/${item.slug || item.id}`;
