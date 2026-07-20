@@ -50,7 +50,7 @@ const EstablishmentLink: React.FC<EstablishmentLinkProps> = ({ id, label, onOpen
     }
   };
 
-  if (item.isPremium) return (
+  return (
     <a
       href={getItemPath(item)}
       onClick={handleClick}
@@ -58,16 +58,6 @@ const EstablishmentLink: React.FC<EstablishmentLinkProps> = ({ id, label, onOpen
     >
       {label}
     </a>
-  );
-
-  return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className="inline-flex items-center gap-0.5 font-bold text-penedo-emerald hover:text-penedo-forest transition-colors underline decoration-dotted underline-offset-4 cursor-pointer outline-none border-none bg-transparent p-0 align-baseline"
-    >
-      {label}
-    </button>
   );
 };
 
@@ -88,7 +78,8 @@ const BlockImage: React.FC<BlockImageProps> = ({ id, src, alt, onOpenDetail, onO
     return null;
   }, [id]);
 
-  const handleClick = () => {
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
     if (!item) return;
     if (item.isPremium) {
       onOpenConfirm(item);
@@ -98,7 +89,8 @@ const BlockImage: React.FC<BlockImageProps> = ({ id, src, alt, onOpenDetail, onO
   };
 
   return (
-    <div 
+    <a
+      href={item ? getItemPath(item) : undefined}
       onClick={handleClick}
       className={`bg-white p-3 shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-gray-100 rounded-[2rem] transition-all duration-500 w-full flex flex-col ${item ? 'cursor-pointer hover:scale-[1.02] hover:shadow-[0_30px_60px_rgba(0,0,0,0.12)]' : 'cursor-default'}`}
     >
@@ -124,7 +116,7 @@ const BlockImage: React.FC<BlockImageProps> = ({ id, src, alt, onOpenDetail, onO
           {item?.title || alt}
         </p>
       </div>
-    </div>
+    </a>
   );
 };
 
