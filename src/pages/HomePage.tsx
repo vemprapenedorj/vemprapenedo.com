@@ -191,6 +191,7 @@ export function HomePage({
                 items={shuffledOQueFazer}
                 renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
                 onNavigate={() => onNavigate('o-que-fazer')}
+                navigateHref="/o-que-fazer"
               />
             </Suspense>
           </DeferredSection>
@@ -204,6 +205,7 @@ export function HomePage({
                 items={shuffledOndeFicar}
                 renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
                 onNavigate={() => onNavigate('onde-ficar')}
+                navigateHref="/onde-ficar"
               />
             </Suspense>
           </DeferredSection>
@@ -217,6 +219,7 @@ export function HomePage({
                 items={shuffledGastronomia}
                 renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
                 onNavigate={() => onNavigate('gastronomia')}
+                navigateHref="/gastronomia"
               />
             </Suspense>
           </DeferredSection>
@@ -230,6 +233,7 @@ export function HomePage({
                 items={shuffledCompras}
                 renderItem={(item) => <InfoCard item={item} onOpen={onOpenDetail} />}
                 onNavigate={() => onNavigate('compras')}
+                navigateHref="/compras"
               />
             </Suspense>
           </DeferredSection>
@@ -255,6 +259,7 @@ export function HomePage({
                   />
                 )}
                 onNavigate={() => onNavigate('blog')}
+                navigateHref="/blog"
               />
             </Suspense>
           </DeferredSection>
