@@ -4,12 +4,17 @@ import { ArrowRight } from 'lucide-react';
 interface BlogPostCTAProps {
   label: string;
   onClick: () => void;
+  href: string;
   primary?: boolean;
 }
 
-export const BlogPostCTA: React.FC<BlogPostCTAProps> = ({ label, onClick, primary = true }) => (
-  <button
-    onClick={onClick}
+export const BlogPostCTA: React.FC<BlogPostCTAProps> = ({ label, onClick, href, primary = true }) => (
+  <a
+    href={href}
+    onClick={(event) => {
+      event.preventDefault();
+      onClick();
+    }}
     className={`px-8 py-4 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 shadow-lg flex items-center gap-2 cursor-pointer ${
       primary 
         ? 'bg-penedo-emerald text-white hover:bg-penedo-forest shadow-penedo-emerald/20' 
@@ -17,5 +22,5 @@ export const BlogPostCTA: React.FC<BlogPostCTAProps> = ({ label, onClick, primar
     }`}
   >
     {label} <ArrowRight size={18} />
-  </button>
+  </a>
 );

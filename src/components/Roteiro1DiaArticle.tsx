@@ -19,6 +19,15 @@ interface EstablishmentLinkProps {
   onOpenConfirm: (item: DetailItem) => void;
 }
 
+const getItemPath = (item: DetailItem): string => {
+  for (const [category, items] of Object.entries(DETAILS_DATA)) {
+    if (items.some(candidate => candidate.id === item.id)) {
+      return `/${category}/${item.slug || item.id}`;
+    }
+  }
+  return `/detalhe/${item.slug || item.id}`;
+};
+
 const EstablishmentLink: React.FC<EstablishmentLinkProps> = ({ id, label, onOpenDetail, onOpenConfirm }) => {
   const item = React.useMemo(() => {
     for (const items of Object.values(DETAILS_DATA)) {
@@ -41,8 +50,19 @@ const EstablishmentLink: React.FC<EstablishmentLinkProps> = ({ id, label, onOpen
     }
   };
 
+  if (item.isPremium) return (
+    <a
+      href={getItemPath(item)}
+      onClick={handleClick}
+      className="inline-flex items-center gap-0.5 font-bold text-penedo-emerald hover:text-penedo-forest transition-colors underline decoration-dotted underline-offset-4 cursor-pointer outline-none border-none bg-transparent p-0 align-baseline"
+    >
+      {label}
+    </a>
+  );
+
   return (
     <button
+      type="button"
       onClick={handleClick}
       className="inline-flex items-center gap-0.5 font-bold text-penedo-emerald hover:text-penedo-forest transition-colors underline decoration-dotted underline-offset-4 cursor-pointer outline-none border-none bg-transparent p-0 align-baseline"
     >
@@ -108,14 +128,15 @@ const BlockImage: React.FC<BlockImageProps> = ({ id, src, alt, onOpenDetail, onO
   );
 };
 
-const BlogPostCTA = ({ label, onClick }: { label: string, onClick: () => void }) => (
-  <button
-    onClick={onClick}
+const BlogPostCTA = ({ label, href, onClick }: { label: string, href: string, onClick: () => void }) => (
+  <a
+    href={href}
+    onClick={(event) => { event.preventDefault(); onClick(); }}
     className="px-6 h-[52px] w-full md:w-[250px] rounded-2xl font-black text-xs uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 shadow-lg flex items-center justify-between cursor-pointer bg-[#A7F3D0] text-[#064E3B] hover:bg-[#D1FAE5] hover:shadow-[#A7F3D0]/20 border-none outline-none"
   >
     <span className="flex-grow text-center pl-4">{label}</span>
     <ArrowRight size={16} className="shrink-0" />
-  </button>
+  </a>
 );
 
 export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArticle }: Roteiro1DiaArticleProps) {
@@ -188,9 +209,9 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
 
       <div className="sticky top-[72px] z-40 bg-white/90 backdrop-blur-md border-b py-4 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <button onClick={() => handleSelectArticle(null)} className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer bg-transparent border-none outline-none">
+          <a href="/blog" onClick={(event) => { event.preventDefault(); handleSelectArticle(null); }} className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer bg-transparent border-none outline-none">
             <ArrowRight className="rotate-180" size={20} /> Voltar para o Blog
-          </button>
+          </a>
           <div className="hidden md:block text-xs font-black text-gray-400 uppercase tracking-widest">
             Lendo: <span className="text-penedo-forest">Roteiro de 1 Dia em Penedo</span>
           </div>
@@ -478,11 +499,11 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
                 </p>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 justify-items-center max-w-4xl mx-auto">
-                  <BlogPostCTA label="Ver hospedagens" onClick={() => onNavigate('onde-ficar')} />
-                  <BlogPostCTA label="Ver onde comer" onClick={() => onNavigate('gastronomia')} />
-                  <BlogPostCTA label="Ver compras em Penedo" onClick={() => onNavigate('compras')} />
+                  <BlogPostCTA label="Ver hospedagens" href="/onde-ficar" onClick={() => onNavigate('onde-ficar')} />
+                  <BlogPostCTA label="Ver onde comer" href="/gastronomia" onClick={() => onNavigate('gastronomia')} />
+                  <BlogPostCTA label="Ver compras em Penedo" href="/compras" onClick={() => onNavigate('compras')} />
                   <div className="sm:col-span-2 md:col-span-3 flex justify-center w-full">
-                    <BlogPostCTA label="Ver passeios e roteiros" onClick={() => onNavigate('o-que-fazer')} />
+                    <BlogPostCTA label="Ver passeios e roteiros" href="/o-que-fazer" onClick={() => onNavigate('o-que-fazer')} />
                   </div>
                 </div>
               </div>
@@ -491,30 +512,33 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
             {/* Navigation buttons below CTA */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-8 border-t border-gray-100 max-w-4xl mx-auto w-full px-4 mb-12">
               {prevPost ? (
-                <button 
-                  onClick={handlePrevArticle}
+                <a
+                  href={`/blog/artigo/${prevPost.id}`}
+                  onClick={(event) => { event.preventDefault(); handlePrevArticle(); }}
                   className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
                 >
                   <ArrowLeft size={16} className="shrink-0" />
                   <span className="flex-1 text-center pr-4">Artigo anterior</span>
-                </button>
+                </a>
               ) : (
-                <button 
-                  onClick={() => { handleSelectArticle(null); onNavigate('blog'); }}
+                <a
+                  href="/blog"
+                  onClick={(event) => { event.preventDefault(); handleSelectArticle(null); onNavigate('blog'); }}
                   className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
                 >
                   <ArrowLeft size={16} className="shrink-0" />
                   <span className="flex-1 text-center pr-4">Ver todos os artigos</span>
-                </button>
+                </a>
               )}
               
-              <button 
-                onClick={handleContinueExploring}
+              <a
+                href="/blog/artigo/penedo-guia"
+                onClick={(event) => { event.preventDefault(); handleContinueExploring(); }}
                 className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
               >
                 <span className="flex-grow text-center pl-4">Continue explorando Penedo</span>
                 <ArrowRight size={16} className="shrink-0" />
-              </button>
+              </a>
             </div>
 
           </div>
@@ -564,8 +588,10 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
                 >
                   Permanecer no roteiro
                 </button>
-                <button 
-                  onClick={() => {
+                <a
+                  href={getItemPath(confirmPremiumItem)}
+                  onClick={(event) => {
+                    event.preventDefault();
                     const slug = confirmPremiumItem.slug || confirmPremiumItem.id;
                     setConfirmPremiumItem(null);
                     onNavigate('premium-detail', slug);
@@ -573,7 +599,7 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
                   className="py-3 px-6 bg-penedo-emerald text-white font-black rounded-2xl hover:bg-penedo-forest transition-colors text-xs uppercase tracking-wider cursor-pointer shadow-lg shadow-penedo-emerald/20 flex-1 border-none"
                 >
                   Conhecer estabelecimento
-                </button>
+                </a>
               </div>
             </motion.div>
           </motion.div>
