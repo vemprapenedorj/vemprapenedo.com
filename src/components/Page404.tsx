@@ -17,26 +17,29 @@ export default function Page404({ onNavigate }: Page404Props) {
         </p>
 
         <div className="space-y-3">
-          <button
-            onClick={() => onNavigate('home')}
+          <a
+            href="/"
+            onClick={(event) => { event.preventDefault(); onNavigate('home'); }}
             className="w-full py-4 bg-penedo-forest hover:bg-penedo-emerald text-white rounded-2xl font-bold text-sm uppercase tracking-widest transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
           >
             <Home size={18} /> Ir para o Início
-          </button>
+          </a>
           
           <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => onNavigate('o-que-fazer')}
+            <a
+              href="/o-que-fazer"
+              onClick={(event) => { event.preventDefault(); onNavigate('o-que-fazer'); }}
               className="py-3 bg-white text-penedo-forest border border-gray-200 hover:border-penedo-emerald hover:bg-gray-50 rounded-2xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Compass size={14} /> O Que Fazer
-            </button>
-            <button
-              onClick={() => onNavigate('onde-ficar')}
+            </a>
+            <a
+              href="/onde-ficar"
+              onClick={(event) => { event.preventDefault(); onNavigate('onde-ficar'); }}
               className="py-3 bg-white text-penedo-forest border border-gray-200 hover:border-penedo-emerald hover:bg-gray-50 rounded-2xl font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Compass size={14} /> Onde Ficar
-            </button>
+            </a>
           </div>
         </div>
       </div>

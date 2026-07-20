@@ -1834,6 +1834,31 @@ export const DETAILS_DATA: Record<string, DetailItem[]> = {
       "instagramUrl": "https://www.instagram.com/casadofritz/"
     },
     {
+      "id": "chocolate-do-papai-noel",
+      "title": "Chocolate do Papai Noel",
+      "category": "Chocolateria",
+      "image": "/assets/imagens/logos/logo-chocolate-do-papai-noel.jpg",
+      "description": "Tradicional chocolateria de Penedo com chocolates finos, produtos artesanais e opções para presentear. Uma parada clássica para quem visita o centro turístico.",
+      "fullInfo": "Tradicional chocolateria de Penedo com chocolates finos, produtos artesanais e opções para presentear. Uma parada clássica para quem visita o centro turístico.",
+      "location": "Rua das Velas, 106 - Penedo, Itatiaia - RJ",
+      "hours": "Consulte horários",
+      "whatsapp": "5524999550711",
+      "whatsappUrl": "https://wa.me/5524999550711",
+      "instagramUrl": "https://www.instagram.com/chocolatedopapainoel/",
+      "mapsUrl": "https://www.google.com/maps/place/Chocolate+do+Papai+Noel/@-22.4394816,-44.5280813,1066m/data=!3m2!1e3!4b1!4m6!3m5!1s0x9e79916ce40d57:0x883191a952a39c06!8m2!3d-22.4394866!4d-44.5255064!16s%2Fg%2F11clzh7q_q?entry=tts",
+      "isPremium": false,
+      "slug": "chocolate-do-papai-noel",
+      "tags": [
+        "chocolate",
+        "chocolateria",
+        "doces",
+        "chocolates artesanais",
+        "presentes",
+        "gastronomia",
+        "centro de Penedo"
+      ]
+    },
+    {
       "id": "enoteca-serrana",
       "title": "Enoteca Serrana",
       "category": "Contemporânea",
@@ -2833,9 +2858,51 @@ export const DETAILS_DATA: Record<string, DetailItem[]> = {
       "instagramUrl": "https://www.instagram.com/raiodeluz_penedo/",
       "mapsUrl": "https://maps.google.com/?cid=3706962587581718413",
       "badge": "Casa e Decoração"
+    },
+    {
+      "id": "emporio-haru",
+      "title": "Emporio Haru",
+      "category": "Empório / Produtos Orientais",
+      "image": "/assets/imagens/logos/logo-emporio-haru.jpg",
+      "description": "Loja de produtos orientais e importados em Penedo, com snacks, lámens, doces, balas e itens diferenciados para quem busca sabores asiáticos.",
+      "fullInfo": "Loja de produtos orientais e importados em Penedo, com snacks, lámens, doces, balas e itens diferenciados para quem busca sabores asiáticos.",
+      "location": "Av. das Mangueiras, 1849 - Penedo",
+      "hours": "Terça a quinta: 10h às 18h\nSexta a domingo: 10h às 22h",
+      "isPremium": false,
+      "slug": "emporio-haru",
+      "instagramUrl": "https://www.instagram.com/emporioharu/",
+      "mapsUrl": "https://maps.google.com/?cid=15927698586743302151",
+      "tags": [
+        "produtos orientais",
+        "produtos importados",
+        "snacks",
+        "lámen",
+        "doces",
+        "balas",
+        "empório",
+        "compras"
+      ]
     }
   ],
   "blog": [
+    {
+      "id": "roteiro-1-dia-em-penedo",
+      "title": "Roteiro de 1 dia em Penedo: onde ficar, o que fazer e onde comer no fim de semana",
+      "category": "Destaque",
+      "image": "/assets/imagens/blog/roteiro-1-dia-penedo/capa.jpg",
+      "description": "Planeje um roteiro de 1 dia em Penedo-RJ com hospedagens, restaurantes, cafés, chocolates, cachoeiras e dicas para aproveitar o fim de semana.",
+      "fullInfo": "Planeje um roteiro de 1 dia em Penedo-RJ com hospedagens, restaurantes, cafés, chocolates, cachoeiras e dicas para aproveitar o fim de semana.",
+      "tags": [
+        "guia",
+        "roteiro de 1 dia em penedo",
+        "o que fazer em penedo",
+        "onde comer em penedo",
+        "hospedagem em penedo",
+        "cafés em penedo",
+        "cachoeiras em penedo"
+      ],
+      "date": "20/07/2026"
+    },
     {
       "id": "penedo-guia",
       "title": "Penedo, RJ: Guia Completo com O Que Fazer, Onde Ir e Dicas Imperdíveis",

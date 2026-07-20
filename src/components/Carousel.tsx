@@ -8,6 +8,7 @@ interface CarouselProps {
   title: string;
   subtitle?: string;
   onNavigate?: () => void;
+  navigateHref?: string;
   itemsPerView?: {
     mobile: number;
     tablet: number;
@@ -19,8 +20,9 @@ export const Carousel = React.memo(function Carousel({
   items, 
   renderItem, 
   title, 
-  subtitle, 
+  subtitle,
   onNavigate,
+  navigateHref,
   itemsPerView = { mobile: 1, tablet: 2, desktop: 5 }
 }: CarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -78,12 +80,13 @@ export const Carousel = React.memo(function Carousel({
             {subtitle && <p className="text-gray-500">{subtitle}</p>}
           </div>
           {onNavigate && (
-            <button 
-              onClick={onNavigate}
+            <a
+              href={navigateHref}
+              onClick={(event) => { event.preventDefault(); onNavigate(); }}
               className="hidden sm:flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer"
             >
               Ver tudo <ChevronRight size={20} />
-            </button>
+            </a>
           )}
         </div>
 

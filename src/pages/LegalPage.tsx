@@ -59,9 +59,9 @@ export function LegalPage({ kind, onGoBack }: LegalPageProps) {
       />
       <section className="min-h-screen bg-white pt-28 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <button onClick={onGoBack} className="mb-8 text-penedo-emerald font-semibold hover:underline">
+          <a href="/" onClick={(event) => { event.preventDefault(); onGoBack(); }} className="mb-8 inline-block text-penedo-emerald font-semibold hover:underline">
             ← Voltar ao início
-          </button>
+          </a>
           <h1 className="text-4xl md:text-5xl font-bold text-penedo-forest mb-4">{content.title}</h1>
           <p className="text-sm text-gray-500 mb-10">Última atualização: {UPDATED_AT}</p>
           <div className="space-y-9 text-gray-700 leading-relaxed">
