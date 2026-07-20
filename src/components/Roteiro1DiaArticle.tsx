@@ -72,7 +72,8 @@ interface BlockImageProps {
   onOpenConfirm: (item: DetailItem) => void;
 }
 
-const BlockImage: React.FC<BlockImageProps> = ({ id, src, alt, onOpenDetail, onOpenConfirm }) => {
+const BlockImage: React.FC<BlockImageProps> = ({ id, src, alt }) => {
+  const [isOpen, setIsOpen] = useState(false);
   const item = React.useMemo(() => {
     for (const items of Object.values(DETAILS_DATA)) {
       const found = items.find(c => c.id === id);
@@ -81,45 +82,87 @@ const BlockImage: React.FC<BlockImageProps> = ({ id, src, alt, onOpenDetail, onO
     return null;
   }, [id]);
 
-  const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    if (!item) return;
-    if (item.isPremium) {
-      onOpenConfirm(item);
-    } else {
-      onOpenDetail(item);
-    }
-  };
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsOpen(false);
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
 
   return (
-    <a
-      href={item ? getItemPath(item) : undefined}
-      onClick={handleClick}
-      className={`bg-white p-3 shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-gray-100 rounded-[2rem] transition-all duration-500 w-full flex flex-col ${item ? 'cursor-pointer hover:scale-[1.02] hover:shadow-[0_30px_60px_rgba(0,0,0,0.12)]' : 'cursor-default'}`}
-    >
-      <div className="h-72 sm:h-96 rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 relative">
-        <img 
-          src={src} 
-          alt={alt} 
-          className={`w-full h-full transition-transform duration-700 ${item?.id === 'arte-da-nossa-terra' ? 'object-contain object-center' : 'object-cover'} ${item ? 'group-hover:scale-105' : ''}`}
-          referrerPolicy="no-referrer"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = `https://picsum.photos/seed/${id}/800/600`;
-          }}
-        />
-        {item?.isPremium && (
-          <div className="absolute top-3 right-3 bg-penedo-gold text-penedo-forest font-black text-[9px] uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-md border border-white/20">
-            Premium
-          </div>
+    <>
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        aria-label={`Ampliar imagem: ${alt}`}
+        className="group bg-white p-3 shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-gray-100 rounded-[2rem] transition-all duration-500 w-full flex flex-col cursor-zoom-in hover:scale-[1.02] hover:shadow-[0_30px_60px_rgba(0,0,0,0.12)]"
+      >
+        <div className="h-72 sm:h-96 rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 relative w-full">
+          <img
+            src={src}
+            alt={alt}
+            className="w-full h-full object-contain object-center transition-transform duration-700 group-hover:scale-[1.02]"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = `https://picsum.photos/seed/${id}/800/600`;
+            }}
+          />
+          {item?.isPremium && (
+            <div className="absolute top-3 right-3 bg-penedo-gold text-penedo-forest font-black text-[9px] uppercase tracking-widest px-3 py-1.5 rounded-xl shadow-md border border-white/20">
+              Premium
+            </div>
+          )}
+        </div>
+        <div className="mt-4 px-2 pb-1 text-center w-full">
+          <p className="text-sm font-bold text-penedo-forest transition-colors group-hover:text-penedo-emerald">
+            {item?.title || alt}
+          </p>
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={alt}
+            className="fixed inset-0 z-[200] bg-black/90 p-4 md:p-10 flex items-center justify-center cursor-zoom-out"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
+          >
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              aria-label="Fechar imagem ampliada"
+              className="absolute top-4 right-4 md:top-6 md:right-6 w-11 h-11 rounded-full bg-white text-penedo-forest flex items-center justify-center shadow-xl hover:scale-105 transition-transform"
+            >
+              <X size={24} />
+            </button>
+            <motion.img
+              src={src}
+              alt={alt}
+              className="max-w-full max-h-full object-contain rounded-xl shadow-2xl cursor-default"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              onClick={(event) => event.stopPropagation()}
+            />
+          </motion.div>
         )}
-      </div>
-      <div className="mt-4 px-2 pb-1 text-center">
-        <p className={`text-sm font-bold text-penedo-forest transition-colors ${item ? 'group-hover:text-penedo-emerald' : ''}`}>
-          {item?.title || alt}
-        </p>
-      </div>
-    </a>
+      </AnimatePresence>
+    </>
   );
 };
 
