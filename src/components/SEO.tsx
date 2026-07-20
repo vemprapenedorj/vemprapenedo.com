@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 interface SEOProps {
@@ -26,10 +26,15 @@ export default function SEO({
 }: SEOProps) {
   const finalCanonical = canonical || url;
   const testHostnames = ['vemprapenedo.com', 'www.vemprapenedo.com', 'homologacao.vemprapenedo.com'];
-  const effectiveRobots = typeof window !== 'undefined'
-    && testHostnames.includes(window.location.hostname)
-    ? 'noindex, nofollow, noarchive'
-    : robots;
+  const [effectiveRobots, setEffectiveRobots] = useState(robots);
+
+  useEffect(() => {
+    setEffectiveRobots(
+      testHostnames.includes(window.location.hostname)
+        ? 'noindex, nofollow, noarchive'
+        : robots
+    );
+  }, [robots]);
 
   const isLogoImage = image.includes('logo-google.png');
   const imgWidth = isLogoImage ? "512" : "800";

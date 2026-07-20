@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { Page, DetailItem } from '../types';
 import { shuffleArray } from '../utils/shuffle';
@@ -7,9 +7,9 @@ import { PremiumCarousel } from '../components/PremiumCarousel';
 import { SearchPromo } from '../components/SearchPromo';
 import { pushSearch } from '../analytics/events';
 import { DeferredSection } from '../components/performance/DeferredSection';
-
-const Carousel = lazy(() => import('../components/Carousel').then(m => ({ default: m.Carousel })));
-const InfoCard = lazy(() => import('../components/InfoCard').then(m => ({ default: m.InfoCard })));
+import { Helmet } from 'react-helmet-async';
+import { Carousel } from '../components/Carousel';
+import { InfoCard } from '../components/InfoCard';
 
 export function HomePage({ 
   onNavigate, 
@@ -52,6 +52,11 @@ export function HomePage({
 
   return (
     <div>
+      <Helmet>
+        <link rel="preload" as="image" href="/assets/imagens/hero-mobile.webp" media="(max-width: 767px)" fetchPriority="high" />
+        <link rel="preload" as="image" href="/assets/imagens/hero-tablet.webp" media="(min-width: 768px) and (max-width: 1279px)" fetchPriority="high" />
+        <link rel="preload" as="image" href="/assets/imagens/hero-desktop.webp" media="(min-width: 1280px)" fetchPriority="high" />
+      </Helmet>
       {/* Hero */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -158,13 +163,11 @@ export function HomePage({
           <div className="max-w-7xl mx-auto px-4">
             <h2 className="text-3xl font-bold text-penedo-forest mb-4 md:mb-8">Resultados da Busca para "{searchQuery}"</h2>
             {filteredResults.length > 0 ? (
-              <Suspense fallback={<div className="h-96 w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-penedo-emerald border-t-transparent rounded-full animate-spin"></div></div>}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {filteredResults.map((item) => (
-                    <InfoCard key={item.id} item={item} onOpen={onOpenDetail} />
-                  ))}
-                </div>
-              </Suspense>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {filteredResults.map((item) => (
+                  <InfoCard key={item.id} item={item} onOpen={onOpenDetail} />
+                ))}
+              </div>
             ) : (
               <div className="text-center py-8 md:py-20">
                 <p className="text-gray-500 text-xl">Nenhum resultado encontrado em todo o site.</p>
@@ -184,7 +187,6 @@ export function HomePage({
         <>
           {/* O Que Fazer Section */}
           <DeferredSection height={450}>
-            <Suspense fallback={<div style={{ height: "450px" }} />}>
               <Carousel 
                 title="O Que Fazer"
                 subtitle="Descubra as melhores atrações e passeios."
@@ -193,12 +195,10 @@ export function HomePage({
                 onNavigate={() => onNavigate('o-que-fazer')}
                 navigateHref="/o-que-fazer"
               />
-            </Suspense>
           </DeferredSection>
 
           {/* Onde Ficar Section */}
           <DeferredSection height={450}>
-            <Suspense fallback={<div style={{ height: "450px" }} />}>
               <Carousel 
                 title="Onde Ficar"
                 subtitle="Pousadas e hotéis para o seu descanso."
@@ -207,12 +207,10 @@ export function HomePage({
                 onNavigate={() => onNavigate('onde-ficar')}
                 navigateHref="/onde-ficar"
               />
-            </Suspense>
           </DeferredSection>
 
           {/* Gastronomia Section */}
           <DeferredSection height={450}>
-            <Suspense fallback={<div style={{ height: "450px" }} />}>
               <Carousel 
                 title="Gastronomia"
                 subtitle="Os melhores sabores de Penedo."
@@ -221,12 +219,10 @@ export function HomePage({
                 onNavigate={() => onNavigate('gastronomia')}
                 navigateHref="/gastronomia"
               />
-            </Suspense>
           </DeferredSection>
 
           {/* Compras Section */}
           <DeferredSection height={450}>
-            <Suspense fallback={<div style={{ height: "450px" }} />}>
               <Carousel 
                 title="Compras & Lojas"
                 subtitle="Artesanato e produtos exclusivos."
@@ -235,12 +231,10 @@ export function HomePage({
                 onNavigate={() => onNavigate('compras')}
                 navigateHref="/compras"
               />
-            </Suspense>
           </DeferredSection>
 
           {/* Blog Section */}
           <DeferredSection height={450}>
-            <Suspense fallback={<div style={{ height: "450px" }} />}>
               <Carousel 
                 title="Blog & Dicas"
                 subtitle="Fique por dentro das novidades e curiosidades."
@@ -261,7 +255,6 @@ export function HomePage({
                 onNavigate={() => onNavigate('blog')}
                 navigateHref="/blog"
               />
-            </Suspense>
           </DeferredSection>
         </>
       ) /* End of searchQuery conditional */}

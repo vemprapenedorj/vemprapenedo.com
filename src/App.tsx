@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Menu, X, Instagram, Mail 
 } from 'lucide-react';
@@ -7,8 +7,7 @@ import { checkRedirects } from './seo/redirects';
 import { generateSEO } from './seo';
 import { Page, DetailItem } from './types';
 import { DeferredSection } from './components/performance/DeferredSection';
-
-const PageTransition = lazy(() => import('./components/PageTransition').then(m => ({ default: m.PageTransition })));
+import { PageTransition } from './components/PageTransition';
 
 
 import { DETAILS_DATA } from './data/detailsData';
@@ -17,8 +16,7 @@ import { DETAILS_DATA } from './data/detailsData';
 import { BackgroundLayer } from './components/BackgroundLayer';
 import { ScrollToTop } from './components/ScrollToTop';
 import Page404 from './components/Page404';
-
-const DetailModal = lazy(() => import('./components/DetailModal').then(m => ({ default: m.DetailModal })));
+import { DetailModal } from './components/DetailModal';
 
 // Analytical trackers
 import { 
@@ -27,26 +25,15 @@ import {
   pushPageView 
 } from './analytics/events';
 
-// Lazy-loaded Pages
-const HomePage = lazy(() => import('./pages/HomePage').then(m => ({ default: m.HomePage })));
-const WhatToDoPage = lazy(() => import('./pages/WhatToDoPage').then(m => ({ default: m.WhatToDoPage })));
-const WhereToStayPage = lazy(() => import('./pages/WhereToStayPage').then(m => ({ default: m.WhereToStayPage })));
-const GastronomyPage = lazy(() => import('./pages/GastronomyPage').then(m => ({ default: m.GastronomyPage })));
-const ShoppingPage = lazy(() => import('./pages/ShoppingPage').then(m => ({ default: m.ShoppingPage })));
-const ContactPage = lazy(() => import('./pages/ContactPage').then(m => ({ default: m.ContactPage })));
-const BlogPage = lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));
-const PremiumDetailPage = lazy(() => import('./pages/PremiumDetailPage').then(m => ({ default: m.PremiumDetailPage })));
-const LegalPage = lazy(() => import('./pages/LegalPage').then(m => ({ default: m.LegalPage })));
-
-// Loading fallback component
-const LoadingFallback = () => (
-  <div className="min-h-[60vh] w-full flex items-center justify-center bg-transparent">
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-12 h-12 border-4 border-penedo-emerald border-t-transparent rounded-full animate-spin"></div>
-      <p className="text-sm font-bold text-penedo-forest/60 tracking-wider uppercase">Carregando...</p>
-    </div>
-  </div>
-);
+import { HomePage } from './pages/HomePage';
+import { WhatToDoPage } from './pages/WhatToDoPage';
+import { WhereToStayPage } from './pages/WhereToStayPage';
+import { GastronomyPage } from './pages/GastronomyPage';
+import { ShoppingPage } from './pages/ShoppingPage';
+import { ContactPage } from './pages/ContactPage';
+import { BlogPage } from './pages/BlogPage';
+import { PremiumDetailPage } from './pages/PremiumDetailPage';
+import { LegalPage } from './pages/LegalPage';
 
 import { trackEvent } from './analytics/tracking';
 
@@ -60,24 +47,7 @@ const getBusinessPath = (slug: string): string => {
   return `/detalhe/${slug}`;
 };
 
-const parsePath = (): { page: Page; premiumSlug: string | null; blogArticle: string | null } => {
-  // Check for backward compatibility with old Hash URLs
-  const hash = window.location.hash;
-  if (hash) {
-    const cleanHash = hash.replace(/^#\/?/, '/');
-    window.location.hash = ''; // Clear hash
-    window.history.replaceState(null, '', cleanHash);
-  }
-
-  const path = window.location.pathname;
-
-  // Check centralized 301 redirects
-  const redirectTarget = checkRedirects(path);
-  if (redirectTarget) {
-    window.location.replace(redirectTarget);
-    return { page: 'home', premiumSlug: null, blogArticle: null };
-  }
-  
+const parsePath = (path: string): { page: Page; premiumSlug: string | null; blogArticle: string | null } => {
   if (path === '/' || path === '') {
     return { page: 'home', premiumSlug: null, blogArticle: null };
   }
@@ -142,15 +112,25 @@ const updatePath = (page: Page, premiumSlug: string | null, blogArticle: string 
   }
 };
 
-export default function App() {
-  const [currentPage, setCurrentPage] = useState<Page>(() => parsePath().page);
-  const [selectedPremiumSlug, setSelectedPremiumSlug] = useState<string | null>(() => parsePath().premiumSlug);
-  const [activeBlogArticle, setActiveBlogArticle] = useState<string | null>(() => parsePath().blogArticle);
+const COPYRIGHT_YEAR = 2026;
+
+export default function App({ initialPath }: { initialPath: string }) {
+  const initialRoute = parsePath(initialPath);
+  const [currentPage, setCurrentPage] = useState<Page>(initialRoute.page);
+  const [selectedPremiumSlug, setSelectedPremiumSlug] = useState<string | null>(initialRoute.premiumSlug);
+  const [activeBlogArticle, setActiveBlogArticle] = useState<string | null>(initialRoute.blogArticle);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showCookies, setShowCookies] = useState(false);
   const [selectedItem, setSelectedItem] = useState<DetailItem | null>(null);
   const [homeRefreshKey, setHomeRefreshKey] = useState(0);
+
+  useEffect(() => {
+    const redirectTarget = checkRedirects(initialPath);
+    if (redirectTarget) {
+      window.location.replace(redirectTarget);
+    }
+  }, [initialPath]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -168,7 +148,7 @@ export default function App() {
   // Listen to browser Back/Forward navigation
   useEffect(() => {
     const handlePopState = () => {
-      const route = parsePath();
+      const route = parsePath(window.location.pathname);
       setCurrentPage(route.page);
       setSelectedPremiumSlug(route.premiumSlug);
       setActiveBlogArticle(route.blogArticle);
@@ -444,7 +424,6 @@ export default function App() {
       </nav>
 
       <main className="flex-grow pt-0 overflow-x-hidden relative">
-        <Suspense fallback={<LoadingFallback />}>
             {currentPage === 'home' && (
               <div className="animate-fade-in">
                 <SEO {...generateSEO('home')} />
@@ -517,7 +496,6 @@ export default function App() {
                 <Page404 onNavigate={navigate} />
               </PageTransition>
             )}
-        </Suspense>
       </main>
 
       {/* Footer */}
@@ -591,18 +569,16 @@ export default function App() {
             </div>
           </div>
           <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-white/10 text-center text-white/40 text-sm">
-            &copy; {new Date().getFullYear()} Vem Pra Penedo. Todos os direitos reservados.
+            {`© ${COPYRIGHT_YEAR} Vem Pra Penedo. Todos os direitos reservados.`}
           </div>
         </footer>
       </DeferredSection>
 
       <ScrollToTop />
 
-      <Suspense fallback={null}>
-        {selectedItem && (
-          <DetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
-        )}
-      </Suspense>
+      {selectedItem && (
+        <DetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
+      )}
 
       {/* Cookie Consent banner with CSS transition */}
       <div 

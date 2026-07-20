@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { 
   Calendar, User, Clock, ArrowRight, Camera, Mountain, Star, 
@@ -12,10 +12,9 @@ import { generateSEO } from '../seo';
 import { BlogPostCTA } from '../components/BlogPostCTA';
 import { getBreadcrumbSchema } from '../schema';
 
-// Lazy load heavy blog article components
-const RestaurantesArticle = lazy(() => import('../components/RestaurantesArticle').then(m => ({ default: m.RestaurantesArticle })));
-const HospedagemArticle = lazy(() => import('../components/HospedagemArticle').then(m => ({ default: m.HospedagemArticle })));
-const Roteiro1DiaArticle = lazy(() => import('../components/Roteiro1DiaArticle').then(m => ({ default: m.Roteiro1DiaArticle })));
+import { RestaurantesArticle } from '../components/RestaurantesArticle';
+import { HospedagemArticle } from '../components/HospedagemArticle';
+import { Roteiro1DiaArticle } from '../components/Roteiro1DiaArticle';
 
 export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArticle }: { onOpenDetail: (item: DetailItem) => void, onNavigate: (page: Page, premiumSlug?: string | null) => void, activeArticle: string | null, onSelectArticle: (id: string | null) => void }) {
   const blogPosts = React.useMemo(() => {
@@ -192,9 +191,7 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
 
   if (activeArticle === 'roteiro-1-dia-em-penedo') {
     return (
-      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-gray-500 font-bold">Carregando roteiro...</p></div>}>
-        <Roteiro1DiaArticle onOpenDetail={onOpenDetail} onNavigate={onNavigate} handleSelectArticle={handleSelectArticle} />
-      </Suspense>
+      <Roteiro1DiaArticle onOpenDetail={onOpenDetail} onNavigate={onNavigate} handleSelectArticle={handleSelectArticle} />
     );
   }
 
@@ -851,17 +848,13 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
 
   if (activeArticle === 'restaurantes') {
     return (
-      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-gray-500 font-bold">Carregando...</p></div>}>
-        <RestaurantesArticle handleSelectArticle={handleSelectArticle} onNavigate={onNavigate} />
-      </Suspense>
+      <RestaurantesArticle handleSelectArticle={handleSelectArticle} onNavigate={onNavigate} />
     );
   }
 
   if (activeArticle === 'melhores-hospedagens') {
     return (
-      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-gray-500 font-bold">Carregando...</p></div>}>
-        <HospedagemArticle handleSelectArticle={handleSelectArticle} onNavigate={onNavigate} />
-      </Suspense>
+      <HospedagemArticle handleSelectArticle={handleSelectArticle} onNavigate={onNavigate} />
     );
   }
 
@@ -934,8 +927,7 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
                 <div>
                   <h3 className="text-2xl font-black text-penedo-forest mb-4 tracking-tighter leading-tight group-hover:text-penedo-emerald transition-colors">{post.title}</h3>
                   <p className="text-gray-500 text-sm leading-relaxed mb-4 md:mb-8">
-                    {post.description}
-                    {post.date && ` Publicado em ${post.date}.`}
+                    {`${post.description}${post.date ? ` Publicado em ${post.date}.` : ''}`}
                   </p>
                 </div>
                 <div className="w-full py-4 bg-gray-50 rounded-2xl flex items-center justify-center gap-3 text-penedo-emerald font-black text-xs uppercase tracking-widest group-hover:bg-penedo-emerald group-hover:text-white transition-all shadow-sm">
