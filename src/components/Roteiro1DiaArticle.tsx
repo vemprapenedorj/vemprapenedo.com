@@ -106,11 +106,11 @@ const BlockImage: React.FC<BlockImageProps> = ({ id, src, alt }) => {
         aria-label={`Ampliar imagem: ${alt}`}
         className="group bg-white p-3 shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-gray-100 rounded-[2rem] transition-all duration-500 w-full flex flex-col cursor-zoom-in hover:scale-[1.02] hover:shadow-[0_30px_60px_rgba(0,0,0,0.12)]"
       >
-        <div className="h-72 sm:h-96 rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 relative w-full">
+        <div className={`h-72 sm:h-96 rounded-2xl overflow-hidden border border-gray-100 relative w-full ${id === 'emporio-haru' ? 'bg-[#fff6ed]' : 'bg-gray-50'}`}>
           <img
             src={src}
             alt={alt}
-            className="w-full h-full object-contain object-center transition-transform duration-700 group-hover:scale-[1.02]"
+            className={`w-full h-full object-center transition-transform duration-700 group-hover:scale-[1.02] ${id === 'emporio-haru' ? 'object-contain' : 'object-cover'}`}
             referrerPolicy="no-referrer"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
@@ -489,7 +489,7 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
               />
               <BlockImage 
                 id="arte-da-nossa-terra"
-                src="/assets/imagens/blog/roteiro-1-dia-penedo/arte-da-nossa-terra.jpg"
+                src="/assets/imagens/blog/roteiro-1-dia-penedo/arte-da-nossa-terra.jpg?v=2"
                 alt="Artesanato, presentes e decoração da Arte da Nossa Terra em Penedo"
                 onOpenDetail={onOpenDetail} 
                 onOpenConfirm={handleOpenConfirm} 
