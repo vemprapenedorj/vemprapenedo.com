@@ -374,12 +374,13 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
       <section className="pt-10 md:pt-20 md:pt-32 pb-6 md:pb-12 bg-penedo-mint/10">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:mb-8 text-left">
-            <button 
-              onClick={() => onNavigate('home')}
+            <a
+              href="/"
+              onClick={(event) => { event.preventDefault(); onNavigate('home'); }}
               className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all bg-transparent border-none outline-none cursor-pointer"
             >
               <ArrowRight className="rotate-180" size={20} /> Voltar ao Início
-            </button>
+            </a>
             
             <nav className="text-xs font-semibold text-gray-500 uppercase tracking-widest flex items-center flex-wrap gap-y-1" aria-label="Breadcrumb">
               <a href="/" onClick={(e) => { e.preventDefault(); onNavigate('home'); }} className="hover:text-penedo-emerald transition-colors">Início</a>
@@ -780,8 +781,9 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
                 <h3 className="text-xl font-bold text-penedo-forest border-b pb-2 border-gray-200">Dicas do Especialista</h3>
                 
                 {/* Blog Card */}
-                <div 
-                  onClick={() => onNavigate('blog', recommendations.blog.id)}
+                <a
+                  href={`/blog/artigo/${recommendations.blog.id}`}
+                  onClick={(event) => { event.preventDefault(); onNavigate('blog', recommendations.blog.id); }}
                   className="p-6 bg-penedo-forest text-white rounded-3xl shadow-lg hover:shadow-xl transition-all cursor-pointer relative overflow-hidden group"
                 >
                   <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
@@ -793,11 +795,12 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
                       Ler artigo completo <ArrowRight size={16} className="shrink-0" />
                     </div>
                   </div>
-                </div>
+                </a>
 
                 {/* Category Link */}
-                <div 
-                  onClick={() => onNavigate(categoryCleanPath as Page)}
+                <a
+                  href={`/${categoryCleanPath}`}
+                  onClick={(event) => { event.preventDefault(); onNavigate(categoryCleanPath as Page); }}
                   className="p-6 bg-white border border-gray-100 rounded-3xl shadow-sm hover:shadow-md transition-all cursor-pointer text-center group"
                 >
                   <h4 className="font-bold text-gray-800 mb-1">Quer ver a lista completa?</h4>
@@ -805,7 +808,7 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
                   <span className="inline-block px-6 py-2.5 bg-gray-50 group-hover:bg-penedo-emerald group-hover:text-white rounded-2xl font-bold text-xs text-penedo-emerald uppercase tracking-widest transition-all">
                     Ver {item.category}
                   </span>
-                </div>
+                </a>
               </div>
             </div>
           </div>

@@ -10,9 +10,10 @@ interface RestaurantesArticleProps {
   onNavigate: (page: string, premiumSlug?: string | null) => void;
 }
 
-const BlogPostCTA = ({ label, onClick, primary = true }: { label: string, onClick: () => void, primary?: boolean }) => (
-  <button
-    onClick={onClick}
+const BlogPostCTA = ({ label, href, onClick, primary = true }: { label: string, href: string, onClick: () => void, primary?: boolean }) => (
+  <a
+    href={href}
+    onClick={(event) => { event.preventDefault(); onClick(); }}
     className={`px-8 py-4 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 shadow-lg flex items-center gap-2 cursor-pointer ${
       primary 
         ? 'bg-penedo-emerald text-white hover:bg-penedo-forest shadow-penedo-emerald/20' 
@@ -20,7 +21,7 @@ const BlogPostCTA = ({ label, onClick, primary = true }: { label: string, onClic
     }`}
   >
     {label} <ArrowRight size={18} />
-  </button>
+  </a>
 );
 
 const ImageWithFallback = ({ 
@@ -73,6 +74,7 @@ export function RestaurantesArticle({ handleSelectArticle, onNavigate }: Restaur
 
   const currentIndex = blogPosts.findIndex(post => post.id === 'restaurantes');
   const prevPost = currentIndex !== -1 && currentIndex + 1 < blogPosts.length ? blogPosts[currentIndex + 1] : null;
+  const nextPost = currentIndex > 0 ? blogPosts[currentIndex - 1] : null;
 
   const handlePrevArticle = () => {
     if (prevPost) {
@@ -90,7 +92,6 @@ export function RestaurantesArticle({ handleSelectArticle, onNavigate }: Restaur
   };
 
   const handleContinueExploring = () => {
-    const nextPost = currentIndex > 0 ? blogPosts[currentIndex - 1] : null;
     if (nextPost) {
       const inlineArticleIds = ['roteiro-1-dia-em-penedo', 'penedo-guia', 'cachoeiras-penedo', 'restaurantes', 'melhores-hospedagens'];
       if (inlineArticleIds.includes(nextPost.id)) {
@@ -196,12 +197,13 @@ export function RestaurantesArticle({ handleSelectArticle, onNavigate }: Restaur
       {/* Sticky Header Back Navigation */}
       <div className="sticky top-20 z-40 bg-white/90 backdrop-blur-md border-b py-4 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <button 
-            onClick={() => handleSelectArticle(null)} 
+          <a
+            href="/blog"
+            onClick={(event) => { event.preventDefault(); handleSelectArticle(null); }}
             className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer bg-transparent border-none outline-none"
           >
             <ArrowLeft size={20} /> Voltar para o Blog
-          </button>
+          </a>
           <div className="hidden md:block text-xs font-black text-gray-400 uppercase tracking-widest">
             Lendo: <span className="text-penedo-forest">Gastronomia em Penedo RJ</span>
           </div>
@@ -375,30 +377,33 @@ export function RestaurantesArticle({ handleSelectArticle, onNavigate }: Restaur
       {/* Navigation buttons below conclusion */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-8 border-t border-gray-100 max-w-4xl mx-auto w-full px-4 mb-12">
         {prevPost ? (
-          <button 
-            onClick={handlePrevArticle}
+          <a
+            href={`/blog/artigo/${prevPost.id}`}
+            onClick={(event) => { event.preventDefault(); handlePrevArticle(); }}
             className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
           >
             <ArrowLeft size={16} className="shrink-0" />
             <span className="flex-1 text-center pr-4">Artigo anterior</span>
-          </button>
+          </a>
         ) : (
-          <button 
-            onClick={() => { handleSelectArticle(null); onNavigate('blog'); }}
+          <a
+            href="/blog"
+            onClick={(event) => { event.preventDefault(); handleSelectArticle(null); onNavigate('blog'); }}
             className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
           >
             <ArrowLeft size={16} className="shrink-0" />
             <span className="flex-1 text-center pr-4">Ver todos os artigos</span>
-          </button>
+          </a>
         )}
         
-        <button 
-          onClick={handleContinueExploring}
+        <a
+          href={nextPost ? `/blog/artigo/${nextPost.id}` : '/blog/artigo/penedo-guia'}
+          onClick={(event) => { event.preventDefault(); handleContinueExploring(); }}
           className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
         >
           <span className="flex-grow text-center pl-4">Continue explorando Penedo</span>
           <ArrowRight size={16} className="shrink-0" />
-        </button>
+        </a>
       </div>
 
       {/* CTA final section */}
@@ -412,6 +417,7 @@ export function RestaurantesArticle({ handleSelectArticle, onNavigate }: Restaur
           <div className="flex justify-center">
             <BlogPostCTA 
               label="Falar com Especialista" 
+              href="https://api.whatsapp.com/send?phone=5524992087767&text=Olá!%20Gostaria%20de%20dicas%20sobre%20onde%20comer%20e%20passear%20em%20Penedo!"
               onClick={() => window.open('https://api.whatsapp.com/send?phone=5524992087767&text=Olá!%20Gostaria%20de%20dicas%20sobre%20onde%20comer%20e%20passear%20em%20Penedo!')} 
               primary={true} 
             />
