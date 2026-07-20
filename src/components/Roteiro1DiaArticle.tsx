@@ -86,7 +86,7 @@ const BlockImage: React.FC<BlockImageProps> = ({ id, src, alt, onOpenDetail, onO
         <img 
           src={src} 
           alt={alt} 
-          className={`w-full h-full object-cover transition-transform duration-700 ${item ? 'group-hover:scale-105' : ''}`}
+          className={`w-full h-full transition-transform duration-700 ${item?.id === 'arte-da-nossa-terra' ? 'object-contain object-center' : 'object-cover'} ${item ? 'group-hover:scale-105' : ''}`}
           referrerPolicy="no-referrer"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
@@ -416,7 +416,7 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
               A <EstablishmentLink id="delicias-da-carol" label="Delícias da Carol" onOpenDetail={onOpenDetail} onOpenConfirm={handleOpenConfirm} /> é uma parada interessante para quem deseja levar produtos artesanais e sabores especiais. No <EstablishmentLink id="emporio-haru" label="Empório Haru" onOpenDetail={onOpenDetail} onOpenConfirm={handleOpenConfirm} />, é possível explorar produtos orientais e itens selecionados que ampliam a experiência gastronômica do passeio.
             </p>
             <p>
-              Para presentes e decoração, a <EstablishmentLink id="artevelas" label="Arte Velas" onOpenDetail={onOpenDetail} onOpenConfirm={handleOpenConfirm} /> é uma boa escolha. Velas artesanais e itens decorativos combinam com o clima acolhedor de Penedo e são uma lembrança diferente para levar da viagem.
+              Para presentes e decoração, a <EstablishmentLink id="arte-da-nossa-terra" label="Arte da Nossa Terra" onOpenDetail={onOpenDetail} onOpenConfirm={handleOpenConfirm} /> é uma boa escolha. A loja reúne lembrancinhas, artigos de decoração e peças de artesanato local para quem deseja levar uma recordação autêntica de Penedo.
             </p>
 
             {/* Images Block — Compras */}
@@ -429,9 +429,9 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
                 onOpenConfirm={handleOpenConfirm} 
               />
               <BlockImage 
-                id="artevelas" 
-                src="/assets/imagens/blog/roteiro-1-dia-penedo/arte-velas.jpg" 
-                alt="Velas artesanais da Arte Velas em Penedo" 
+                id="arte-da-nossa-terra"
+                src="/assets/imagens/blog/roteiro-1-dia-penedo/arte-da-nossa-terra.jpg"
+                alt="Artesanato, presentes e decoração da Arte da Nossa Terra em Penedo"
                 onOpenDetail={onOpenDetail} 
                 onOpenConfirm={handleOpenConfirm} 
               />
