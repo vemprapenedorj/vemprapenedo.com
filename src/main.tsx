@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { HelmetProvider } from 'react-helmet-async';
+import { BrowserRouter } from 'react-router-dom';
 
 const container = document.getElementById('root')!;
 const legacyHashPath = window.location.hash.startsWith('#/')
@@ -13,12 +14,12 @@ if (legacyHashPath) {
   window.history.replaceState(null, '', legacyHashPath);
 }
 
-const initialPath = window.location.pathname;
-
 const appContent = (
   <StrictMode>
     <HelmetProvider>
-      <App initialPath={initialPath} />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </HelmetProvider>
   </StrictMode>
 );

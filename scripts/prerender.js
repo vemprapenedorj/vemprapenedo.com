@@ -5,6 +5,7 @@ import { spawn } from 'child_process';
 import net from 'net';
 import zlib from 'zlib';
 import puppeteer from 'puppeteer';
+import { discoverSiteRoutes } from './site-routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,7 +15,6 @@ const BASE_URL = `http://localhost:${PORT}`;
 const PRODUCTION_URL = (process.env.SITE_URL || process.env.VITE_SITE_URL || 'https://vemprapenedo.com.br')
   .replace(/\/$/, '');
 const DIST_DIR = path.resolve(__dirname, '../dist');
-const PUBLIC_DIR = path.resolve(__dirname, '../public');
 
 // --- 1. PORT POLLING HELPER ---
 const waitPort = async (port, timeout = 15000) => {
@@ -34,58 +34,7 @@ const waitPort = async (port, timeout = 15000) => {
   throw new Error(`Timeout waiting for port ${port}`);
 };
 
-// --- 2. ROUTE DISCOVERY ---
-const discoverRoutes = () => {
-  console.log('🔍 Iniciando descoberta automática de rotas...');
-  const routes = new Set(['/', '/blog', '/contato', '/politica-de-privacidade', '/politica-de-cookies', '/404']);
-  // Read the canonical content source.
-  let DETAILS_DATA = null;
-  const detailsDataPath = path.resolve(__dirname, '../src/data/detailsData.ts');
-  if (fs.existsSync(detailsDataPath)) {
-    try {
-      const tsContent = fs.readFileSync(detailsDataPath, 'utf8');
-      const jsContent = tsContent
-        .replace(/import\s+.*;/g, '')
-        .replace(/export\s+/g, '')
-        .replace(/: Record<string, DetailItem\[\]>/g, '');
-      
-      const context = {};
-      const runContext = new Function('exports', `${jsContent}\nexports.DETAILS_DATA = DETAILS_DATA;`);
-      runContext(context);
-      DETAILS_DATA = context.DETAILS_DATA;
-      
-    } catch (err) {
-      console.error('⚠️ Erro ao ler detailsData.ts para mapear slugs:', err);
-    }
-  }
-
-  // Add category routes and detail routes.
-  if (DETAILS_DATA) {
-    Object.keys(DETAILS_DATA).forEach(cat => {
-      if (cat === 'blog') {
-        DETAILS_DATA[cat].forEach(item => {
-          const slug = item.slug || item.id;
-          if (slug) {
-            routes.add(`/blog/artigo/${slug}`);
-          }
-        });
-      } else {
-        routes.add(`/${cat}`);
-        DETAILS_DATA[cat].forEach(item => {
-          const slug = item.slug || item.id;
-          if (slug && item.isPremium) {
-            routes.add(`/${cat}/${slug}`);
-          }
-        });
-      }
-    });
-  }
-
-  console.log(`✅ Descobertas ${routes.size} rotas únicas.`);
-  return Array.from(routes);
-};
-
-// --- 3. COMPRESSION HELPER ---
+// --- 2. COMPRESSION HELPER ---
 const compressFile = (filePath) => {
   const content = fs.readFileSync(filePath);
   
@@ -445,54 +394,12 @@ ${brokenLinks.map(l => `    *   [Link Quebrado] \`${l}\` ❌`).join('\n')}
   console.log('✅ Relatório seo-audit-report.md gerado com sucesso em dist/!');
 };
 
-// --- 6. SITEMAP GENERATION ---
-const generateSitemap = (routes) => {
-  console.log('xml 🗺️ Gerando sitemap.xml baseado nas páginas geradas...');
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
-
-  routes.forEach(route => {
-    if (route === '/404') return; // Exclude 404 page from sitemap
-
-    let priority = '0.6';
-    let changefreq = 'weekly';
-    
-    if (route === '/') {
-      priority = '1.0';
-      changefreq = 'daily';
-    } else if (['/o-que-fazer', '/onde-ficar', '/gastronomia', '/compras'].includes(route)) {
-      priority = '0.9';
-    } else if (route === '/blog') {
-      priority = '0.8';
-      changefreq = 'daily';
-    } else if (route.startsWith('/blog/')) {
-      priority = '0.7';
-    } else if (route === '/contato') {
-      priority = '0.5';
-      changefreq = 'monthly';
-    }
-
-    xml += `
-  <url>
-    <loc>${PRODUCTION_URL}${route === '/' ? '' : route}</loc>
-    <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
-  </url>`;
-  });
-
-  xml += '\n</urlset>\n';
-  
-  fs.writeFileSync(path.join(DIST_DIR, 'sitemap.xml'), xml, 'utf8');
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), xml, 'utf8');
-  console.log('✅ sitemap.xml gerado em public/ e dist/!');
-};
-
 // --- MAIN RUNNER ---
 const main = async () => {
   console.log('🏁 Iniciando pipeline de Pré-renderização e Otimização SEO...');
   
   // 1. Discover all routes
-  const routes = discoverRoutes();
+  const routes = discoverSiteRoutes();
   
   // 2. Start Vite Preview server helper
   console.log('🔌 Iniciando servidor de preview do Vite...');
@@ -510,7 +417,6 @@ const main = async () => {
     await prerenderAndValidate(routes);
     
     // 5. Generate sitemap
-    generateSitemap(routes);
     
     console.log('🎉 Pipeline finalizado com sucesso absoluto!');
   } catch (error) {

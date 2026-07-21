@@ -5,8 +5,10 @@ import { Carousel } from './Carousel';
 import { PartnerHeader } from './PartnerHeader';
 import { pushPremiumCardClick } from '../analytics/events';
 import { shuffleArray } from '../utils/shuffle';
+import { getBusinessPath } from '../routing/routeHelpers';
+import { Link } from 'react-router-dom';
 
-export function PremiumCarousel({ onNavigatePremium }: { onNavigatePremium: (slug: string) => void }) {
+export function PremiumCarousel() {
   const premiumItems = React.useMemo(() => {
     const detailsPremium = Object.values(DETAILS_DATA).flat()
       .filter((item) => item.isPremium);
@@ -48,16 +50,14 @@ export function PremiumCarousel({ onNavigatePremium }: { onNavigatePremium: (slu
           items={premiumItems as any}
           itemsPerView={{ mobile: 1, tablet: 2, desktop: 3 }}
           renderItem={(item, index) => (
-            <a
-              href={`#/detalhe/${(item as any).slug || item.id}`}
-              onClick={(e) => {
-                e.preventDefault();
+            <Link
+              to={getBusinessPath((item as any).slug || item.id)}
+              onClick={() => {
                 pushPremiumCardClick({
                   business_id: item.id,
                   business_name: item.title,
                   business_category: item.category
                 }, index + 1);
-                ((item as any).slug || item.id) && onNavigatePremium((item as any).slug || item.id);
               }}
               className="bg-white rounded-[2.5rem] overflow-hidden shadow-xl border border-gray-100 flex flex-col h-full group cursor-pointer block transition-transform duration-300 hover:-translate-y-2"
             >
@@ -107,7 +107,7 @@ export function PremiumCarousel({ onNavigatePremium }: { onNavigatePremium: (slu
                   SAIBA MAIS <ChevronRight size={14} />
                 </div>
               </div>
-            </a>
+            </Link>
           )}
         />
       </div>

@@ -19,6 +19,10 @@ body {
   @apply bg-white text-penedo-graphite antialiased;
 }
 
+img {
+  max-width: 100%;
+}
+
 a {
   text-decoration: none;
 }
@@ -99,4 +103,26 @@ a {
 
 .animate-float-slow-3 {
   animation: float-slow-3 22s ease-in-out infinite;
+}
+
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+  .animate-float-slow-1,
+  .animate-float-slow-2,
+  .animate-float-slow-3 {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

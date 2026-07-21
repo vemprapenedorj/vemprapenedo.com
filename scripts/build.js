@@ -1,8 +1,8 @@
 import { execSync } from 'child_process';
 
-const isNetlify = process.env.NETLIFY === 'true';
+const skipPrerender = process.env.SKIP_PRERENDER === 'true';
 
-console.log(`📡 [Build Pipeline] Ambiente detectado: ${isNetlify ? 'NETLIFY (Cloud)' : 'LOCAL / HOSTINGER'}`);
+console.log('📡 [Build Pipeline] Preparando pacote para hospedagem estática.');
 
 try {
   // 1. Generate environment-specific crawler directives.
@@ -17,12 +17,18 @@ try {
   console.log('📦 Executando vite build...');
   execSync('npx vite build', { stdio: 'inherit' });
 
-  // 4. Conditionally execute static pre-rendering (SSG) with Puppeteer
-  if (isNetlify) {
-    console.log('⚡ Detectado ambiente Netlify. Ignorando a pré-renderização estática (SSG) para evitar dependências de Chrome/Puppeteer.');
+  // 4. Pré-renderização é uma otimização de SEO. O pacote Vite já está apto
+  // para publicação, portanto a indisponibilidade do Chromium no servidor de
+  // build não deve interromper o deploy do site.
+  if (skipPrerender) {
+    console.log('⚡ SKIP_PRERENDER=true: pré-renderização estática ignorada.');
   } else {
-    console.log('🚀 Iniciando pipeline de pré-renderização estática (SSG) com Puppeteer...');
-    execSync('node scripts/prerender.js', { stdio: 'inherit' });
+    try {
+      console.log('🚀 Iniciando pré-renderização estática (SSG) com Puppeteer...');
+      execSync('node scripts/prerender.js', { stdio: 'inherit' });
+    } catch {
+      console.warn('⚠️ O Chromium não iniciou. O deploy continuará com a versão SPA funcional.');
+    }
   }
   
   console.log('🎉 Pipeline de build finalizado com sucesso!');

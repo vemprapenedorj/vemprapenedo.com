@@ -83,6 +83,7 @@ export function DetailModal({ item, onClose }: { item: DetailItem | null, onClos
             )}
             <img 
               src={item.image} 
+              decoding="async"
               className={`relative z-10 w-full h-full ${
                 item.id === 'hotel-girassol'
                   ? 'object-contain object-center p-4'
@@ -96,6 +97,7 @@ export function DetailModal({ item, onClose }: { item: DetailItem | null, onClos
             <button 
               onClick={onClose}
               className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-white/40 transition-colors"
+              aria-label="Fechar detalhes"
             >
               <X size={24} />
             </button>

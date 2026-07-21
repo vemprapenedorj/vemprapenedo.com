@@ -1,6 +1,8 @@
 import React from 'react';
 import { Info } from 'lucide-react';
 import { DetailItem } from '../types';
+import { Link } from 'react-router-dom';
+import { getBusinessPath } from '../routing/routeHelpers';
 
 interface InfoCardProps {
   item: DetailItem;
@@ -63,26 +65,33 @@ export const InfoCard = React.memo(function InfoCard({ item, onOpen }: InfoCardP
 
   const linkHref = React.useMemo(() => {
     if (isPremium) {
-      return `#/detalhe/${item.slug || item.id}`;
+      return getBusinessPath(item.slug || item.id);
     }
-    return `#/local/${item.id}`;
+    return '';
   }, [item, isPremium]);
 
   return (
     <article
       className="group relative rounded-3xl overflow-hidden aspect-[3/4] shadow-md cursor-pointer bg-gray-100 block transition-transform duration-300 hover:scale-[1.02] will-change-transform"
     >
-      <a
-        href={linkHref}
-        aria-label={`Abrir detalhes de ${item.title}`}
-        onClick={(e) => {
-          e.preventDefault();
-          onOpen(item);
-        }}
-        className="absolute inset-0 z-[25]"
-      >
-        <span className="sr-only">{`Abrir detalhes de ${item.title}`}</span>
-      </a>
+      {isPremium ? (
+        <Link
+          to={linkHref}
+          aria-label={`Abrir detalhes de ${item.title}`}
+          className="absolute inset-0 z-[25]"
+        >
+          <span className="sr-only">{`Abrir detalhes de ${item.title}`}</span>
+        </Link>
+      ) : (
+        <button
+          type="button"
+          aria-label={`Abrir detalhes de ${item.title}`}
+          onClick={() => onOpen(item)}
+          className="absolute inset-0 z-[25]"
+        >
+          <span className="sr-only">{`Abrir detalhes de ${item.title}`}</span>
+        </button>
+      )}
       {/* Blurred Background Layer for Contained Images */}
       {!isPremium && ['pequena-finlandia', 'pequena-finlandia-shopping', 'lelu-museu', 'hotel-girassol', 'hotel-bertell', 'hotel-britannia', 'hotel-daniela', 'hotel-rio-penedo', 'hotel-do-sino', 'hotel-titanic', 'pousada-aurora-mantiqueira', 'pousada-chez-nous', 'pousada-penedo', 'pousada-reserva-penedo', 'pousada-terraco', 'pousada-villa-luna', 'pousada-rainha-mata', 'pousada-rainha-da-mata', 'vila-francesa-hotel', 'hotel-casa-encantada', 'pousada-santa-fe', 'pousada-do-sol', 'vert-hotel', 'pousada-lago', 'hotel-terras-finlandia', 'aglio-e-olio', 'bazzini-pizzeria', 'borbulha-penedo', 'botegare', 'braseiro-gaucho', 'casa-da-picanha', 'casa-do-fritz', 'enoteca-serrana', 'estancia-penedo', 'kaiten-sushi', 'loazo-resto', 'petit-gourmet', 'pizza-da-villa', 'querencia', 'rei-das-trutas', 'restaurante-finlandes', 'truta-viva', 'zero-a-zero', 'expedicao-raizes', 'aguia-de-penedo', 'rota-dos-passeios', 'trilhando-penedo', 'tonttulakki-suklaat', 'lugano-penedo', 'lolita-penedo', 'kahvila-cafe', 'santa-claus-burger', 'maria-cuisine', 'armazem-da-vila', 'geek-penedo', 'astral-exotheryca', 'via-lactea-balas', 'casa-das-latas', 'vanilla-patisserie', 'delicias-da-carol', 'fue-gelateria', 'cafe-finlandes-penedo', 'arte-da-nossa-terra', 'reserva-da-mata', 'meu-sonho', 'artevelas', 'raio-de-luz-decoracoes', 'raio-de-luz', 'pousada-doce-mel', 'le-garden-pousada-boutique', 'pousada-viking', 'halloween-inn-penedo', 'pousada-nova-conquista', 'recanto-dos-passaros-penedo', 'pousada-laponia', 'vilar-hotel', 'hotel-penedo-inn', 'chale-na-roca-penedo', 'pousada-chicle-penedo-mc', 'pousada-estancia-penedo', 'casa-de-artista-suites-penedo', 'pousada-da-praca-penedo', 'pousada-bela-vista-penedo', 'pousada-chales-mon-desir', 'chales-laco-e-no', 'hotel-moradas-do-penedo', 'hotel-aromas-de-penedo', 'pousada-finlandia', 'city-park-hotel', 'hotel-do-papai-noel', 'pousada-penedo-house', 'pousada-nossa-senhora', 'hotel-pequena-suecia', 'gute-passeios', 'esquilo-passeios', 'pousada-vale-do-ermitao', 'andicaro-penedo-cafes-especiais', 'chocolate-do-papai-noel', 'emporio-haru'].includes(item.id) && (
         <div 

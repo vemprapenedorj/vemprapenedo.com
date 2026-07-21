@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, X, ArrowRight, Check, MapPin, ExternalLink, Calendar, Clock, User, Droplets, Utensils, ShoppingBag } from 'lucide-react';
 import SEO from './SEO';
@@ -167,14 +168,14 @@ const BlockImage: React.FC<BlockImageProps> = ({ id, src, alt }) => {
 };
 
 const BlogPostCTA = ({ label, href, onClick }: { label: string, href: string, onClick: () => void }) => (
-  <a
-    href={href}
-    onClick={(event) => { event.preventDefault(); onClick(); }}
+  <Link
+    to={href}
+    onClick={onClick}
     className="px-6 h-[52px] w-full md:w-[250px] rounded-2xl font-black text-xs uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 shadow-lg flex items-center justify-between cursor-pointer bg-[#A7F3D0] text-[#064E3B] hover:bg-[#D1FAE5] hover:shadow-[#A7F3D0]/20 border-none outline-none"
   >
     <span className="flex-grow text-center pl-4">{label}</span>
     <ArrowRight size={16} className="shrink-0" />
-  </a>
+  </Link>
 );
 
 export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArticle }: Roteiro1DiaArticleProps) {
@@ -247,9 +248,9 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
 
       <div className="sticky top-[72px] z-40 bg-white/90 backdrop-blur-md border-b py-4 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <a href="/blog" onClick={(event) => { event.preventDefault(); handleSelectArticle(null); }} className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer bg-transparent border-none outline-none">
+          <Link to="/blog" className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer bg-transparent border-none outline-none">
             <ArrowRight className="rotate-180" size={20} /> Voltar para o Blog
-          </a>
+          </Link>
           <div className="hidden md:block text-xs font-black text-gray-400 uppercase tracking-widest">
             Lendo: <span className="text-penedo-forest">Roteiro de 1 Dia em Penedo</span>
           </div>
@@ -550,33 +551,30 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
             {/* Navigation buttons below CTA */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-8 border-t border-gray-100 max-w-4xl mx-auto w-full px-4 mb-12">
               {prevPost ? (
-                <a
-                  href={`/blog/artigo/${prevPost.id}`}
-                  onClick={(event) => { event.preventDefault(); handlePrevArticle(); }}
+                <Link
+                  to={`/blog/artigo/${prevPost.id}`}
                   className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
                 >
                   <ArrowLeft size={16} className="shrink-0" />
                   <span className="flex-1 text-center pr-4">Artigo anterior</span>
-                </a>
+                </Link>
               ) : (
-                <a
-                  href="/blog"
-                  onClick={(event) => { event.preventDefault(); handleSelectArticle(null); onNavigate('blog'); }}
+                <Link
+                  to="/blog"
                   className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
                 >
                   <ArrowLeft size={16} className="shrink-0" />
                   <span className="flex-1 text-center pr-4">Ver todos os artigos</span>
-                </a>
+                </Link>
               )}
               
-              <a
-                href="/blog/artigo/penedo-guia"
-                onClick={(event) => { event.preventDefault(); handleContinueExploring(); }}
+              <Link
+                to="/blog/artigo/penedo-guia"
                 className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
               >
                 <span className="flex-grow text-center pl-4">Continue explorando Penedo</span>
                 <ArrowRight size={16} className="shrink-0" />
-              </a>
+              </Link>
             </div>
 
           </div>
@@ -626,18 +624,15 @@ export function Roteiro1DiaArticle({ onOpenDetail, onNavigate, handleSelectArtic
                 >
                   Permanecer no roteiro
                 </button>
-                <a
-                  href={getItemPath(confirmPremiumItem)}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    const slug = confirmPremiumItem.slug || confirmPremiumItem.id;
+                <Link
+                  to={getItemPath(confirmPremiumItem)}
+                  onClick={() => {
                     setConfirmPremiumItem(null);
-                    onNavigate('premium-detail', slug);
                   }}
                   className="py-3 px-6 bg-penedo-emerald text-white font-black rounded-2xl hover:bg-penedo-forest transition-colors text-xs uppercase tracking-wider cursor-pointer shadow-lg shadow-penedo-emerald/20 flex-1 border-none"
                 >
                   Conhecer estabelecimento
-                </a>
+                </Link>
               </div>
             </motion.div>
           </motion.div>

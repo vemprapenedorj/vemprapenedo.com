@@ -10,17 +10,16 @@ import { DeferredSection } from '../components/performance/DeferredSection';
 import { Helmet } from 'react-helmet-async';
 import { Carousel } from '../components/Carousel';
 import { InfoCard } from '../components/InfoCard';
+import { Link } from 'react-router-dom';
 
 export function HomePage({ 
   onNavigate, 
   onOpenDetail,
-  onSelectArticle,
-  onNavigatePremium
+  onSelectArticle
 }: { 
   onNavigate: (page: Page) => void, 
   onOpenDetail: (item: DetailItem) => void,
-  onSelectArticle: (id: string | null) => void,
-  onNavigatePremium: (slug: string) => void
+  onSelectArticle: (id: string | null) => void
 }) {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -134,26 +133,24 @@ export function HomePage({
           <div 
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <a 
-              href="/gastronomia"
-              onClick={(e) => { e.preventDefault(); onNavigate('gastronomia'); }} 
+            <Link
+              to="/gastronomia"
               className="px-8 py-4 bg-penedo-emerald hover:bg-penedo-forest text-white rounded-full font-bold transition-all transform hover:scale-105 flex items-center justify-center gap-2 cursor-pointer"
             >
               Explorar Agora <ArrowRight size={20} />
-            </a>
-            <a 
-              href="/compras"
-              onClick={(e) => { e.preventDefault(); onNavigate('compras'); }} 
+            </Link>
+            <Link
+              to="/compras"
               className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-sm rounded-full font-bold transition-all transform hover:scale-105 flex items-center justify-center gap-2 cursor-pointer"
             >
               Onde Comprar
-            </a>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Premium Carousel Section */}
-      <PremiumCarousel onNavigatePremium={onNavigatePremium} />
+      <PremiumCarousel />
 
       {/* Search Promo */}
       <SearchPromo query={searchQuery} onSearch={setSearchQuery} />
@@ -245,7 +242,6 @@ export function HomePage({
                     onOpen={(item) => {
                       if (item.id === 'roteiro-1-dia-em-penedo' || item.id === 'penedo-guia' || item.id === 'cachoeiras-penedo' || item.id === 'restaurantes' || item.id === 'melhores-hospedagens') {
                         onSelectArticle(item.id);
-                        onNavigate('blog');
                       } else {
                         onNavigate('blog');
                       }

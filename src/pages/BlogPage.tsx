@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { 
   Calendar, User, Clock, ArrowRight, Camera, Mountain, Star, 
@@ -15,8 +16,12 @@ import { getBreadcrumbSchema } from '../schema';
 import { RestaurantesArticle } from '../components/RestaurantesArticle';
 import { HospedagemArticle } from '../components/HospedagemArticle';
 import { Roteiro1DiaArticle } from '../components/Roteiro1DiaArticle';
+import Page404 from '../components/Page404';
 
-export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArticle }: { onOpenDetail: (item: DetailItem) => void, onNavigate: (page: Page, premiumSlug?: string | null) => void, activeArticle: string | null, onSelectArticle: (id: string | null) => void }) {
+const MotionLink = motion.create(Link);
+
+export function BlogPage({ onOpenDetail, onNavigate, onSelectArticle }: { onOpenDetail: (item: DetailItem) => void, onNavigate: (page: Page, premiumSlug?: string | null) => void, onSelectArticle: (id: string | null) => void }) {
+  const { slug: activeArticle } = useParams<{ slug: string }>();
   const blogPosts = React.useMemo(() => {
     return [...(DETAILS_DATA['blog'] || [])].sort((a, b) => {
       const parseDate = (d: string) => {
@@ -75,33 +80,30 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
     return (
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-8 border-t border-gray-100 max-w-4xl mx-auto w-full px-4 mb-12">
         {prevPost ? (
-          <a
-            href={prevHref}
-            onClick={(event) => { event.preventDefault(); handlePrev(); }}
+          <Link
+            to={prevHref}
             className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
           >
             <ArrowRight className="rotate-180 shrink-0" size={16} />
             <span className="flex-1 text-center pr-4">Artigo anterior</span>
-          </a>
+          </Link>
         ) : (
-          <a
-            href="/blog"
-            onClick={(event) => { event.preventDefault(); handleSelectArticle(null); onNavigate('blog'); }}
+          <Link
+            to="/blog"
             className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
           >
             <ArrowRight className="rotate-180 shrink-0" size={16} />
             <span className="flex-1 text-center pr-4">Ver todos os artigos</span>
-          </a>
+          </Link>
         )}
         
-        <a
-          href={nextHref}
-          onClick={(event) => { event.preventDefault(); handleNext(); }}
+        <Link
+          to={nextHref}
           className="px-6 h-[52px] w-full sm:w-[280px] rounded-2xl font-bold text-xs uppercase tracking-widest flex items-center justify-between transition-all bg-[#064E3B] hover:bg-[#0B6B50] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer border-none outline-none"
         >
           <span className="flex-grow text-center pl-4">Continue explorando Penedo</span>
           <ArrowRight size={16} className="shrink-0" />
-        </a>
+        </Link>
       </div>
     );
   };
@@ -189,6 +191,20 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
     onSelectArticle(id);
   };
 
+  if (activeArticle && !blogPosts.some((post) => (post.slug || post.id) === activeArticle)) {
+    return (
+      <>
+        <SEO
+          title="Artigo Não Encontrado | Vem Pra Penedo"
+          description="O artigo que você procura não foi encontrado."
+          canonical="https://vemprapenedo.com.br/404"
+          robots="noindex, follow"
+        />
+        <Page404 onNavigate={onNavigate} />
+      </>
+    );
+  }
+
   if (activeArticle === 'roteiro-1-dia-em-penedo') {
     return (
       <Roteiro1DiaArticle onOpenDetail={onOpenDetail} onNavigate={onNavigate} handleSelectArticle={handleSelectArticle} />
@@ -210,9 +226,9 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
         />
         <div className="sticky top-[72px] z-40 bg-white/90 backdrop-blur-md border-b py-4 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <a href="/blog" onClick={(event) => { event.preventDefault(); handleSelectArticle(null); }} className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer">
+            <Link to="/blog" className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer">
               <ArrowRight className="rotate-180" size={20} /> Voltar para o Blog
-            </a>
+            </Link>
             <div className="hidden md:block text-xs font-black text-gray-400 uppercase tracking-widest">
               Lendo: <span className="text-penedo-forest">Cachoeiras em Penedo RJ</span>
             </div>
@@ -449,13 +465,12 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
                   Quer aproveitar ao máximo sua viagem e descobrir todos os segredos da Finlândia Brasileira?
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
-                  <a
-                    href="/blog/artigo/penedo-guia"
-                    onClick={(event) => { event.preventDefault(); handleSelectArticle('penedo-guia'); }}
+                  <Link
+                    to="/blog/artigo/penedo-guia"
                     className="w-full sm:w-auto px-10 py-5 bg-penedo-emerald text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-penedo-forest transition-all shadow-xl shadow-penedo-emerald/30 transform hover:-translate-y-1"
                   >
                     Ver roteiro completo de Penedo
-                  </a>
+                  </Link>
                   <a
                     href="https://api.whatsapp.com/send?phone=5524992087767&text=Olá,%20vim%20do%20site%20Vem%20Pra%20Penedo%20e%20gostaria%20de%20mais%20informações!"
                     target="_blank"
@@ -511,9 +526,9 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
         />
         <div className="sticky top-[72px] z-40 bg-white/90 backdrop-blur-md border-b py-4">
           <div className="max-w-7xl mx-auto px-4">
-            <a href="/blog" onClick={(event) => { event.preventDefault(); handleSelectArticle(null); }} className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer">
+            <Link to="/blog" className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer">
               <ArrowRight className="rotate-180" size={20} /> Voltar para o Blog
-            </a>
+            </Link>
           </div>
         </div>
         {/* Full Guia Content */}
@@ -873,12 +888,12 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
       />
       <div className="sticky top-[72px] z-40 bg-white/90 backdrop-blur-md border-b py-4 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <a href="/" onClick={(event) => { event.preventDefault(); onNavigate('home'); }} className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer bg-transparent border-none outline-none">
+          <Link to="/" className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer bg-transparent border-none outline-none">
             <ArrowRight className="rotate-180" size={20} /> Voltar ao Início
-          </a>
+          </Link>
           
           <nav className="text-xs font-semibold text-gray-500 uppercase tracking-widest" aria-label="Breadcrumb">
-            <a href="/" onClick={(e) => { e.preventDefault(); onNavigate('home'); }} className="hover:text-penedo-emerald transition-colors">Início</a>
+            <Link to="/" className="hover:text-penedo-emerald transition-colors">Início</Link>
             <span className="mx-2 text-gray-400">/</span>
             <span className="text-penedo-forest">Blog</span>
           </nav>
@@ -901,18 +916,10 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
             const postHref = hasArticlePage ? `/blog/artigo/${post.id}` : '/onde-ficar';
 
             return (
-            <motion.a
+            <MotionLink
               key={post.id} 
-              href={postHref}
+              to={postHref}
               whileHover={{ y: -12 }}
-              onClick={(event) => {
-                event.preventDefault();
-                if (hasArticlePage) {
-                  handleSelectArticle(post.id);
-                } else {
-                  onNavigate('onde-ficar');
-                }
-              }}
               className="bg-white rounded-[3rem] overflow-hidden shadow-2xl border border-gray-100 flex flex-col h-full group cursor-pointer"
             >
               <div className="relative h-72 overflow-hidden">
@@ -934,7 +941,7 @@ export function BlogPage({ onOpenDetail, onNavigate, activeArticle, onSelectArti
                   Ler artigo completo <ArrowRight size={18} />
                 </div>
               </div>
-            </motion.a>
+            </MotionLink>
             );
           })}
         </div>
