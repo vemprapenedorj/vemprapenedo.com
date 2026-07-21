@@ -54,6 +54,8 @@ export function FeaturedCard(props: { item: DetailItem, onClick: () => void }) {
         <img 
           src={item.image} 
           alt={item.title}
+          loading="lazy"
+          decoding="async"
           className={`relative z-10 w-full h-full transition-transform duration-1000 group-hover:scale-110 ${
             item.id === 'hotel-girassol'
               ? 'object-contain object-center'

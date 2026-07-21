@@ -66,4 +66,30 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 RewriteCond %{HTTP_HOST} ^www\.vemprapenedo\.com$ [NC]
 RewriteRule ^ https://vemprapenedo.com%{REQUEST_URI} [R=301,L]
 
+RewriteCond %{HTTP_HOST} ^www\.vemprapenedo\.com\.br$ [NC]
+RewriteRule ^ https://vemprapenedo.com.br%{REQUEST_URI} [R=301,L]
+
+# Redirects canônicos de rotas antigas.
+RewriteRule ^contatos/?$ /contato [R=301,L,NC]
+RewriteRule ^blog/(?!artigo/)([^/]+)/?$ /blog/artigo/$1 [R=301,L,NC]
+RewriteRule ^restaurantes/([^/]+)/?$ /gastronomia/$1 [R=301,L,NC]
+RewriteRule ^pousadas/([^/]+)/?$ /onde-ficar/$1 [R=301,L,NC]
+RewriteRule ^hoteis/([^/]+)/?$ /onde-ficar/$1 [R=301,L,NC]
+
+# /detalhe/:slug precisa de regras explícitas porque a categoria canônica
+# depende do estabelecimento cadastrado.
+RewriteRule ^detalhe/expedicao-raizes/?$ /o-que-fazer/expedicao-raizes [R=301,L,NC]
+RewriteRule ^detalhe/rodrigo-dione/?$ /o-que-fazer/rodrigo-dione [R=301,L,NC]
+RewriteRule ^detalhe/pousada-aurora-da-mantiqueira/?$ /onde-ficar/pousada-aurora-da-mantiqueira [R=301,L,NC]
+RewriteRule ^detalhe/pousada-rainha-da-mata/?$ /onde-ficar/pousada-rainha-da-mata [R=301,L,NC]
+RewriteRule ^detalhe/casa-da-picanha/?$ /gastronomia/casa-da-picanha [R=301,L,NC]
+
+# Prioriza arquivos e páginas estáticas geradas; as demais URLs válidas são
+# entregues ao React Router pelo index.html.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+RewriteRule ^ index.html [L]
+
 ErrorDocument 404 /404.html

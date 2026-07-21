@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Menu, X, Instagram, Mail 
 } from 'lucide-react';
 import SEO from './components/SEO';
-import { checkRedirects } from './seo/redirects';
+import { checkRedirects } from './routing/legacyRedirects';
 import { generateSEO } from './seo';
 import { Page, DetailItem } from './types';
 import { DeferredSection } from './components/performance/DeferredSection';
@@ -26,99 +27,28 @@ import {
 } from './analytics/events';
 
 import { HomePage } from './pages/HomePage';
-import { WhatToDoPage } from './pages/WhatToDoPage';
-import { WhereToStayPage } from './pages/WhereToStayPage';
-import { GastronomyPage } from './pages/GastronomyPage';
-import { ShoppingPage } from './pages/ShoppingPage';
-import { ContactPage } from './pages/ContactPage';
-import { BlogPage } from './pages/BlogPage';
-import { PremiumDetailPage } from './pages/PremiumDetailPage';
-import { LegalPage } from './pages/LegalPage';
+
+const WhatToDoPage = React.lazy(() => import('./pages/WhatToDoPage').then(module => ({ default: module.WhatToDoPage })));
+const WhereToStayPage = React.lazy(() => import('./pages/WhereToStayPage').then(module => ({ default: module.WhereToStayPage })));
+const GastronomyPage = React.lazy(() => import('./pages/GastronomyPage').then(module => ({ default: module.GastronomyPage })));
+const ShoppingPage = React.lazy(() => import('./pages/ShoppingPage').then(module => ({ default: module.ShoppingPage })));
+const ContactPage = React.lazy(() => import('./pages/ContactPage').then(module => ({ default: module.ContactPage })));
+const BlogPage = React.lazy(() => import('./pages/BlogPage').then(module => ({ default: module.BlogPage })));
+const PremiumDetailPage = React.lazy(() => import('./pages/PremiumDetailPage').then(module => ({ default: module.PremiumDetailPage })));
+const LegalPage = React.lazy(() => import('./pages/LegalPage').then(module => ({ default: module.LegalPage })));
 
 import { trackEvent } from './analytics/tracking';
-
-const getBusinessPath = (slug: string): string => {
-  for (const [category, items] of Object.entries(DETAILS_DATA)) {
-    const item = items.find((candidate) => candidate.slug === slug || candidate.id === slug);
-    if (item && category !== 'blog') {
-      return `/${category}/${item.slug || item.id}`;
-    }
-  }
-  return `/detalhe/${slug}`;
-};
-
-const parsePath = (path: string): { page: Page; premiumSlug: string | null; blogArticle: string | null } => {
-  if (path === '/' || path === '') {
-    return { page: 'home', premiumSlug: null, blogArticle: null };
-  }
-  
-  if (path.startsWith('/detalhe/')) {
-    const slug = path.replace('/detalhe/', '');
-    return { page: 'premium-detail', premiumSlug: slug, blogArticle: null };
-  }
-  
-  if (path.startsWith('/blog/artigo/')) {
-    const slug = path.replace('/blog/artigo/', '');
-    return { page: 'blog', premiumSlug: null, blogArticle: slug };
-  }
-
-  if (path.startsWith('/blog/')) {
-    const slug = path.replace('/blog/', '');
-    return { page: 'blog', premiumSlug: null, blogArticle: slug };
-  }
-  
-  if (path === '/blog' || path === '/blog/') {
-    return { page: 'blog', premiumSlug: null, blogArticle: null };
-  }
-
-  const parts = path.split('/').filter(Boolean);
-  if (parts.length === 2) {
-    const [category, slug] = parts;
-    const allCategories = ['gastronomia', 'onde-ficar', 'o-que-fazer', 'compras', 'restaurantes', 'pousadas', 'hoteis', 'detalhe'];
-    if (allCategories.includes(category)) {
-      return { page: 'premium-detail', premiumSlug: slug, blogArticle: null };
-    }
-  }
-  
-  const pageName = path.replace(/^\//, '').replace(/\/$/, '') as Page;
-  const validPages: Page[] = ['home', 'o-que-fazer', 'onde-ficar', 'gastronomia', 'compras', 'blog', 'contato', 'politica-de-privacidade', 'politica-de-cookies', 'premium-detail', '404'];
-  if (validPages.includes(pageName)) {
-    return { page: pageName, premiumSlug: null, blogArticle: null };
-  }
-  
-  return { page: '404', premiumSlug: null, blogArticle: null };
-};
-
-const updatePath = (page: Page, premiumSlug: string | null, blogArticle: string | null) => {
-  let path = '/';
-  if (page === 'home') {
-    path = '/';
-  } else if (page === 'premium-detail' && premiumSlug) {
-    path = getBusinessPath(premiumSlug);
-  } else if (page === 'blog') {
-    if (blogArticle) {
-      path = `/blog/artigo/${blogArticle}`;
-    } else {
-      path = `/blog`;
-    }
-  } else if (page === '404') {
-    path = '/404';
-  } else {
-    path = `/${page}`;
-  }
-  
-  if (window.location.pathname !== path) {
-    window.history.pushState({ page, premiumSlug, blogArticle }, '', path);
-  }
-};
+import { buildPath, parsePath } from './routing/routeHelpers';
 
 const COPYRIGHT_YEAR = 2026;
 
-export default function App({ initialPath }: { initialPath: string }) {
-  const initialRoute = parsePath(initialPath);
-  const [currentPage, setCurrentPage] = useState<Page>(initialRoute.page);
-  const [selectedPremiumSlug, setSelectedPremiumSlug] = useState<string | null>(initialRoute.premiumSlug);
-  const [activeBlogArticle, setActiveBlogArticle] = useState<string | null>(initialRoute.blogArticle);
+export default function App() {
+  const location = useLocation();
+  const routerNavigate = useNavigate();
+  const currentRoute = React.useMemo(() => parsePath(location.pathname), [location.pathname]);
+  const currentPage = currentRoute.page;
+  const selectedPremiumSlug = currentRoute.premiumSlug;
+  const activeBlogArticle = currentRoute.blogArticle;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showCookies, setShowCookies] = useState(false);
@@ -126,11 +56,11 @@ export default function App({ initialPath }: { initialPath: string }) {
   const [homeRefreshKey, setHomeRefreshKey] = useState(0);
 
   useEffect(() => {
-    const redirectTarget = checkRedirects(initialPath);
+    const redirectTarget = checkRedirects(location.pathname);
     if (redirectTarget) {
-      window.location.replace(redirectTarget);
+      routerNavigate(redirectTarget, { replace: true });
     }
-  }, [initialPath]);
+  }, [location.pathname, routerNavigate]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -144,24 +74,6 @@ export default function App({ initialPath }: { initialPath: string }) {
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Listen to browser Back/Forward navigation
-  useEffect(() => {
-    const handlePopState = () => {
-      const route = parsePath(window.location.pathname);
-      setCurrentPage(route.page);
-      setSelectedPremiumSlug(route.premiumSlug);
-      setActiveBlogArticle(route.blogArticle);
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  // Synchronize state changes to URL path
-  useEffect(() => {
-    updatePath(currentPage, selectedPremiumSlug, activeBlogArticle);
-  }, [currentPage, selectedPremiumSlug, activeBlogArticle]);
 
   // Efeito robusto para garantir que a página sempre suba ao topo em trocas de página ou artigos
   useEffect(() => {
@@ -261,26 +173,24 @@ export default function App({ initialPath }: { initialPath: string }) {
   }, [currentPage, selectedPremiumSlug, activeBlogArticle]);
 
   const navigate = (page: Page, premiumSlug: string | null = null) => {
-    setActiveBlogArticle(null);
-    
-    if (page !== 'premium-detail' && page !== 'blog') {
-      setSelectedPremiumSlug(null);
-    }
-
     if (page === 'home') {
       setHomeRefreshKey(prev => prev + 1);
     }
-    
-    setCurrentPage(page);
-    if (page === 'blog' && premiumSlug) {
-      setActiveBlogArticle(premiumSlug);
-    } else {
-      setSelectedPremiumSlug(premiumSlug);
-    }
+
+    const path = buildPath(
+      page,
+      page === 'premium-detail' ? premiumSlug : null,
+      page === 'blog' ? premiumSlug : null
+    );
+    routerNavigate(path);
     setIsMenuOpen(false);
     
     // Always scroll to top on navigation
     window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
+  const selectBlogArticle = (slug: string | null) => {
+    routerNavigate(slug ? buildPath('blog', null, slug) : buildPath('blog', null, null));
   };
 
   const handleOpenDetail = (item: DetailItem) => {
@@ -336,9 +246,9 @@ export default function App({ initialPath }: { initialPath: string }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <a 
-                href="/" 
-                onClick={(e) => { e.preventDefault(); navigate('home'); }} 
+              <Link
+                to="/"
+                onClick={() => setHomeRefreshKey(prev => prev + 1)}
                 className="transition-colors group cursor-pointer"
               >
                 <img 
@@ -347,15 +257,15 @@ export default function App({ initialPath }: { initialPath: string }) {
                   className="h-12 w-12 object-cover rounded-full shadow-md"
                   referrerPolicy="no-referrer"
                 />
-              </a>
+              </Link>
               <div className="flex flex-col items-center selection:bg-transparent">
-                <a 
-                  href="/" 
-                  onClick={(e) => { e.preventDefault(); navigate('home'); }}
+                <Link
+                  to="/"
+                  onClick={() => setHomeRefreshKey(prev => prev + 1)}
                   className="text-2xl font-bold tracking-tighter leading-none mb-1 text-white select-none cursor-pointer hover:text-white"
                 >
                   VEM PRA PENEDO
-                </a>
+                </Link>
                 <span className="text-[#FFC107] text-[12px] font-bold tracking-wider drop-shadow-sm select-none">
                   onde a magia acontece
                 </span>
@@ -373,21 +283,24 @@ export default function App({ initialPath }: { initialPath: string }) {
                 { id: 'blog', label: 'Blog' },
                 { id: 'contato', label: 'Contato' }
               ].map((item) => (
-                <a
+                <Link
                   key={item.id}
-                  href={item.id === 'home' ? '/' : `/${item.id}`}
-                  onClick={(e) => { e.preventDefault(); navigate(item.id as Page); }}
+                  to={item.id === 'home' ? '/' : `/${item.id}`}
+                  onClick={() => { setIsMenuOpen(false); if (item.id === 'home') setHomeRefreshKey(prev => prev + 1); }}
                   className="font-medium text-sm transition-colors text-white/90 hover:text-white cursor-pointer"
                 >
                   {item.label}
-                </a>
+                </Link>
               ))}
             </div>
 
             {/* Mobile Button */}
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)} 
-              className="md:hidden transition-colors text-white"
+              className="md:hidden w-11 h-11 -mr-2 flex items-center justify-center rounded-lg transition-colors text-white hover:bg-white/10"
+              aria-label={isMenuOpen ? 'Fechar menu de navegação' : 'Abrir menu de navegação'}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-navigation"
             >
               {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -396,6 +309,7 @@ export default function App({ initialPath }: { initialPath: string }) {
         
         {/* Mobile Menu */}
         <div 
+          id="mobile-navigation"
           className={`md:hidden bg-penedo-forest border-b border-white/10 overflow-hidden transition-all duration-300 ${
             isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'
           }`}
@@ -410,82 +324,101 @@ export default function App({ initialPath }: { initialPath: string }) {
               { id: 'blog', label: 'Blog' },
               { id: 'contato', label: 'Contato' }
             ].map((item) => (
-              <a
+              <Link
                 key={item.id}
-                href={item.id === 'home' ? '/' : `/${item.id}`}
-                onClick={(e) => { e.preventDefault(); navigate(item.id as Page); }}
+                to={item.id === 'home' ? '/' : `/${item.id}`}
+                onClick={() => { setIsMenuOpen(false); if (item.id === 'home') setHomeRefreshKey(prev => prev + 1); }}
                 className="block w-full text-left px-3 py-2 rounded-md text-white/90 font-medium hover:bg-penedo-emerald/20 transition-colors cursor-pointer"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
       </nav>
 
       <main className="flex-grow pt-0 overflow-x-hidden relative">
-            {currentPage === 'home' && (
+        <React.Suspense fallback={(
+          <div className="min-h-[60vh] flex items-center justify-center px-4" role="status" aria-live="polite">
+            <span className="text-penedo-forest font-semibold">Carregando página…</span>
+          </div>
+        )}>
+          <Routes>
+          <Route path="/" element={(
               <div className="animate-fade-in">
                 <SEO {...generateSEO('home')} />
                 <HomePage 
                   onNavigate={navigate} 
                   onOpenDetail={handleOpenDetail} 
-                  onSelectArticle={setActiveBlogArticle}
-                  onNavigatePremium={(slug) => navigate('premium-detail', slug)}
+                  onSelectArticle={selectBlogArticle}
                 />
               </div>
-            )}
-            {currentPage === 'o-que-fazer' && (
+          )} />
+          <Route path="/o-que-fazer" element={(
               <PageTransition key="what-to-do">
                 <SEO {...generateSEO('category', 'o-que-fazer')} />
                 <WhatToDoPage onOpenDetail={handleOpenDetail} onGoBack={() => navigate('home')} />
               </PageTransition>
-            )}
-            {currentPage === 'onde-ficar' && (
+          )} />
+          <Route path="/onde-ficar" element={(
               <PageTransition key="where-to-stay">
                 <SEO {...generateSEO('category', 'onde-ficar')} />
                 <WhereToStayPage onOpenDetail={handleOpenDetail} onGoBack={() => navigate('home')} />
               </PageTransition>
-            )}
-            {currentPage === 'gastronomia' && (
+          )} />
+          <Route path="/gastronomia" element={(
               <PageTransition key="gastronomy">
                 <SEO {...generateSEO('category', 'gastronomia')} />
                 <GastronomyPage onOpenDetail={handleOpenDetail} onGoBack={() => navigate('home')} />
               </PageTransition>
-            )}
-            {currentPage === 'compras' && (
+          )} />
+          <Route path="/compras" element={(
               <PageTransition key="shopping">
                 <SEO {...generateSEO('category', 'compras')} />
                 <ShoppingPage onOpenDetail={handleOpenDetail} onGoBack={() => navigate('home')} />
               </PageTransition>
-            )}
-            {currentPage === 'contato' && (
+          )} />
+          <Route path="/contato" element={(
               <PageTransition key="contact">
                 <SEO {...generateSEO('category', 'contato')} />
                 <ContactPage onGoBack={() => navigate('home')} />
               </PageTransition>
-            )}
-            {currentPage === 'blog' && (
+          )} />
+          <Route path="/blog" element={(
               <PageTransition key="blog">
-                <BlogPage onOpenDetail={handleOpenDetail} onNavigate={navigate} activeArticle={activeBlogArticle} onSelectArticle={setActiveBlogArticle} />
+                <BlogPage onOpenDetail={handleOpenDetail} onNavigate={navigate} onSelectArticle={selectBlogArticle} />
               </PageTransition>
-            )}
-            {currentPage === 'premium-detail' && (
-              <PageTransition key={`premium-${selectedPremiumSlug}`}>
-                <PremiumDetailPage slug={selectedPremiumSlug!} onNavigate={navigate} onOpenDetail={handleOpenDetail} />
-              </PageTransition>
-            )}
-            {currentPage === 'politica-de-privacidade' && (
+          )} />
+          <Route path="/blog/artigo/:slug" element={(
+            <PageTransition key={`blog-${activeBlogArticle}`}>
+              <BlogPage onOpenDetail={handleOpenDetail} onNavigate={navigate} onSelectArticle={selectBlogArticle} />
+            </PageTransition>
+          )} />
+          <Route path="/blog/:slug" element={(
+            <PageTransition key={`legacy-blog-${activeBlogArticle}`}>
+              <BlogPage onOpenDetail={handleOpenDetail} onNavigate={navigate} onSelectArticle={selectBlogArticle} />
+            </PageTransition>
+          )} />
+          {['/o-que-fazer/:slug', '/onde-ficar/:slug', '/gastronomia/:slug', '/compras/:slug', '/detalhe/:slug', '/restaurantes/:slug', '/pousadas/:slug', '/hoteis/:slug'].map((path) => (
+            <React.Fragment key={path}>
+              <Route path={path} element={(
+                <PageTransition key={`premium-${location.pathname}`}>
+                  <PremiumDetailPage onNavigate={navigate} onOpenDetail={handleOpenDetail} />
+                </PageTransition>
+              )} />
+            </React.Fragment>
+          ))}
+          <Route path="/politica-de-privacidade" element={(
               <PageTransition key="privacy-policy">
                 <LegalPage kind="privacidade" onGoBack={() => navigate('home')} />
               </PageTransition>
-            )}
-            {currentPage === 'politica-de-cookies' && (
+          )} />
+          <Route path="/politica-de-cookies" element={(
               <PageTransition key="cookie-policy">
                 <LegalPage kind="cookies" onGoBack={() => navigate('home')} />
               </PageTransition>
-            )}
-            {currentPage === '404' && (
+          )} />
+          <Route path="*" element={(
               <PageTransition key="page-404">
                 <SEO 
                   title="Página Não Encontrada | Vem Pra Penedo"
@@ -495,7 +428,9 @@ export default function App({ initialPath }: { initialPath: string }) {
                 />
                 <Page404 onNavigate={navigate} />
               </PageTransition>
-            )}
+          )} />
+          </Routes>
+        </React.Suspense>
       </main>
 
       {/* Footer */}
@@ -508,6 +443,8 @@ export default function App({ initialPath }: { initialPath: string }) {
                   src="/assets/imagens/Logo.jpg" 
                   alt="Vem Pra Penedo Logo" 
                   className="h-16 w-16 object-cover rounded-full bg-white p-1"
+                  loading="lazy"
+                  decoding="async"
                   referrerPolicy="no-referrer"
                 />
                 <div className="flex flex-col items-center">
@@ -520,15 +457,15 @@ export default function App({ initialPath }: { initialPath: string }) {
             <div>
               <h4 className="font-bold text-penedo-gold mb-6 text-lg">Links Rápidos</h4>
               <ul className="space-y-2 text-white/50">
-                <li><a href="/" onClick={(e) => { e.preventDefault(); navigate('home'); }} className="hover:text-white transition-colors cursor-pointer">Início</a></li>
-                <li><a href="/o-que-fazer" onClick={(e) => { e.preventDefault(); navigate('o-que-fazer'); }} className="hover:text-white transition-colors cursor-pointer">O Que Fazer</a></li>
-                <li><a href="/onde-ficar" onClick={(e) => { e.preventDefault(); navigate('onde-ficar'); }} className="hover:text-white transition-colors cursor-pointer">Onde Ficar</a></li>
-                <li><a href="/gastronomia" onClick={(e) => { e.preventDefault(); navigate('gastronomia'); }} className="hover:text-white transition-colors cursor-pointer">Gastronomia</a></li>
-                <li><a href="/compras" onClick={(e) => { e.preventDefault(); navigate('compras'); }} className="hover:text-white transition-colors cursor-pointer">Compras</a></li>
-                <li><a href="/blog" onClick={(e) => { e.preventDefault(); navigate('blog'); }} className="hover:text-white transition-colors cursor-pointer">Blog</a></li>
-                <li><a href="/contato" onClick={(e) => { e.preventDefault(); navigate('contato'); }} className="hover:text-white transition-colors cursor-pointer">Contato</a></li>
-                <li><a href="/politica-de-privacidade" onClick={(e) => { e.preventDefault(); navigate('politica-de-privacidade'); }} className="hover:text-white transition-colors cursor-pointer">Privacidade</a></li>
-                <li><a href="/politica-de-cookies" onClick={(e) => { e.preventDefault(); navigate('politica-de-cookies'); }} className="hover:text-white transition-colors cursor-pointer">Cookies</a></li>
+                <li><Link to="/" className="hover:text-white transition-colors cursor-pointer">Início</Link></li>
+                <li><Link to="/o-que-fazer" className="hover:text-white transition-colors cursor-pointer">O Que Fazer</Link></li>
+                <li><Link to="/onde-ficar" className="hover:text-white transition-colors cursor-pointer">Onde Ficar</Link></li>
+                <li><Link to="/gastronomia" className="hover:text-white transition-colors cursor-pointer">Gastronomia</Link></li>
+                <li><Link to="/compras" className="hover:text-white transition-colors cursor-pointer">Compras</Link></li>
+                <li><Link to="/blog" className="hover:text-white transition-colors cursor-pointer">Blog</Link></li>
+                <li><Link to="/contato" className="hover:text-white transition-colors cursor-pointer">Contato</Link></li>
+                <li><Link to="/politica-de-privacidade" className="hover:text-white transition-colors cursor-pointer">Privacidade</Link></li>
+                <li><Link to="/politica-de-cookies" className="hover:text-white transition-colors cursor-pointer">Cookies</Link></li>
               </ul>
             </div>
             <div>
@@ -590,9 +527,9 @@ export default function App({ initialPath }: { initialPath: string }) {
           <h4 className="font-bold text-penedo-graphite">Privacidade e Cookies</h4>
           <p className="text-sm text-gray-500 my-4">
             Utilizamos tecnologias necessárias e, com sua autorização, métricas para melhorar sua experiência.{' '}
-            <a href="/politica-de-cookies" onClick={(e) => { e.preventDefault(); navigate('politica-de-cookies'); }} className="text-penedo-emerald font-semibold hover:underline">
+            <Link to="/politica-de-cookies" className="text-penedo-emerald font-semibold hover:underline">
               Saiba mais
-            </a>.
+            </Link>.
           </p>
           <div className="flex gap-3">
             <button onClick={() => updateConsent(true)} className="flex-grow py-3 bg-penedo-emerald text-white font-bold rounded-2xl text-sm hover:bg-penedo-forest transition-colors">Aceitar</button>

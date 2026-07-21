@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface BlogPostCTAProps {
   label: string;
@@ -9,12 +10,9 @@ interface BlogPostCTAProps {
 }
 
 export const BlogPostCTA: React.FC<BlogPostCTAProps> = ({ label, onClick, href, primary = true }) => (
-  <a
-    href={href}
-    onClick={(event) => {
-      event.preventDefault();
-      onClick();
-    }}
+  <Link
+    to={href}
+    onClick={onClick}
     className={`px-8 py-4 rounded-2xl font-bold text-sm uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 shadow-lg flex items-center gap-2 cursor-pointer ${
       primary 
         ? 'bg-penedo-emerald text-white hover:bg-penedo-forest shadow-penedo-emerald/20' 
@@ -22,5 +20,5 @@ export const BlogPostCTA: React.FC<BlogPostCTAProps> = ({ label, onClick, href, 
     }`}
   >
     {label} <ArrowRight size={18} />
-  </a>
+  </Link>
 );

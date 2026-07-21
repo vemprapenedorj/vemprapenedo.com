@@ -13,6 +13,8 @@ import { generateSEO } from '../seo';
 import SEO from '../components/SEO';
 import { PartnerHeader } from '../components/PartnerHeader';
 import { getSubcategoryInfo } from '../seo/utils/seoUtils';
+import { Link, useParams } from 'react-router-dom';
+import Page404 from '../components/Page404';
 
 // Helper to extract video embed details
 function getVideoEmbedData(url: string): { url: string; platform: 'youtube' | 'instagram' | 'unknown' } {
@@ -36,7 +38,8 @@ function getVideoEmbedData(url: string): { url: string; platform: 'youtube' | 'i
   return { url: cleanUrl, platform: 'unknown' };
 }
 
-export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: string, onNavigate: (page: Page, slug?: string) => void, onOpenDetail?: (item: DetailItem) => void }) {
+export function PremiumDetailPage({ onNavigate, onOpenDetail }: { onNavigate: (page: Page, slug?: string) => void, onOpenDetail?: (item: DetailItem) => void }) {
+  const { slug = '' } = useParams<{ slug: string }>();
   const [selectedImgIndex, setSelectedImgIndex] = useState<number | null>(null);
   const [showMap, setShowMap] = useState(false);
 
@@ -114,12 +117,6 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
   }, [item]);
 
   useEffect(() => {
-    if (!item) {
-      onNavigate('home');
-    }
-  }, [item, onNavigate]);
-
-  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (selectedImgIndex === null) return;
       if (e.key === 'ArrowLeft') {
@@ -134,7 +131,19 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedImgIndex, galleryImages.length]);
 
-  if (!item) return null;
+  if (!item) {
+    return (
+      <>
+        <SEO
+          title="Página Não Encontrada | Vem Pra Penedo"
+          description="O estabelecimento que você procura não foi encontrado."
+          canonical="https://vemprapenedo.com.br/404"
+          robots="noindex, follow"
+        />
+        <Page404 onNavigate={onNavigate} />
+      </>
+    );
+  }
 
   const getWhatsAppMessage = () => {
     const isLodging = item.category === 'Hospedagem';
@@ -187,7 +196,7 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
       : 'md:grid-cols-3';
 
     return (
-      <div className={`grid grid-cols-1 ${gridCols} gap-3 ${sticky ? 'fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md z-[100] md:hidden border-t shadow-[0_-10px_20px_rgba(0,0,0,0.1)]' : 'mt-8'}`}>
+      <div className={`grid grid-cols-1 ${gridCols} gap-3 ${sticky ? 'fixed bottom-0 left-0 right-0 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-white/90 backdrop-blur-md z-[100] md:hidden border-t shadow-[0_-10px_20px_rgba(0,0,0,0.1)]' : 'mt-8'}`}>
         
         {isPremium || !isHospedagem ? (
           <a 
@@ -374,32 +383,29 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
       <section className="pt-10 md:pt-20 md:pt-32 pb-6 md:pb-12 bg-penedo-mint/10">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:mb-8 text-left">
-            <a
-              href="/"
-              onClick={(event) => { event.preventDefault(); onNavigate('home'); }}
+            <Link
+              to="/"
               className="flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all bg-transparent border-none outline-none cursor-pointer"
             >
               <ArrowRight className="rotate-180" size={20} /> Voltar ao Início
-            </a>
+            </Link>
             
             <nav className="text-xs font-semibold text-gray-500 uppercase tracking-widest flex items-center flex-wrap gap-y-1" aria-label="Breadcrumb">
-              <a href="/" onClick={(e) => { e.preventDefault(); onNavigate('home'); }} className="hover:text-penedo-emerald transition-colors">Início</a>
+              <Link to="/" className="hover:text-penedo-emerald transition-colors">Início</Link>
               <span className="mx-2 text-gray-400">/</span>
-              <a 
-                href={`/${categoryCleanPath}`} 
-                onClick={(e) => { e.preventDefault(); onNavigate(categoryCleanPath as Page); }}
+              <Link
+                to={`/${categoryCleanPath}`}
                 className="hover:text-penedo-emerald transition-colors"
               >
                 {categoryLabel}
-              </a>
+              </Link>
               <span className="mx-2 text-gray-400">/</span>
-              <a 
-                href={`/${categoryCleanPath}#${subSlug}`} 
-                onClick={(e) => { e.preventDefault(); onNavigate(categoryCleanPath as Page); }}
+              <Link
+                to={`/${categoryCleanPath}#${subSlug}`}
                 className="hover:text-penedo-emerald transition-colors"
               >
                 {subName}
-              </a>
+              </Link>
               <span className="mx-2 text-gray-400">/</span>
               <span className="text-penedo-forest line-clamp-1">{item.title}</span>
             </nav>
@@ -781,10 +787,9 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
                 <h3 className="text-xl font-bold text-penedo-forest border-b pb-2 border-gray-200">Dicas do Especialista</h3>
                 
                 {/* Blog Card */}
-                <a
-                  href={`/blog/artigo/${recommendations.blog.id}`}
-                  onClick={(event) => { event.preventDefault(); onNavigate('blog', recommendations.blog.id); }}
-                  className="p-6 bg-penedo-forest text-white rounded-3xl shadow-lg hover:shadow-xl transition-all cursor-pointer relative overflow-hidden group"
+                <Link
+                  to={`/blog/artigo/${recommendations.blog.id}`}
+                  className="block w-full p-6 bg-penedo-forest text-white rounded-3xl shadow-lg hover:shadow-xl transition-all cursor-pointer relative overflow-hidden group"
                 >
                   <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
                   <div className="relative z-10">
@@ -795,20 +800,19 @@ export function PremiumDetailPage({ slug, onNavigate, onOpenDetail }: { slug: st
                       Ler artigo completo <ArrowRight size={16} className="shrink-0" />
                     </div>
                   </div>
-                </a>
+                </Link>
 
                 {/* Category Link */}
-                <a
-                  href={`/${categoryCleanPath}`}
-                  onClick={(event) => { event.preventDefault(); onNavigate(categoryCleanPath as Page); }}
-                  className="p-6 bg-white border border-gray-100 rounded-3xl shadow-sm hover:shadow-md transition-all cursor-pointer text-center group"
+                <Link
+                  to={`/${categoryCleanPath}`}
+                  className="block w-full p-6 bg-white border border-gray-100 rounded-3xl shadow-sm hover:shadow-md transition-all cursor-pointer text-center group"
                 >
                   <h4 className="font-bold text-gray-800 mb-1">Quer ver a lista completa?</h4>
                   <p className="text-xs text-gray-400 mb-4">Veja todas as opções da categoria {item.category} em Penedo.</p>
                   <span className="inline-block px-6 py-2.5 bg-gray-50 group-hover:bg-penedo-emerald group-hover:text-white rounded-2xl font-bold text-xs text-penedo-emerald uppercase tracking-widest transition-all">
                     Ver {item.category}
                   </span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

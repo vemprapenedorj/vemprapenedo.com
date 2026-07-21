@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DetailItem } from '../types';
+import { Link } from 'react-router-dom';
 
 interface CarouselProps {
   items: DetailItem[];
@@ -83,13 +84,13 @@ export const Carousel = React.memo(function Carousel({
             {subtitle && <p className="text-gray-500">{subtitle}</p>}
           </div>
           {onNavigate && (
-            <a
-              href={navigateHref}
-              onClick={(event) => { event.preventDefault(); onNavigate(); }}
+            <Link
+              to={navigateHref || '/'}
+              onClick={onNavigate}
               className="hidden sm:flex items-center gap-2 text-penedo-emerald font-bold hover:gap-3 transition-all cursor-pointer"
             >
               Ver tudo <ChevronRight size={20} />
-            </a>
+            </Link>
           )}
         </div>
 

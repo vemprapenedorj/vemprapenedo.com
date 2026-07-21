@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "clean": "node -e \"const fs = require('fs'); fs.rmSync('dist', { recursive: true, force: true });\"",
     "lint": "tsc --noEmit",
-    "validate:db": "node scripts/validate_db.js"
+    "validate:db": "node scripts/validate_db.js",
+    "test": "tsx --test src/routing/__tests__/*.test.ts",
+    "test:routing:e2e": "node --test tests/routing-history.e2e.js",
+    "test:routing": "npm run test && npm run test:routing:e2e"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
@@ -21,6 +24,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-helmet-async": "^3.0.0",
+    "react-router-dom": "^7.18.1",
     "vite": "^6.2.0"
   },
   "devDependencies": {
