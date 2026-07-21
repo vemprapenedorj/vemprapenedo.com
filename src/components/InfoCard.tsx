@@ -48,6 +48,10 @@ export const InfoCard = React.memo(function InfoCard({ item, onOpen }: InfoCardP
       classes += "object-contain object-center";
     } else if (isPremium) {
       classes += "object-cover";
+    } else if (item.id === 'enoteca-serrana') {
+      classes += "object-cover object-[center_75%]";
+    } else if (item.id === 'andicaro-penedo-cafes-especiais') {
+      classes += "object-contain object-top";
     } else if (item.id === 'shopping-roda-dagua') {
       classes += "object-cover object-right";
     } else if (item.id === 'hotel-girassol') {
