@@ -5,7 +5,7 @@ import { discoverSiteRoutes, getSitemapSettings } from './site-routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const BASE_URL = (process.env.SITE_URL || process.env.VITE_SITE_URL || 'https://vemprapenedo.com.br').replace(/\/$/, '');
+const BASE_URL = (process.env.SITE_URL || process.env.VITE_SITE_URL || 'https://vemprapenedo.com').replace(/\/$/, '');
 const routes = discoverSiteRoutes().filter((route) => route !== '/404');
 
 let xml = `<?xml version="1.0" encoding="UTF-8"?>

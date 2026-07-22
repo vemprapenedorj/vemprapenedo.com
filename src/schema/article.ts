@@ -19,24 +19,24 @@ export const getArticleSchema = (article: ArticleData) => {
     "@type": "BlogPosting",
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://vemprapenedo.com.br/blog/artigo/${article.slug}`
+      "@id": `https://vemprapenedo.com/blog/artigo/${article.slug}`
     },
     "headline": article.title,
     "description": article.description,
-    "image": article.image.startsWith('http') ? article.image : `https://vemprapenedo.com.br${article.image.startsWith('/') ? '' : '/'}${article.image}`,
+    "image": article.image.startsWith('http') ? article.image : `https://vemprapenedo.com${article.image.startsWith('/') ? '' : '/'}${article.image}`,
     "datePublished": publishedDate,
     "dateModified": article.dateModified || publishedDate,
     "author": {
       "@type": "Organization",
       "name": "Vem Pra Penedo",
-      "url": "https://vemprapenedo.com.br"
+      "url": "https://vemprapenedo.com"
     },
     "publisher": {
       "@type": "Organization",
       "name": "Vem Pra Penedo",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://vemprapenedo.com.br/assets/imagens/Logo.jpg"
+        "url": "https://vemprapenedo.com/assets/imagens/Logo.jpg"
       }
     },
     "keywords": article.keywords ? article.keywords.join(', ') : "penedo turismo, blog penedo"
