@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const outputPath = path.resolve(__dirname, '../public/robots.txt');
-const siteUrl = (process.env.SITE_URL || process.env.VITE_SITE_URL || 'https://vemprapenedo.com.br')
+const siteUrl = (process.env.SITE_URL || process.env.VITE_SITE_URL || 'https://vemprapenedo.com')
   .replace(/\/$/, '');
 const allowIndexing = process.env.ALLOW_INDEXING === 'true';
 

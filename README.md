@@ -23,10 +23,10 @@ operacional do GA4 está documentada em `src/analytics/README.md`.
 
 ## Ambientes e indexação
 
-- `vemprapenedo.com.br`: domínio oficial futuro da nova versão.
-- `vemprapenedo.com` e `homologacao.vemprapenedo.com`: ambientes temporários,
-  sempre protegidos por `X-Robots-Tag` e sem carregamento do GTM.
+- `vemprapenedo.com`: domínio oficial de produção.
+- `homologacao.vemprapenedo.com`: ambiente de testes, sempre protegido por
+  `X-Robots-Tag` e sem carregamento do GTM.
 - O build gera `robots.txt` a partir de `ALLOW_INDEXING`. O valor padrão é
-  `false`; configure `true` exclusivamente no deploy oficial `.com.br`.
+  `false`; configure `true` exclusivamente no deploy oficial `.com`.
 - `SITE_URL` controla sitemap e pré-renderização. `VITE_SITE_URL` documenta a
   URL pública utilizada pelo frontend.

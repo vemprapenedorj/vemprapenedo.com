@@ -197,7 +197,7 @@ export function BlogPage({ onOpenDetail, onNavigate, onSelectArticle }: { onOpen
         <SEO
           title="Artigo Não Encontrado | Vem Pra Penedo"
           description="O artigo que você procura não foi encontrado."
-          canonical="https://vemprapenedo.com.br/404"
+          canonical="https://vemprapenedo.com/404"
           robots="noindex, follow"
         />
         <Page404 onNavigate={onNavigate} />
@@ -878,12 +878,12 @@ export function BlogPage({ onOpenDetail, onNavigate, onSelectArticle }: { onOpen
       <SEO 
         title="Blog Penedo RJ - Dicas e Roteiros | Vem Pra Penedo"
         description="Acompanhe o blog Vem Pra Penedo. Dicas exclusivas, roteiros completos, os melhores restaurantes e onde se hospedar na Finlândia Brasileira."
-        image="https://vemprapenedo.com.br/assets/imagens/blog/penedo_blog_header.jpg"
+        image="https://vemprapenedo.com/assets/imagens/blog/penedo_blog_header.jpg"
         type="website"
-        canonical="https://vemprapenedo.com.br/blog"
+        canonical="https://vemprapenedo.com/blog"
         schema={getBreadcrumbSchema([
-          { name: 'Início', item: 'https://vemprapenedo.com.br/' },
-          { name: 'Blog', item: 'https://vemprapenedo.com.br/blog' }
+          { name: 'Início', item: 'https://vemprapenedo.com/' },
+          { name: 'Blog', item: 'https://vemprapenedo.com/blog' }
         ])}
       />
       <div className="sticky top-[72px] z-40 bg-white/90 backdrop-blur-md border-b py-4 shadow-sm">

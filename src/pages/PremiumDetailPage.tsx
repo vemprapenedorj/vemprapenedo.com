@@ -137,7 +137,7 @@ export function PremiumDetailPage({ onNavigate, onOpenDetail }: { onNavigate: (p
         <SEO
           title="Página Não Encontrada | Vem Pra Penedo"
           description="O estabelecimento que você procura não foi encontrado."
-          canonical="https://vemprapenedo.com.br/404"
+          canonical="https://vemprapenedo.com/404"
           robots="noindex, follow"
         />
         <Page404 onNavigate={onNavigate} />
@@ -351,7 +351,7 @@ export function PremiumDetailPage({ onNavigate, onOpenDetail }: { onNavigate: (p
   if (galleryImages.length > 0) {
     const businessSchema = (seoData.schema as any[]).find((s: any) => s["@type"] === 'Restaurant' || s["@type"] === 'Hotel' || s["@type"] === 'TouristAttraction' || s["@type"] === 'LocalBusiness') as any;
     if (businessSchema) {
-      businessSchema.image = galleryImages.map((img: string) => img.startsWith('http') ? img : `https://vemprapenedo.com.br${img}`);
+      businessSchema.image = galleryImages.map((img: string) => img.startsWith('http') ? img : `https://vemprapenedo.com${img}`);
     }
   }
 
